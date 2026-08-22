@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { GitHubPulse } from "./GitHubPulse";
 import { GamePanel } from "./tetris/GamePanel";
 import { INTEL, useUnlockedIntel } from "./tetris/intel";
 import { PIECES, PieceName } from "./tetris/types";
@@ -33,7 +34,7 @@ const projects: Project[] = [
     title: "IntelliRAG",
     copy: "Production-grade RAG platform built from first principles, not a vector-search demo. Async Celery ingestion with dead-letter queues, five benchmark-driven chunking strategies, hybrid retrieval (dense + BM25 + RRF), cross-encoder reranking, citation-aware generation, and a CI-gated evaluation platform with span-attached metrics.",
     image: "/projects/intellirag.jpg",
-    imageAlt: "Rows of illuminated servers in a data center",
+    imageAlt: "Code and terminal on a developer workstation",
     metrics: [
       "12 PHASES SHIPPED",
       "100+ TESTS",
@@ -73,7 +74,7 @@ const projects: Project[] = [
     title: "Project Management Tool",
     copy: "Full-stack Kanban board with drag-and-drop task management, team collaboration, and real-time updates. TypeScript end-to-end.",
     image: "/projects/kanban.jpg",
-    imageAlt: "Team collaborating around a planning board",
+    imageAlt: "Team workshop around sticky notes and a planning board",
     tech: ["TypeScript", "React", "Next.js", "Tailwind"],
     github: "https://github.com/charan-rathore/project-management-tool",
     live: "https://project-management-tool-nine-zeta.vercel.app",
@@ -84,7 +85,7 @@ const projects: Project[] = [
     title: "Agentic Finance Advisor",
     copy: "Multi-agent LLM system that monitors stocks, reads market sentiment from news and social media, and generates actionable investment recommendations.",
     image: "/projects/finance.jpg",
-    imageAlt: "Financial charts on a trading screen",
+    imageAlt: "Candlestick charts and market data on a trading desk",
     tech: ["Python", "LangChain", "Multi-Agent", "NLP"],
     github: "https://github.com/charan-rathore/agentic-finance-advisor",
   },
@@ -94,7 +95,7 @@ const projects: Project[] = [
     title: "Drone Wildlife Detection",
     copy: "YOLOv8 detection pipeline identifying blackbuck from drone-captured footage, applied machine learning for ecological conservation.",
     image: "/projects/wildlife.jpg",
-    imageAlt: "Drone flying above open landscape",
+    imageAlt: "Blackbuck antelope in its natural grassland habitat",
     tech: ["Python", "YOLOv8", "PyTorch"],
     github: "https://github.com/charan-rathore/Object-detection-from-drone-captured-videos",
   },
@@ -104,7 +105,7 @@ const projects: Project[] = [
     title: "3D Bolt Dataset Automation",
     copy: "Automated generation of 1,000+ labeled STL datasets through the Fusion 360 API for ML-based CAD classification, from parametric generation to labeling.",
     image: "/projects/cad.jpg",
-    imageAlt: "Metal bolts and machining tools on a workbench",
+    imageAlt: "Python scripting and CAD-adjacent engineering software on a laptop",
     tech: ["Python", "Fusion 360 API", "Deep Learning"],
     github: "https://github.com/charan-rathore/Automation-of-3D-Bolt-Dataset",
   },
@@ -131,34 +132,23 @@ const experience = [
   },
 ];
 
-const playerStats = [
-  { value: "10+", label: "SYSTEMS SHIPPED" },
-  { value: "5", label: "AI/ML DOMAINS" },
-  { value: "3", label: "LIVE APPS" },
-  { value: "∞", label: "SYSTEMS LOOPS" },
-];
-
-const TECH_STACK: { name: string; piece: PieceName }[] = [
-  { name: "Python", piece: "T" },
-  { name: "TypeScript", piece: "I" },
-  { name: "Next.js", piece: "O" },
-  { name: "React", piece: "S" },
-  { name: "Three.js", piece: "Z" },
-  { name: "FastAPI", piece: "J" },
-  { name: "Celery", piece: "L" },
-  { name: "PostgreSQL", piece: "T" },
-  { name: "Redis", piece: "I" },
-  { name: "ChromaDB", piece: "O" },
-  { name: "Ollama", piece: "S" },
-  { name: "LangChain", piece: "Z" },
-  { name: "PyTorch", piece: "J" },
-  { name: "YOLOv8", piece: "L" },
-  { name: "MLflow", piece: "T" },
-  { name: "LightGBM", piece: "I" },
-  { name: "Tailwind", piece: "O" },
-  { name: "pdf.js", piece: "S" },
-  { name: "Fusion 360", piece: "Z" },
-  { name: "IoT", piece: "J" },
+const TECH_LOGOS: { name: string; file: string; piece: PieceName }[] = [
+  { name: "Python", file: "python.svg", piece: "T" },
+  { name: "TypeScript", file: "typescript.svg", piece: "I" },
+  { name: "Next.js", file: "nextdotjs.svg", piece: "O" },
+  { name: "React", file: "react.svg", piece: "S" },
+  { name: "Three.js", file: "threedotjs.svg", piece: "Z" },
+  { name: "FastAPI", file: "fastapi.svg", piece: "J" },
+  { name: "PostgreSQL", file: "postgresql.svg", piece: "L" },
+  { name: "Redis", file: "redis.svg", piece: "T" },
+  { name: "PyTorch", file: "pytorch.svg", piece: "I" },
+  { name: "scikit-learn", file: "scikitlearn.svg", piece: "O" },
+  { name: "Jupyter", file: "jupyter.svg", piece: "S" },
+  { name: "LangChain", file: "langchain.svg", piece: "Z" },
+  { name: "Tailwind", file: "tailwindcss.svg", piece: "J" },
+  { name: "Docker", file: "docker.svg", piece: "L" },
+  { name: "Vercel", file: "vercel.svg", piece: "T" },
+  { name: "Git", file: "git.svg", piece: "I" },
 ];
 
 function PieceGlyph({ name }: { name: PieceName }) {
@@ -193,18 +183,28 @@ function PieceGlyph({ name }: { name: PieceName }) {
 }
 
 function TechMarquee() {
-  const loop = [...TECH_STACK, ...TECH_STACK];
+  const loop = [...TECH_LOGOS, ...TECH_LOGOS];
   return (
-    <div className="tech-marquee" aria-label="Tech stack">
+    <div className="tech-marquee" aria-label="Tech stack logos">
       <div className="tech-marquee-track">
         {loop.map((item, index) => (
           <div
-            className="tech-chip"
+            className="tech-chip is-logo"
             key={`${item.name}-${index}`}
             style={{ "--piece": PIECES[item.piece].color } as React.CSSProperties}
+            title={item.name}
           >
-            <PieceGlyph name={item.piece} />
-            <span>{item.name}</span>
+            <div className="tech-chip-block" aria-hidden="true">
+              <PieceGlyph name={item.piece} />
+            </div>
+            <img
+              src={`/logos/${item.file}`}
+              alt={item.name}
+              width={28}
+              height={28}
+              className="tech-logo"
+              loading="lazy"
+            />
           </div>
         ))}
       </div>
@@ -379,7 +379,7 @@ export function Portfolio() {
           <h2>The method behind the madness.</h2>
         </div>
 
-        <div className="about-grid">
+        <div className="about-grid about-grid-live">
           <div className="about-copy">
             <p className="about-lead">
               I really love designing systems that love me back :)
@@ -396,14 +396,7 @@ export function Portfolio() {
             </p>
           </div>
 
-          <div className="stat-blocks">
-            {playerStats.map((stat) => (
-              <div className="stat-block" key={stat.label}>
-                <b>{stat.value}</b>
-                <span className="pixel-label">{stat.label}</span>
-              </div>
-            ))}
-          </div>
+          <GitHubPulse />
         </div>
 
         <div className="xp-list">
@@ -446,19 +439,6 @@ export function Portfolio() {
           >
             LINKEDIN
           </a>
-          {unlocked.has("x") ? (
-            <a href="https://x.com/huesofbanter" target="_blank" rel="noreferrer">
-              X · MEMES &amp; BANTER
-            </a>
-          ) : (
-            <button
-              type="button"
-              className="contact-locked"
-              onClick={() => scrollToId("play")}
-            >
-              X · LOCKED · SCORE 1,200
-            </button>
-          )}
           {unlocked.has("substack") ? (
             <a
               href="https://substack.com/@charanrathore"
@@ -473,7 +453,20 @@ export function Portfolio() {
               className="contact-locked"
               onClick={() => scrollToId("play")}
             >
-              SUBSTACK · LOCKED · SCORE 3,000
+              SUBSTACK · LOCKED · SCORE 350
+            </button>
+          )}
+          {unlocked.has("x") ? (
+            <a href="https://x.com/huesofbanter" target="_blank" rel="noreferrer">
+              X · MEMES &amp; BANTER
+            </a>
+          ) : (
+            <button
+              type="button"
+              className="contact-locked"
+              onClick={() => scrollToId("play")}
+            >
+              X · LOCKED · SCORE 650
             </button>
           )}
         </div>

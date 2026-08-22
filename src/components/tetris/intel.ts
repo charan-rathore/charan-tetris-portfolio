@@ -4,10 +4,8 @@
  * The Intel Vault: score-gated reveals that reward play with information
  * about Charan that isn't printed anywhere else on the page.
  *
- * Design follows classic reward-schedule structure: the first file is cheap
- * (everyone who clears a line or two gets a taste), later files are spaced
- * so they keep their value, and thresholds are always visible so play stays
- * goal-oriented. Unlocks persist per device.
+ * Substack unlocks before X. Thresholds are intentionally low enough that
+ * a short focused session decrypts the channels, while the thesis stays rare.
  */
 
 import { useMemo, useSyncExternalStore } from "react";
@@ -27,26 +25,16 @@ export type IntelItem = {
 export const INTEL: IntelItem[] = [
   {
     id: "origin",
-    at: 400,
+    at: 150,
     label: "FILE 01 · ORIGIN",
     title: "THE PIVOT",
     blurb:
       "Mechanical engineer who got lost in data and never looked back. The hardest engineering problems aren't about machines. They're about information.",
   },
   {
-    id: "x",
-    at: 1200,
-    label: "FILE 02 · CHANNEL",
-    title: "@huesofbanter",
-    blurb:
-      "The unfiltered feed. Memes, banter, and unpolished takes on AI, product, and whatever broke in production this week.",
-    href: "https://x.com/huesofbanter",
-    cta: "FOLLOW ON X ↗",
-  },
-  {
     id: "substack",
-    at: 3000,
-    label: "FILE 03 · CHANNEL",
+    at: 350,
+    label: "FILE 02 · CHANNEL",
     title: "SUBSTACK",
     blurb:
       "Long-form systems thinking. How I reason about infrastructure, product decisions, and what actually scales.",
@@ -54,8 +42,18 @@ export const INTEL: IntelItem[] = [
     cta: "READ ON SUBSTACK ↗",
   },
   {
+    id: "x",
+    at: 650,
+    label: "FILE 03 · CHANNEL",
+    title: "@huesofbanter",
+    blurb:
+      "The unfiltered feed. Memes, banter, and unpolished takes on AI, product, and whatever broke in production this week.",
+    href: "https://x.com/huesofbanter",
+    cta: "FOLLOW ON X ↗",
+  },
+  {
     id: "thesis",
-    at: 6000,
+    at: 1800,
     label: "FILE 04 · CLASSIFIED",
     title: "THE THESIS",
     blurb:
