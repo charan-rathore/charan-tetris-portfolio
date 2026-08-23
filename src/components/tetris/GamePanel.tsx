@@ -28,13 +28,21 @@ const BoardScene = dynamic(
 const HIGH_SCORE_KEY = "cr-tetris-high-score";
 const MUTE_KEY = "cr-tetris-muted";
 
-function subscribeHighScore(onChange: () => void) {
+function subscribeStorage(key: string, onChange: () => void) {
   window.addEventListener("storage", onChange);
-  window.addEventListener(`${HIGH_SCORE_KEY}-updated`, onChange);
+  window.addEventListener(`${key}-updated`, onChange);
   return () => {
     window.removeEventListener("storage", onChange);
-    window.removeEventListener(`${HIGH_SCORE_KEY}-updated`, onChange);
+    window.removeEventListener(`${key}-updated`, onChange);
   };
+}
+
+function subscribeHighScore(onChange: () => void) {
+  return subscribeStorage(HIGH_SCORE_KEY, onChange);
+}
+
+function subscribeMute(onChange: () => void) {
+  return subscribeStorage(MUTE_KEY, onChange);
 }
 
 function PiecePreview({ name }: { name: PieceName | null }) {
@@ -91,17 +99,13 @@ const KONAMI = [
 type Toast = { title: string; sub: string; key: number };
 
 export function GamePanel() {
-  const gameRef = useRef<TetrisGame | null>(null);
-  if (!gameRef.current) gameRef.current = new TetrisGame();
-  const game = gameRef.current;
+  const [game] = useState(() => new TetrisGame());
 
   const [snapshot, setSnapshot] = useState<GameSnapshot>(() => game.snapshot());
   const [toast, setToast] = useState<Toast | null>(null);
   const [flashKey, setFlashKey] = useState(0);
-  const [muted, setMuted] = useState(false);
   const [showHud, setShowHud] = useState(false);
-  const mutedRef = useRef(muted);
-  mutedRef.current = muted;
+  const mutedRef = useRef(false);
   const sectionRef = useRef<HTMLElement>(null);
 
   const highScore = useSyncExternalStore(
@@ -109,11 +113,16 @@ export function GamePanel() {
     () => readStoredNumber(HIGH_SCORE_KEY, 0),
     () => 0,
   );
+  const muted = useSyncExternalStore(
+    subscribeMute,
+    () => readStoredNumber(MUTE_KEY, 0) === 1,
+    () => false,
+  );
   const unlocked = useUnlockedIntel();
 
   useEffect(() => {
-    setMuted(readStoredNumber(MUTE_KEY, 0) === 1);
-  }, []);
+    mutedRef.current = muted;
+  }, [muted]);
 
   // Decrypt intel files as the score (or best on this device) crosses thresholds.
   useEffect(() => {
@@ -122,11 +131,12 @@ export function GamePanel() {
       if (floor >= item.at && !unlocked.has(item.id)) {
         unlockIntel(item.id);
         if (snapshot.score >= item.at) {
-          setToast({
+          const nextToast = {
             title: "INTEL DECRYPTED",
             sub: `${item.label} · ${item.title}`,
             key: Date.now(),
-          });
+          };
+          queueMicrotask(() => setToast(nextToast));
           if (!mutedRef.current) sfx.intel();
         }
       }
@@ -375,10 +385,7 @@ export function GamePanel() {
   };
 
   const toggleMute = () => {
-    setMuted((value) => {
-      writeStoredNumber(MUTE_KEY, value ? 0 : 1);
-      return !value;
-    });
+    writeStoredNumber(MUTE_KEY, muted ? 0 : 1);
   };
 
   const nextIntel = INTEL.find((item) => !unlocked.has(item.id)) ?? null;

@@ -29,7 +29,7 @@ type GithubPayload = {
   publicRepos: number;
   followers: number;
   stars: number;
-  month: BarDay[];
+  month?: BarDay[];
   languages: Language[];
   recent: RecentRepo[];
   fetchedAt: string;
@@ -81,13 +81,18 @@ function repoPiece(index: number): PieceName {
   return LANG_PIECES[index % LANG_PIECES.length];
 }
 
+const CLIENT_TIMEOUT_MS = 8000;
+
 export function GitHubPulse() {
   const [data, setData] = useState<GithubPayload | null>(null);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/github")
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), CLIENT_TIMEOUT_MS);
+
+    fetch("/api/github", { signal: controller.signal })
       .then((response) => {
         if (!response.ok) throw new Error("bad status");
         return response.json();
@@ -97,9 +102,14 @@ export function GitHubPulse() {
       })
       .catch(() => {
         if (!cancelled) setError(true);
+      })
+      .finally(() => {
+        window.clearTimeout(timer);
       });
     return () => {
       cancelled = true;
+      controller.abort();
+      window.clearTimeout(timer);
     };
   }, []);
 
@@ -130,9 +140,10 @@ export function GitHubPulse() {
     );
   }
 
-  const peak = data.month.reduce(
-    (best, day) => (day.count > best.count ? day : best),
-    data.month[0],
+  const month = data.month ?? [];
+  const peak = month.reduce<BarDay | null>(
+    (best, day) => (!best || day.count > best.count ? day : best),
+    null,
   );
 
   return (
@@ -163,7 +174,7 @@ export function GitHubPulse() {
           <span className="pixel-label accent-yellow">{data.monthTotal} TOTAL</span>
         </div>
         <div className="gh-chart" aria-label="Daily contributions bar chart">
-          {data.month.map((day) => (
+          {month.map((day) => (
             <div key={day.date} className="gh-chart-col">
               <div
                 className={`gh-chart-bar ${day.count > 0 ? "is-active" : ""}`}
@@ -176,7 +187,9 @@ export function GitHubPulse() {
         </div>
         <div className="gh-chart-meta">
           <span>
-            Peak {peak.count} on {shortDay(peak.date)}
+            {peak
+              ? `Peak ${peak.count} on ${shortDay(peak.date)}`
+              : "No contribution days in range"}
           </span>
           <span>
             {data.publicRepos} repos · {data.stars} stars · {data.followers}{" "}

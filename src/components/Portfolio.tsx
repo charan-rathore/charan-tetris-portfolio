@@ -1,18 +1,13 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { GitHubPulse } from "./GitHubPulse";
+import { HeroBackdrop } from "./HeroBackdrop";
 import { sfx } from "./tetris/audio";
 import { GamePanel } from "./tetris/GamePanel";
 import { INTEL, useUnlockedIntel } from "./tetris/intel";
 import { PIECES, PieceName } from "./tetris/types";
-
-const HeroScene = dynamic(
-  () => import("./hero/HeroScene").then((module) => module.HeroScene),
-  { ssr: false },
-);
 
 type TechItem = {
   name: string;
@@ -475,7 +470,7 @@ export function Portfolio() {
       </header>
 
       <section className="hero" id="top">
-        <HeroScene />
+        <HeroBackdrop />
         <div className="hero-content">
           <span className="pixel-label">
             PLAYER 1 &gt; SYSTRIS : TETRIS WITH SYSTEMS
