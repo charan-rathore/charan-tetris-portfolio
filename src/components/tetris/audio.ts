@@ -153,6 +153,12 @@ export const sfx = {
     tone(1108.73, 0.28, { type: "sine", volume: 0.25, delay: 0.26 });
   },
 
+  /** Soft UI click for portfolio links / chips (keeps the Tetris timbre). */
+  ui() {
+    tone(detune(660), 0.035, { type: "square", volume: 0.14 });
+    tone(detune(880), 0.04, { type: "triangle", volume: 0.1, delay: 0.02 });
+  },
+
   gameOver() {
     [392, 329.63, 261.63, 196].forEach((frequency, index) => {
       tone(frequency, 0.22, { type: "sawtooth", volume: 0.3, delay: index * 0.16 });

@@ -20,6 +20,22 @@ type Repo = {
   description: string | null;
 };
 
+function isoDate(d: Date) {
+  return d.toISOString().slice(0, 10);
+}
+
+/** Inclusive day range from start → end (YYYY-MM-DD). */
+function eachDay(start: string, end: string): string[] {
+  const out: string[] = [];
+  const cursor = new Date(`${start}T12:00:00Z`);
+  const last = new Date(`${end}T12:00:00Z`);
+  while (cursor <= last) {
+    out.push(isoDate(cursor));
+    cursor.setUTCDate(cursor.getUTCDate() + 1);
+  }
+  return out;
+}
+
 export async function GET() {
   try {
     const [contribRes, userRes, reposRes] = await Promise.all([
@@ -55,14 +71,34 @@ export async function GET() {
     };
     const repos = (await reposRes.json()) as Repo[];
 
-    const days = contrib.contributions ?? [];
-    const last30 = days.slice(-30);
-    const monthWindow = days.slice(-35); // ~5 weeks for the heatmap strip
+    // Upstream returns an unsorted mix of years — always sort by date.
+    const byDate = new Map<string, Day>();
+    for (const day of contrib.contributions ?? []) {
+      byDate.set(day.date, day);
+    }
 
-    const year = new Date().getFullYear();
-    const yearTotal =
-      contrib.total?.[String(year)] ??
-      last30.reduce((sum, day) => sum + day.count, 0);
+    const today = new Date();
+    const end = isoDate(today);
+    // Past one month window: July 1 of current year through today when we are
+    // in Jul/Aug+, otherwise rolling ~31 days ending today.
+    const year = today.getUTCFullYear();
+    const month = today.getUTCMonth(); // 0-indexed
+    const start =
+      month >= 6
+        ? `${year}-07-01`
+        : isoDate(new Date(Date.UTC(year, month, today.getUTCDate() - 30)));
+
+    const monthDays = eachDay(start, end).map((date) => {
+      const hit = byDate.get(date);
+      return {
+        date,
+        count: hit?.count ?? 0,
+        level: hit?.level ?? 0,
+      };
+    });
+
+    const monthTotal = monthDays.reduce((sum, day) => sum + day.count, 0);
+    const maxDay = Math.max(1, ...monthDays.map((day) => day.count));
 
     const languageCounts: Record<string, number> = {};
     for (const repo of repos) {
@@ -89,22 +125,20 @@ export async function GET() {
         description: repo.description,
       }));
 
-    const maxDay = Math.max(1, ...last30.map((day) => day.count));
-
     return NextResponse.json({
       user: USER,
-      year,
-      yearTotal,
+      rangeStart: start,
+      rangeEnd: end,
+      monthTotal,
       publicRepos: user.public_repos,
       followers: user.followers,
       stars: repos.reduce((sum, repo) => sum + repo.stargazers_count, 0),
-      last30: last30.map((day) => ({
+      month: monthDays.map((day) => ({
         date: day.date,
         count: day.count,
         level: day.level,
-        height: Math.max(8, Math.round((day.count / maxDay) * 100)),
+        height: Math.max(4, Math.round((day.count / maxDay) * 100)),
       })),
-      month: monthWindow,
       languages,
       recent,
       fetchedAt: new Date().toISOString(),

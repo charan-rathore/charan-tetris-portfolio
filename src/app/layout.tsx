@@ -21,20 +21,19 @@ const pixel = Press_Start_2P({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://charan-tetris-portfolio.vercel.app"),
-  title: "Charan Rathore · Product Analyst & AI Systems Builder",
+  title: "Charan Rathore · Systris",
   description:
-    "A playable Tetris portfolio. BITS Pilani '26, ex-Flipkart, building AI infrastructure. IntelliRAG, memoRABLE, ThermoSense, and more.",
+    "Systris: tetris with systems. A playable Tetris portfolio · IntelliRAG, memoRABLE, ThermoSense, and more.",
   openGraph: {
-    title: "Charan Rathore · Product Analyst & AI Systems Builder",
-    description:
-      "A playable Tetris portfolio. Guideline mechanics, hand-tuned juice, real production systems.",
+    title: "Charan Rathore · Systris",
+    description: "I am the MCP between Charan and the world",
     type: "website",
     url: "https://charan-tetris-portfolio.vercel.app",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Charan Rathore · Product Analyst & AI Systems Builder",
-    description: "A playable Tetris portfolio built with Next.js + Three.js.",
+    title: "Charan Rathore · Systris",
+    description: "Systris: tetris with systems. Built with Next.js + Three.js.",
     creator: "@huesofbanter",
   },
 };

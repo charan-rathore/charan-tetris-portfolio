@@ -14,6 +14,7 @@ import { sfx } from "./audio";
 import type { GameEvent, GameSnapshot } from "./game";
 import { TetrisGame } from "./game";
 import { INTEL, unlockAllIntel, unlockIntel, useUnlockedIntel } from "./intel";
+import { GameplayPreview } from "./GameplayPreview";
 import { PIECES, PieceName } from "./types";
 
 const BoardScene = dynamic(
@@ -98,6 +99,7 @@ export function GamePanel() {
   const [toast, setToast] = useState<Toast | null>(null);
   const [flashKey, setFlashKey] = useState(0);
   const [muted, setMuted] = useState(false);
+  const [showHud, setShowHud] = useState(false);
   const mutedRef = useRef(muted);
   mutedRef.current = muted;
   const sectionRef = useRef<HTMLElement>(null);
@@ -397,6 +399,8 @@ export function GamePanel() {
   );
 
   const status = snapshot.status;
+  const showPreview = status === "ready" || status === "over";
+  const idleOverlay = status === "ready" || status === "over";
 
   return (
     <section
@@ -406,30 +410,19 @@ export function GamePanel() {
       aria-label="Playable Tetris"
     >
       <div className="arcade-shell">
-        <div className="arcade-side arcade-left" aria-label="Game statistics">
-          {stats.map((stat) => (
-            <div className="stat" key={stat.label}>
-              <span>{stat.label}</span>
-              <b>{stat.value}</b>
-            </div>
-          ))}
-          <button
-            type="button"
-            className="sound-toggle"
-            onClick={toggleMute}
-            aria-label={muted ? "Unmute sound" : "Mute sound"}
-          >
-            {muted ? "SOUND OFF" : "SOUND ON"}
-          </button>
-        </div>
-
         <div
           className="arcade-board"
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
         >
-          <BoardScene game={game} onEvents={handleEvents} />
+          <div
+            className={`board-live${showPreview ? " is-dimmed" : ""}`}
+            aria-hidden={showPreview}
+          >
+            <BoardScene game={game} onEvents={handleEvents} />
+          </div>
+          {showPreview && <GameplayPreview />}
           {flashKey > 0 && <div className="board-flash" key={flashKey} />}
           {toast && (
             <div className="board-toast" key={toast.key}>
@@ -438,7 +431,9 @@ export function GamePanel() {
             </div>
           )}
           {status !== "playing" && status !== "clearing" && (
-            <div className="board-overlay">
+            <div
+              className={`board-overlay${idleOverlay ? " is-ready" : ""}`}
+            >
               {status === "ready" && (
                 <>
                   <span className="pixel-label">CREDIT 00 · FREE PLAY</span>
@@ -483,26 +478,62 @@ export function GamePanel() {
           )}
         </div>
 
-        <div className="arcade-side arcade-right">
-          <div className="queue-block">
-            <span>HOLD</span>
-            <PiecePreview name={snapshot.hold} />
-          </div>
-          <div className="queue-block">
-            <span>NEXT</span>
-            <PiecePreview name={snapshot.queue[0] ?? null} />
-            <PiecePreview name={snapshot.queue[1] ?? null} />
-            <PiecePreview name={snapshot.queue[2] ?? null} />
-          </div>
-          <div className="keys-legend" aria-hidden="true">
-            <div><i>←→</i> MOVE</div>
-            <div><i>↑ / X</i> ROTATE</div>
-            <div><i>Z</i> COUNTER</div>
-            <div><i>↓</i> SOFT DROP</div>
-            <div><i>SPACE</i> HARD DROP</div>
-            <div><i>C</i> HOLD</div>
-            <div><i>P</i> PAUSE</div>
-          </div>
+        <div className="arcade-hud-dock">
+          <button
+            type="button"
+            className={`hud-toggle${showHud ? " is-open" : ""}`}
+            aria-expanded={showHud}
+            aria-controls="arcade-hud-panel"
+            onClick={() => {
+              setShowHud((value) => !value);
+              sfx.unlock();
+              sfx.ui();
+            }}
+          >
+            <span className="pixel-label">
+              {showHud ? "HIDE GAME STATS ▲" : "SHOW GAME STATS ▼"}
+            </span>
+            <span className="hud-toggle-hint">
+              SCORE · HOLD · NEXT · SOUND
+            </span>
+          </button>
+
+          {showHud && (
+            <div
+              id="arcade-hud-panel"
+              className="arcade-hud-panel"
+              aria-label="Game statistics"
+            >
+              <div className="arcade-hud-stats">
+                {stats.map((stat) => (
+                  <div className="stat" key={stat.label}>
+                    <span>{stat.label}</span>
+                    <b>{stat.value}</b>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  className="sound-toggle"
+                  onClick={toggleMute}
+                  aria-label={muted ? "Unmute sound" : "Mute sound"}
+                >
+                  {muted ? "SOUND OFF" : "SOUND ON"}
+                </button>
+              </div>
+              <div className="arcade-hud-queues">
+                <div className="queue-block">
+                  <span>HOLD</span>
+                  <PiecePreview name={snapshot.hold} />
+                </div>
+                <div className="queue-block">
+                  <span>NEXT</span>
+                  <PiecePreview name={snapshot.queue[0] ?? null} />
+                  <PiecePreview name={snapshot.queue[1] ?? null} />
+                  <PiecePreview name={snapshot.queue[2] ?? null} />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -547,41 +578,112 @@ export function GamePanel() {
 
       <div className="intel-vault" aria-label="Intel vault · unlock by scoring">
         <div className="vault-header">
-          <span className="pixel-label accent-yellow">THE INTEL VAULT</span>
-          <p>
-            {nextIntel
-              ? `Score decrypts files the page doesn't show. Next decrypt at ${nextIntel.at.toLocaleString()} pts.`
-              : "Every file decrypted. You've seen more than most recruiters ever will."}
-          </p>
+          <div>
+            <span className="pixel-label accent-yellow">THE INTEL VAULT</span>
+            <p>
+              {nextIntel
+                ? `Score decrypts files the page doesn't show. Next decrypt at ${nextIntel.at.toLocaleString()} pts.`
+                : "Every file decrypted. You've seen more than most recruiters ever will."}
+            </p>
+          </div>
+          <div className="vault-progress" aria-label="Vault unlock progress">
+            <span className="pixel-label">
+              {unlocked.size}/{INTEL.length} FILES
+            </span>
+            <div className="vault-progress-track">
+              <i
+                style={{
+                  width: `${(unlocked.size / INTEL.length) * 100}%`,
+                }}
+              />
+            </div>
+          </div>
         </div>
         <div className="intel-grid">
-          {INTEL.map((item) => {
+          {INTEL.map((item, index) => {
             const isOpen = unlocked.has(item.id);
+            const brand =
+              item.id === "substack"
+                ? { src: "/logos/substack.svg", alt: "Substack" }
+                : item.id === "x"
+                  ? { src: "/logos/x.svg", alt: "X" }
+                  : item.id === "thesis"
+                    ? { src: "/logos/gmail.svg", alt: "Gmail" }
+                    : null;
+
+            if (isOpen) {
+              const body = (
+                <>
+                  <span className="pixel-label">{item.label}</span>
+                  <div className="intel-title-row">
+                    {brand && (
+                      <img
+                        src={brand.src}
+                        alt=""
+                        width={22}
+                        height={22}
+                        className="intel-brand"
+                      />
+                    )}
+                    <h3>{item.title}</h3>
+                  </div>
+                  <p>{item.blurb}</p>
+                  {item.cta && (
+                    <span className="intel-cta pixel-label">{item.cta}</span>
+                  )}
+                </>
+              );
+              return item.href ? (
+                <a
+                  key={item.id}
+                  className="intel-card is-open is-link"
+                  href={item.href}
+                  target={item.href.startsWith("mailto:") ? undefined : "_blank"}
+                  rel={
+                    item.href.startsWith("mailto:") ? undefined : "noreferrer"
+                  }
+                  onClick={() => {
+                    sfx.unlock();
+                    sfx.ui();
+                  }}
+                  style={{ "--slot": index } as React.CSSProperties}
+                >
+                  {body}
+                </a>
+              ) : (
+                <article
+                  key={item.id}
+                  className="intel-card is-open"
+                  style={{ "--slot": index } as React.CSSProperties}
+                >
+                  {body}
+                </article>
+              );
+            }
+
             return (
-              <article
+              <button
                 key={item.id}
-                className={`intel-card ${isOpen ? "is-open" : "is-locked"}`}
+                type="button"
+                className="intel-card is-locked"
+                style={{ "--slot": index } as React.CSSProperties}
+                onClick={() => {
+                  sfx.unlock();
+                  sfx.ui();
+                  sectionRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  });
+                  if (status === "ready") startGame();
+                }}
               >
                 <span className="pixel-label">{item.label}</span>
-                {isOpen ? (
-                  <>
-                    <h3>{item.title}</h3>
-                    <p>{item.blurb}</p>
-                    {item.href && item.cta && (
-                      <a href={item.href} target="_blank" rel="noreferrer">
-                        {item.cta}
-                      </a>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <h3 aria-hidden="true">▓▓▓▓▓▓▓▓</h3>
-                    <p className="intel-locked-note">
-                      ENCRYPTED · DECRYPT AT {item.at.toLocaleString()} PTS
-                    </p>
-                  </>
-                )}
-              </article>
+                <h3 aria-hidden="true">▓▓▓▓▓▓▓▓</h3>
+                <p className="intel-locked-note">
+                  ENCRYPTED · DECRYPT AT {item.at.toLocaleString()} PTS
+                </p>
+                <span className="intel-cta pixel-label">TAP TO PLAY ↑</span>
+              </button>
             );
           })}
         </div>

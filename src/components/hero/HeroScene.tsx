@@ -17,7 +17,7 @@ const WORD = "CHARAN";
 const GLYPH_ROWS = 7;
 const GLYPH_COLS = 5;
 const GAP = 1;
-const WORD_Y_OFFSET = 2.2;
+const WORD_Y_OFFSET = 3.4;
 
 type Cluster = {
   color: THREE.Color;
@@ -95,12 +95,17 @@ export function HeroScene() {
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
-    const renderer = new THREE.WebGLRenderer({
-      canvas,
-      antialias: true,
-      alpha: true,
-      powerPreference: "high-performance",
-    });
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: true,
+        alpha: true,
+        powerPreference: "high-performance",
+      });
+    } catch {
+      return;
+    }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
 
@@ -139,36 +144,144 @@ export function HeroScene() {
     blocks.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     group.add(blocks);
 
-    // Distant silhouettes.
-    const driftMaterial = new THREE.MeshBasicMaterial({
-      color: "#131a30",
+    // Far silhouettes — quiet atmosphere.
+    const farMaterial = new THREE.MeshBasicMaterial({
+      color: "#101628",
+      transparent: true,
+      opacity: 0.5,
+    });
+    const farCount = 12;
+    const farMesh = new THREE.InstancedMesh(
+      new THREE.BoxGeometry(0.94, 0.94, 0.35),
+      farMaterial,
+      farCount * 4,
+    );
+    farMesh.position.z = -14;
+    scene.add(farMesh);
+
+    // Mid “systems” layer — colorful pieces that fall, fail, and recover.
+    const midMaterial = new THREE.MeshStandardMaterial({
+      roughness: 0.35,
+      metalness: 0.2,
       transparent: true,
       opacity: 0.55,
     });
-    const driftCount = 10;
-    const driftMesh = new THREE.InstancedMesh(
-      new THREE.BoxGeometry(0.94, 0.94, 0.4),
-      driftMaterial,
-      driftCount * 4,
+    const midCount = 12;
+    const midMesh = new THREE.InstancedMesh(
+      blockGeometry,
+      midMaterial,
+      midCount * 4,
     );
-    driftMesh.position.z = -10;
-    scene.add(driftMesh);
+    midMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    midMesh.position.z = -5.5;
+    scene.add(midMesh);
+
     const tetrominoShapes: [number, number][][] = [
       [[0, 0], [1, 0], [2, 0], [3, 0]],
       [[0, 0], [1, 0], [0, 1], [1, 1]],
       [[1, 0], [0, 1], [1, 1], [2, 1]],
       [[0, 0], [0, 1], [1, 1], [2, 1]],
       [[1, 0], [2, 0], [0, 1], [1, 1]],
+      [[0, 0], [1, 0], [2, 0], [2, 1]],
+      [[0, 1], [1, 1], [2, 1], [0, 0]],
     ];
-    const drifts = Array.from({ length: driftCount }, (_, index) => ({
+    const palette = Object.values(PIECE_COLORS).map((hex) => new THREE.Color(hex));
+
+    type DriftPiece = {
+      cells: [number, number][];
+      x: number;
+      y: number;
+      z: number;
+      rot: number;
+      spin: number;
+      speed: number;
+      scale: number;
+      color: THREE.Color;
+      retries: number;
+      failAt: number;
+      recovering: number;
+      lane: number;
+    };
+
+    const spawnDrift = (index: number, far: boolean): DriftPiece => {
+      const lane = index % 2 === 0 ? -1 : 1;
+      // Keep pieces in side corridors so CHARAN stays readable.
+      const nameClearance = cols / 2 + (far ? 5.5 : 4.2);
+      const sidePad = nameClearance + Math.random() * (far ? 14 : 7);
+      return {
+        cells: tetrominoShapes[index % tetrominoShapes.length],
+        x: lane * sidePad,
+        y: (Math.random() - 0.15) * (far ? 36 : 30),
+        z: far ? 0 : -0.4 - Math.random() * 1.4,
+        rot: Math.random() * Math.PI * 2,
+        spin: (Math.random() - 0.5) * (far ? 0.12 : 0.1),
+        speed: (far ? 0.28 : 0.42) + Math.random() * 0.4,
+        scale: (far ? 0.7 : 0.55) + Math.random() * (far ? 1.0 : 0.55),
+        color: palette[index % palette.length].clone(),
+        retries: 0,
+        failAt: 5 + Math.random() * 10,
+        recovering: 0,
+        lane,
+      };
+    };
+
+    const farDrifts = Array.from({ length: farCount }, (_, i) => spawnDrift(i, true));
+    const midDrifts = Array.from({ length: midCount }, (_, i) => spawnDrift(i + 3, false));
+
+    // Upper “sky well” — uses empty space above CHARAN without crossing the name.
+    const skyCount = 10;
+    const skyMesh = new THREE.InstancedMesh(
+      blockGeometry,
+      new THREE.MeshStandardMaterial({
+        roughness: 0.32,
+        metalness: 0.15,
+        transparent: true,
+        opacity: 0.72,
+      }),
+      skyCount * 4,
+    );
+    skyMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    skyMesh.position.z = -3.8;
+    scene.add(skyMesh);
+    const skyFloor = WORD_Y_OFFSET + GLYPH_ROWS / 2 + 2.8;
+    const skyDrifts = Array.from({ length: skyCount }, (_, index) => ({
       cells: tetrominoShapes[index % tetrominoShapes.length],
-      x: (Math.random() - 0.5) * 56,
-      y: (Math.random() - 0.5) * 34,
+      x: (Math.random() - 0.5) * (cols * 0.9),
+      y: skyFloor + 2 + Math.random() * 10,
       rot: Math.random() * Math.PI * 2,
-      spin: (Math.random() - 0.5) * 0.14,
-      speed: 0.3 + Math.random() * 0.5,
-      scale: 0.9 + Math.random() * 1.4,
+      spin: (Math.random() - 0.5) * 0.08,
+      speed: 0.35 + Math.random() * 0.35,
+      scale: 0.45 + Math.random() * 0.45,
+      color: palette[index % palette.length].clone(),
     }));
+
+    // Side rails — further out, quieter framing (not competing with the word).
+    const railCells: { x: number; y: number; color: THREE.Color }[] = [];
+    for (let side = -1; side <= 1; side += 2) {
+      for (let row = 0; row < 9; row += 1) {
+        if (row % 3 === 1) continue;
+        for (let col = 0; col < 2; col += 1) {
+          railCells.push({
+            x: side * (cols / 2 + 5.8 + col * 1.05),
+            y: WORD_Y_OFFSET + 3.6 - row * 1.05,
+            color: palette[(row + col + (side > 0 ? 3 : 0)) % palette.length].clone(),
+          });
+        }
+      }
+    }
+    const railMesh = new THREE.InstancedMesh(
+      blockGeometry,
+      new THREE.MeshStandardMaterial({
+        roughness: 0.3,
+        metalness: 0.16,
+        transparent: true,
+        opacity: 0.42,
+      }),
+      railCells.length,
+    );
+    railMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    railMesh.position.z = -2.2;
+    scene.add(railMesh);
 
     const dustGeometry = new THREE.BoxGeometry(0.14, 0.14, 0.14);
     const dustMaterial = new THREE.MeshBasicMaterial({
@@ -332,14 +445,14 @@ export function HeroScene() {
       dustMesh.count = dustCount;
       dustMesh.instanceMatrix.needsUpdate = true;
 
-      // Background drift.
-      let driftIndex = 0;
-      for (const piece of drifts) {
+      // Far drift silhouettes.
+      let farIndex = 0;
+      for (const piece of farDrifts) {
         piece.y -= piece.speed * dt;
         piece.rot += piece.spin * dt;
-        if (piece.y < -20) {
-          piece.y = 20;
-          piece.x = (Math.random() - 0.5) * 56;
+        if (piece.y < -22) {
+          piece.y = 22;
+          piece.x = piece.lane * (10 + Math.random() * 16);
         }
         const cos = Math.cos(piece.rot);
         const sin = Math.sin(piece.rot);
@@ -347,18 +460,119 @@ export function HeroScene() {
           const lx = (cx - 1) * piece.scale;
           const ly = (cy - 0.5) * piece.scale;
           dummy.position.set(
-            piece.x + lx * cos - ly * sin + pointer.x * 1.6,
-            piece.y + lx * sin + ly * cos - pointer.y * 1,
+            piece.x + lx * cos - ly * sin + pointer.x * 1.2,
+            piece.y + lx * sin + ly * cos - pointer.y * 0.8,
             0,
           );
           dummy.scale.setScalar(piece.scale);
           dummy.rotation.set(0, 0, piece.rot);
           dummy.updateMatrix();
-          driftMesh.setMatrixAt(driftIndex, dummy.matrix);
-          driftIndex += 1;
+          farMesh.setMatrixAt(farIndex, dummy.matrix);
+          farIndex += 1;
         }
       }
-      driftMesh.instanceMatrix.needsUpdate = true;
+      farMesh.count = farIndex;
+      farMesh.instanceMatrix.needsUpdate = true;
+
+      // Mid systems layer — side corridors only (never over the word).
+      let midIndex = 0;
+      const nameClearance = cols / 2 + 4.2;
+      for (const piece of midDrifts) {
+        if (piece.recovering > 0) {
+          piece.recovering -= dt;
+          piece.rot += piece.spin * 2.4 * dt;
+        } else {
+          piece.y -= piece.speed * dt;
+          piece.rot += piece.spin * dt;
+          piece.failAt -= dt;
+          if (piece.failAt <= 0) {
+            piece.recovering = 0.4 + Math.random() * 0.35;
+            piece.retries += 1;
+            piece.failAt = 6 + Math.random() * 9;
+            piece.spin *= -1;
+          }
+        }
+        // Soft clamp: bounce back if a recovery nudge drifts toward the name.
+        if (Math.abs(piece.x) < nameClearance) {
+          piece.x = Math.sign(piece.x || piece.lane) * (nameClearance + 0.6);
+        }
+        if (piece.y < -18) {
+          piece.y = 18 + Math.random() * 4;
+          piece.x =
+            piece.lane * (nameClearance + Math.random() * 7);
+          piece.color.copy(palette[Math.floor(Math.random() * palette.length)]);
+        }
+        const cos = Math.cos(piece.rot);
+        const sin = Math.sin(piece.rot);
+        const pulse = piece.recovering > 0 ? 1.05 : 1;
+        for (const [cx, cy] of piece.cells) {
+          const lx = (cx - 1) * piece.scale;
+          const ly = (cy - 0.5) * piece.scale;
+          dummy.position.set(
+            piece.x + lx * cos - ly * sin + pointer.x * 1.2,
+            piece.y + lx * sin + ly * cos - pointer.y * 0.7,
+            piece.z,
+          );
+          dummy.scale.setScalar(piece.scale * pulse);
+          dummy.rotation.set(0, 0, piece.rot);
+          dummy.updateMatrix();
+          midMesh.setMatrixAt(midIndex, dummy.matrix);
+          midMesh.setColorAt(midIndex, piece.color);
+          midIndex += 1;
+        }
+      }
+      midMesh.count = midIndex;
+      midMesh.instanceMatrix.needsUpdate = true;
+      if (midMesh.instanceColor) midMesh.instanceColor.needsUpdate = true;
+
+      // Sky belt above CHARAN — fills empty headroom, stops above the word.
+      let skyIndex = 0;
+      for (const piece of skyDrifts) {
+        piece.y -= piece.speed * dt;
+        piece.rot += piece.spin * dt;
+        if (piece.y < skyFloor) {
+          piece.y = skyFloor + 8 + Math.random() * 6;
+          piece.x = (Math.random() - 0.5) * (cols * 0.9);
+          piece.color.copy(palette[Math.floor(Math.random() * palette.length)]);
+        }
+        const cos = Math.cos(piece.rot);
+        const sin = Math.sin(piece.rot);
+        for (const [cx, cy] of piece.cells) {
+          const lx = (cx - 1) * piece.scale;
+          const ly = (cy - 0.5) * piece.scale;
+          dummy.position.set(
+            piece.x + lx * cos - ly * sin + pointer.x * 0.8,
+            piece.y + lx * sin + ly * cos,
+            0,
+          );
+          dummy.scale.setScalar(piece.scale);
+          dummy.rotation.set(0, 0, piece.rot * 0.35);
+          dummy.updateMatrix();
+          skyMesh.setMatrixAt(skyIndex, dummy.matrix);
+          skyMesh.setColorAt(skyIndex, piece.color);
+          skyIndex += 1;
+        }
+      }
+      skyMesh.count = skyIndex;
+      skyMesh.instanceMatrix.needsUpdate = true;
+      if (skyMesh.instanceColor) skyMesh.instanceColor.needsUpdate = true;
+
+      // Side rails framing the empty space around CHARAN.
+      railCells.forEach((cell, index) => {
+        const bob = Math.sin(elapsed * 0.002 + index * 0.45) * 0.08;
+        dummy.position.set(
+          cell.x + pointer.x * 0.35,
+          cell.y + bob - pointer.y * 0.2,
+          0,
+        );
+        dummy.scale.setScalar(0.92);
+        dummy.rotation.set(0, 0, 0);
+        dummy.updateMatrix();
+        railMesh.setMatrixAt(index, dummy.matrix);
+        railMesh.setColorAt(index, cell.color);
+      });
+      railMesh.instanceMatrix.needsUpdate = true;
+      if (railMesh.instanceColor) railMesh.instanceColor.needsUpdate = true;
 
       // Parallax.
       group.rotation.y += (pointer.x * 0.06 - group.rotation.y) * 0.05;

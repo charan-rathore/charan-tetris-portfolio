@@ -1,9 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { LangCrushBoard } from "./LangCrushBoard";
+import { sfx } from "./tetris/audio";
+import { PIECES, PieceName } from "./tetris/types";
 
-type Day = { date: string; count: number; level: number };
-type BarDay = Day & { height: number };
+type BarDay = {
+  date: string;
+  count: number;
+  level: number;
+  height: number;
+};
 type Language = { name: string; count: number };
 type RecentRepo = {
   name: string;
@@ -16,23 +23,62 @@ type RecentRepo = {
 
 type GithubPayload = {
   user: string;
-  year: number;
-  yearTotal: number;
+  rangeStart: string;
+  rangeEnd: string;
+  monthTotal: number;
   publicRepos: number;
   followers: number;
   stars: number;
-  last30: BarDay[];
-  month: Day[];
+  month: BarDay[];
   languages: Language[];
   recent: RecentRepo[];
   fetchedAt: string;
 };
 
-const LEVEL_CLASS = ["lvl-0", "lvl-1", "lvl-2", "lvl-3", "lvl-4"];
+const LANG_PIECES: PieceName[] = ["T", "I", "O", "S", "Z", "J", "L"];
 
-function monthLabel(dateStr: string) {
+const LANG_COLORS: Record<string, string> = {
+  Python: "#3572A5",
+  "Jupyter Notebook": "#DA5B0B",
+  TypeScript: "#3178C6",
+  JavaScript: "#F1E05A",
+  HTML: "#E34C26",
+  CSS: "#563D7C",
+  Go: "#00ADD8",
+  Rust: "#DEA584",
+  Shell: "#89E051",
+};
+
+function formatRange(start: string, end: string) {
+  const a = new Date(`${start}T12:00:00`);
+  const b = new Date(`${end}T12:00:00`);
+  const opts: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
+  const year = b.getFullYear();
+  return `${a.toLocaleDateString("en-US", opts)} – ${b.toLocaleDateString("en-US", opts)} ${year}`;
+}
+
+function shortDay(dateStr: string) {
   const date = new Date(`${dateStr}T12:00:00`);
-  return date.toLocaleString("en-US", { month: "short" });
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function monthTick(dateStr: string) {
+  const date = new Date(`${dateStr}T12:00:00`);
+  if (date.getDate() === 1) {
+    return date.toLocaleDateString("en-US", { month: "short" });
+  }
+  if (date.getDate() % 7 === 0) {
+    return String(date.getDate());
+  }
+  return "";
+}
+
+function langSearchUrl(user: string, language: string) {
+  return `https://github.com/search?q=user%3A${encodeURIComponent(user)}+language%3A${encodeURIComponent(language)}&type=repositories`;
+}
+
+function repoPiece(index: number): PieceName {
+  return LANG_PIECES[index % LANG_PIECES.length];
 }
 
 export function GitHubPulse() {
@@ -63,7 +109,12 @@ export function GitHubPulse() {
         <p className="pixel-label">GITHUB LIVE FEED OFFLINE</p>
         <p>
           Couldn&apos;t reach GitHub right now.{" "}
-          <a href="https://github.com/charan-rathore" target="_blank" rel="noreferrer">
+          <a
+            href="https://github.com/charan-rathore"
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => sfx.ui()}
+          >
             Open profile ↗
           </a>
         </p>
@@ -79,17 +130,10 @@ export function GitHubPulse() {
     );
   }
 
-  const monthMarkers: string[] = [];
-  let lastMonth = "";
-  data.month.forEach((day) => {
-    const label = `${monthLabel(day.date)} ${new Date(`${day.date}T12:00:00`).getFullYear()}`;
-    if (label !== lastMonth) {
-      monthMarkers.push(label);
-      lastMonth = label;
-    }
-  });
-
-  const maxLang = Math.max(1, ...data.languages.map((item) => item.count));
+  const peak = data.month.reduce(
+    (best, day) => (day.count > best.count ? day : best),
+    data.month[0],
+  );
 
   return (
     <div className="gh-pulse">
@@ -98,7 +142,8 @@ export function GitHubPulse() {
           <span className="pixel-label accent-cyan">LIVE FROM GITHUB</span>
           <h3>@{data.user}</h3>
           <p>
-            Auto-refreshes hourly. No manual portfolio edits when I ship.
+            Activity for {formatRange(data.rangeStart, data.rangeEnd)}. Refreshes
+            hourly.
           </p>
         </div>
         <a
@@ -106,120 +151,114 @@ export function GitHubPulse() {
           href={`https://github.com/${data.user}`}
           target="_blank"
           rel="noreferrer"
+          onClick={() => sfx.ui()}
         >
           OPEN PROFILE ↗
         </a>
       </div>
 
-      <div className="gh-stat-row">
-        <div className="gh-stat">
-          <b>{data.yearTotal}</b>
-          <span className="pixel-label">COMMITS · {data.year}</span>
+      <div className="gh-chart-card">
+        <div className="gh-panel-head">
+          <span className="pixel-label">COMMITS · PAST MONTH</span>
+          <span className="pixel-label accent-yellow">{data.monthTotal} TOTAL</span>
         </div>
-        <div className="gh-stat">
-          <b>{data.publicRepos}</b>
-          <span className="pixel-label">PUBLIC REPOS</span>
+        <div className="gh-chart" aria-label="Daily contributions bar chart">
+          {data.month.map((day) => (
+            <div key={day.date} className="gh-chart-col">
+              <div
+                className={`gh-chart-bar ${day.count > 0 ? "is-active" : ""}`}
+                title={`${shortDay(day.date)}: ${day.count} contribution${day.count === 1 ? "" : "s"}`}
+                style={{ height: `${day.height}%` }}
+              />
+              <span className="gh-chart-tick">{monthTick(day.date)}</span>
+            </div>
+          ))}
         </div>
-        <div className="gh-stat">
-          <b>{data.stars}</b>
-          <span className="pixel-label">STARS</span>
-        </div>
-        <div className="gh-stat">
-          <b>{data.followers}</b>
-          <span className="pixel-label">FOLLOWERS</span>
+        <div className="gh-chart-meta">
+          <span>
+            Peak {peak.count} on {shortDay(peak.date)}
+          </span>
+          <span>
+            {data.publicRepos} repos · {data.stars} stars · {data.followers}{" "}
+            followers
+          </span>
         </div>
       </div>
 
       <div className="gh-panels">
-        <div className="gh-panel">
-          <div className="gh-panel-head">
-            <span className="pixel-label">LAST 30 DAYS · ACTIVITY</span>
-          </div>
-          <div className="gh-bars" aria-label="Last 30 days of contributions">
-            {data.last30.map((day) => (
-              <div
-                key={day.date}
-                className="gh-bar"
-                title={`${day.date}: ${day.count} contributions`}
-                style={{ height: `${day.height}%` }}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div className="gh-panel">
+        <div className="gh-panel gh-panel-lang">
           <div className="gh-panel-head">
             <span className="pixel-label">LANGUAGE MIX · REPOS</span>
+            <span className="pixel-label accent-yellow">DROP · LOCK</span>
           </div>
-          <ul className="gh-langs">
-            {data.languages.map((lang) => (
-              <li key={lang.name}>
-                <div className="gh-lang-meta">
-                  <span>{lang.name}</span>
-                  <b>{lang.count}</b>
-                </div>
-                <div className="gh-lang-track">
-                  <i style={{ width: `${(lang.count / maxLang) * 100}%` }} />
-                </div>
-              </li>
-            ))}
+          <LangCrushBoard
+            items={data.languages.map((lang, index) => {
+              const piece = LANG_PIECES[index % LANG_PIECES.length];
+              return {
+                name: lang.name,
+                count: lang.count,
+                piece,
+                color: LANG_COLORS[lang.name] ?? PIECES[piece].color,
+              };
+            })}
+            hrefFor={(name) => langSearchUrl(data.user, name)}
+            onActivate={() => sfx.ui()}
+          />
+        </div>
+
+        <div className="gh-recent">
+          <div className="gh-panel-head">
+            <span className="pixel-label accent-cyan">NEXT QUEUE · PUSHED</span>
+            <span className="pixel-label">{data.recent.length} IN BAG</span>
+          </div>
+          <ul className="gh-queue">
+            {data.recent.map((repo, index) => {
+              const piece = repoPiece(index);
+              const color =
+                (repo.language && LANG_COLORS[repo.language]) ||
+                PIECES[piece].color;
+              return (
+                <li key={repo.name}>
+                  <a
+                    className="gh-queue-row"
+                    href={repo.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ "--piece": color } as React.CSSProperties}
+                    onClick={() => sfx.ui()}
+                  >
+                    <span className="gh-queue-slot pixel-label">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span className="gh-queue-piece" aria-hidden="true">
+                      {PIECES[piece].rotations[0].map(([x, y], cellIndex) => (
+                        <i
+                          key={cellIndex}
+                          style={{
+                            gridColumn: x + 1,
+                            gridRow: y + 1,
+                            background: color,
+                          }}
+                        />
+                      ))}
+                    </span>
+                    <span className="gh-queue-body">
+                      <b>{repo.name}</b>
+                      <em>
+                        {repo.language ?? "misc"} ·{" "}
+                        {new Date(repo.pushedAt).toLocaleDateString("en-IN", {
+                          day: "2-digit",
+                          month: "short",
+                        })}
+                      </em>
+                    </span>
+                    <span className="gh-queue-go">↗</span>
+                  </a>
+                </li>
+              );
+            })}
           </ul>
         </div>
-      </div>
-
-      <div className="gh-heatmap-wrap">
-        <div className="gh-panel-head">
-          <span className="pixel-label">CONTRIBUTION SNAPSHOT · ~5 WEEKS</span>
-          <span className="pixel-label">AUTO-UPDATING</span>
-        </div>
-        <div className="gh-month-labels">
-          {monthMarkers.map((label) => (
-            <span key={label}>{label}</span>
-          ))}
-        </div>
-        <div
-          className="gh-heatmap"
-          style={{ gridTemplateColumns: `repeat(${data.month.length}, 1fr)` }}
-          aria-label="GitHub contribution heatmap"
-        >
-          {data.month.map((day) => (
-            <i
-              key={day.date}
-              className={LEVEL_CLASS[day.level] ?? "lvl-0"}
-              title={`${day.date}: ${day.count}`}
-            />
-          ))}
-        </div>
-        <div className="gh-legend" aria-hidden="true">
-          <span>Less</span>
-          <i className="lvl-0" />
-          <i className="lvl-1" />
-          <i className="lvl-2" />
-          <i className="lvl-3" />
-          <i className="lvl-4" />
-          <span>More</span>
-        </div>
-      </div>
-
-      <div className="gh-recent">
-        <span className="pixel-label">RECENTLY PUSHED</span>
-        <ul>
-          {data.recent.map((repo) => (
-            <li key={repo.name}>
-              <a href={repo.url} target="_blank" rel="noreferrer">
-                {repo.name}
-              </a>
-              <span>
-                {repo.language ?? "misc"} ·{" "}
-                {new Date(repo.pushedAt).toLocaleDateString("en-IN", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                })}
-              </span>
-            </li>
-          ))}
-        </ul>
       </div>
     </div>
   );
