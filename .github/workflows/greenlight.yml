@@ -1,0 +1,27 @@
+name: Greenlight
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+  deployments: read
+  issues: read
+
+concurrency:
+  group: greenlight-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  greenlight:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: VC444/greenlight@v1
+        with:
+          llm-api-key: ${{ secrets.GREENLIGHT_API_KEY }}
+          vercel-bypass-secret: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          model: openai/gpt-5.6-sol

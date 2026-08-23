@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
+import { canUseWebGL } from "@/lib/webgl";
 import { PIECE_COLORS } from "../tetris/types";
 
 const GLYPHS: Record<string, string[]> = {
@@ -83,13 +84,27 @@ function buildCells(): { cells: HeroCell[]; clusters: Cluster[]; cols: number } 
   return { cells, clusters, cols: totalCols };
 }
 
-export function HeroScene() {
+export function HeroScene({
+  onUnavailable,
+}: {
+  onUnavailable?: () => void;
+} = {}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const onUnavailableRef = useRef(onUnavailable);
+
+  useEffect(() => {
+    onUnavailableRef.current = onUnavailable;
+  }, [onUnavailable]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = canvas?.parentElement;
     if (!canvas || !container) return;
+
+    if (!canUseWebGL()) {
+      onUnavailableRef.current?.();
+      return;
+    }
 
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
@@ -104,6 +119,12 @@ export function HeroScene() {
         powerPreference: "high-performance",
       });
     } catch {
+      onUnavailableRef.current?.();
+      return;
+    }
+    if (!renderer.getContext()) {
+      renderer.dispose();
+      onUnavailableRef.current?.();
       return;
     }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -330,6 +351,14 @@ export function HeroScene() {
       pointer.y = (event.clientY / window.innerHeight) * 2 - 1;
     };
     window.addEventListener("pointermove", onPointerMove, { passive: true });
+
+    const onContextLost = (event: Event) => {
+      event.preventDefault();
+      disposed = true;
+      renderer.setAnimationLoop(null);
+      onUnavailableRef.current?.();
+    };
+    canvas.addEventListener("webglcontextlost", onContextLost, { passive: false });
 
     const replay = () => {
       if (reducedMotion) return;
@@ -591,6 +620,7 @@ export function HeroScene() {
       visibility.disconnect();
       window.removeEventListener("pointermove", onPointerMove);
       canvas.removeEventListener("pointerdown", replay);
+      canvas.removeEventListener("webglcontextlost", onContextLost);
       scene.traverse((node) => {
         if (node instanceof THREE.Mesh) {
           node.geometry.dispose();

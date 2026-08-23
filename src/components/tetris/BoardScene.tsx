@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
+import { canUseWebGL } from "@/lib/webgl";
 import type { GameEvent, TetrisGame } from "./game";
 import { COLS, HIDDEN_ROWS, PIECES, VISIBLE_ROWS, pieceCells } from "./types";
 
@@ -30,17 +31,7 @@ type FlashStamp = {
   age: number;
 };
 
-export function canUseWebGL(): boolean {
-  if (typeof window === "undefined") return false;
-  try {
-    const canvas = document.createElement("canvas");
-    return Boolean(
-      canvas.getContext("webgl2") || canvas.getContext("webgl"),
-    );
-  } catch {
-    return false;
-  }
-}
+export { canUseWebGL };
 
 export function BoardScene({
   game,
@@ -51,7 +42,10 @@ export function BoardScene({
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const onEventsRef = useRef(onEvents);
-  onEventsRef.current = onEvents;
+
+  useEffect(() => {
+    onEventsRef.current = onEvents;
+  }, [onEvents]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -62,12 +56,23 @@ export function BoardScene({
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
-    const renderer = new THREE.WebGLRenderer({
-      canvas,
-      antialias: true,
-      alpha: true,
-      powerPreference: "high-performance",
-    });
+    if (!canUseWebGL()) return;
+
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: true,
+        alpha: true,
+        powerPreference: "high-performance",
+      });
+    } catch {
+      return;
+    }
+    if (!renderer.getContext()) {
+      renderer.dispose();
+      return;
+    }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
 
