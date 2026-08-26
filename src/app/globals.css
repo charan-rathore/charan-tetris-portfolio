@@ -254,6 +254,7 @@ p {
 .hero {
   position: relative;
   min-height: 100svh;
+  min-height: 100dvh;
   display: flex;
   align-items: flex-end;
   padding: calc(var(--header-h) + 24px) var(--gutter) 56px;
