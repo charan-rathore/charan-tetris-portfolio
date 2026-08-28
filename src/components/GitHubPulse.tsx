@@ -92,7 +92,8 @@ export function GitHubPulse() {
     const controller = new AbortController();
     const timer = window.setTimeout(() => controller.abort(), CLIENT_TIMEOUT_MS);
 
-    fetch("/api/github", { signal: controller.signal })
+    const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+    fetch(`${base}/github.json`, { signal: controller.signal })
       .then((response) => {
         if (!response.ok) throw new Error("bad status");
         return response.json();

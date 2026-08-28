@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const geistSans = localFont({
@@ -24,8 +23,10 @@ const pixel = localFont({
   display: "swap",
 });
 
+const siteUrl = "https://charan-rathore.github.io/charan-tetris-portfolio";
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://charan-tetris-portfolio.vercel.app"),
+  metadataBase: new URL(siteUrl),
   title: "Charan Rathore · Systris",
   description:
     "Systris: tetris with systems. A playable Tetris portfolio · IntelliRAG, memoRABLE, ThermoSense, and more.",
@@ -33,7 +34,7 @@ export const metadata: Metadata = {
     title: "Charan Rathore · Systris",
     description: "I am the MCP between Charan and the world",
     type: "website",
-    url: "https://charan-tetris-portfolio.vercel.app",
+    url: siteUrl,
   },
   twitter: {
     card: "summary_large_image",
@@ -51,7 +52,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body>
         {children}
-        <Analytics />
       </body>
     </html>
   );

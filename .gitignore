@@ -4,6 +4,7 @@
 # Next.js output
 /.next
 /out
+public/github.json
 
 # production
 /build
