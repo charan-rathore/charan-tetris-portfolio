@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 import dynamic from "next/dynamic";
 import {
   useCallback,
@@ -14,6 +16,8 @@ import { sfx } from "./audio";
 import type { GameEvent, GameSnapshot } from "./game";
 import { TetrisGame } from "./game";
 import { INTEL, unlockAllIntel, unlockIntel, useUnlockedIntel } from "./intel";
+import { CanvasBoard } from "./CanvasBoard";
+import { SceneBoundary } from "../SceneBoundary";
 import { GameplayPreview } from "./GameplayPreview";
 import { PIECES, PieceName } from "./types";
 
@@ -104,7 +108,7 @@ export function GamePanel() {
   const [snapshot, setSnapshot] = useState<GameSnapshot>(() => game.snapshot());
   const [toast, setToast] = useState<Toast | null>(null);
   const [flashKey, setFlashKey] = useState(0);
-  const [showHud, setShowHud] = useState(false);
+  const [showHud, setShowHud] = useState(true);
   const mutedRef = useRef(false);
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -242,6 +246,7 @@ export function GamePanel() {
   const startGame = useCallback(() => {
     sfx.unlock();
     game.start();
+    sectionRef.current?.focus({ preventScroll: true });
   }, [game]);
 
   // Keyboard: DAS-aware press/release handling.
@@ -261,12 +266,16 @@ export function GamePanel() {
       "Shift",
     ]);
     const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target instanceof HTMLElement ? event.target : null;
+      if (!sectionRef.current?.contains(target) || target?.closest("a, button, input, textarea, select, [contenteditable=true]")) return;
       const active = game.status === "playing" || game.status === "clearing";
       if (event.key === "Enter" && (game.status === "ready" || game.status === "over")) {
+        event.preventDefault();
         startGame();
         return;
       }
       if (event.key === "p" || event.key === "P" || event.key === "Escape") {
+        event.preventDefault();
         game.togglePause();
         return;
       }
@@ -318,12 +327,16 @@ export function GamePanel() {
   // Auto-pause when the tab or section loses attention mid-game.
   useEffect(() => {
     const pauseIfPlaying = () => {
-      if (game.status === "playing") game.togglePause();
+      game.releaseMove(-1);
+      game.releaseMove(1);
+      game.releaseSoft();
+      if (game.status === "playing" || game.status === "clearing") game.togglePause();
     };
     const onVisibility = () => {
       if (document.hidden) pauseIfPlaying();
     };
     document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("blur", pauseIfPlaying);
     const observer = new IntersectionObserver(
       (entries) => {
         if (!entries[0].isIntersecting) pauseIfPlaying();
@@ -333,6 +346,7 @@ export function GamePanel() {
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => {
       document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("blur", pauseIfPlaying);
       observer.disconnect();
     };
   }, [game]);
@@ -415,6 +429,8 @@ export function GamePanel() {
       id="play"
       ref={sectionRef}
       aria-label="Playable Tetris"
+      tabIndex={-1}
+      aria-describedby="game-instructions"
     >
       <div className="arcade-shell">
         <div
@@ -427,7 +443,9 @@ export function GamePanel() {
             className={`board-live${showPreview ? " is-dimmed" : ""}`}
             aria-hidden={showPreview}
           >
-            <BoardScene game={game} onEvents={handleEvents} />
+            <SceneBoundary fallback={<CanvasBoard game={game} onEvents={handleEvents} />}>
+              <BoardScene game={game} onEvents={handleEvents} />
+            </SceneBoundary>
           </div>
           {showPreview && <GameplayPreview />}
           {flashKey > 0 && <div className="board-flash" key={flashKey} />}
@@ -544,12 +562,17 @@ export function GamePanel() {
         </div>
       </div>
 
+      <p id="game-instructions" className="game-instructions">← → move · ↑ rotate · Space drop · C hold · P pause. On touch: tap to rotate, swipe to move or drop.</p>
+      <button type="button" className="sound-toggle game-pause" disabled={status === "ready" || status === "over"} onClick={() => { game.togglePause(); sectionRef.current?.focus({ preventScroll: true }); }}>
+        {status === "paused" ? "RESUME" : "PAUSE"}
+      </button>
       <div className="touch-controls" aria-label="Touch controls">
         <button
           type="button"
           onPointerDown={() => game.pressMove(-1)}
           onPointerUp={() => game.releaseMove(-1)}
           onPointerLeave={() => game.releaseMove(-1)}
+          onPointerCancel={() => game.releaseMove(-1)}
           aria-label="Move left"
         >
           ←
@@ -562,6 +585,7 @@ export function GamePanel() {
           onPointerDown={() => game.pressMove(1)}
           onPointerUp={() => game.releaseMove(1)}
           onPointerLeave={() => game.releaseMove(1)}
+          onPointerCancel={() => game.releaseMove(1)}
           aria-label="Move right"
         >
           →
@@ -571,6 +595,7 @@ export function GamePanel() {
           onPointerDown={() => game.pressSoft()}
           onPointerUp={() => game.releaseSoft()}
           onPointerLeave={() => game.releaseSoft()}
+          onPointerCancel={() => game.releaseSoft()}
           aria-label="Soft drop"
         >
           ↓
@@ -624,7 +649,7 @@ export function GamePanel() {
                   <span className="pixel-label">{item.label}</span>
                   <div className="intel-title-row">
                     {brand && (
-                      <img
+                      <Image
                         src={brand.src}
                         alt=""
                         width={22}

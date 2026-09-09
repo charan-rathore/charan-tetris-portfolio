@@ -92,6 +92,8 @@ export class TetrisGame {
   private arrTimer = 0;
   private softHeld = false;
 
+  private pausedStatus: "playing" | "clearing" = "playing";
+
   private onChangeCallback: (() => void) | null = null;
 
   onChange(callback: () => void) {
@@ -151,11 +153,14 @@ export class TetrisGame {
   }
 
   togglePause() {
-    if (this.status === "playing") {
+    if (this.status === "playing" || this.status === "clearing") {
+      this.pausedStatus = this.status;
+      this.dasDirection = 0;
+      this.softHeld = false;
       this.status = "paused";
       this.notify();
     } else if (this.status === "paused") {
-      this.status = "playing";
+      this.status = this.pausedStatus;
       this.notify();
     }
   }

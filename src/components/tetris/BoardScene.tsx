@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import type { GameEvent, TetrisGame } from "./game";
 import { COLS, HIDDEN_ROWS, PIECES, VISIBLE_ROWS, pieceCells } from "./types";
+
+import { CanvasBoard } from "./CanvasBoard";
 
 const BOARD_W = COLS;
 const BOARD_H = VISIBLE_ROWS;
@@ -48,6 +50,7 @@ export function BoardScene({
   onEvents: (events: GameEvent[]) => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [unavailable, setUnavailable] = useState(false);
   const onEventsRef = useRef(onEvents);
 
   useEffect(() => {
@@ -57,18 +60,29 @@ export function BoardScene({
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = canvas?.parentElement;
-    if (!canvas || !container) return;
+    if (!canvas || !container || unavailable) return;
 
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
-    const renderer = new THREE.WebGLRenderer({
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({
       canvas,
       antialias: true,
       alpha: true,
       powerPreference: "high-performance",
     });
+    } catch {
+      queueMicrotask(() => setUnavailable(true));
+      return;
+    }
+    const onContextLost = (event: Event) => {
+      event.preventDefault();
+      setUnavailable(true);
+    };
+    canvas.addEventListener("webglcontextlost", onContextLost);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
 
@@ -544,9 +558,11 @@ export function BoardScene({
           materials.forEach((material) => material.dispose());
         }
       });
+      canvas.removeEventListener("webglcontextlost", onContextLost);
       renderer.dispose();
     };
-  }, [game]);
+  }, [game, unavailable]);
 
+  if (unavailable) return <CanvasBoard game={game} onEvents={onEvents} />;
   return <canvas ref={canvasRef} aria-label="Tetris board" />;
 }

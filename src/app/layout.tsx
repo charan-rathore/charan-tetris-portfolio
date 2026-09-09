@@ -23,13 +23,14 @@ const pixel = localFont({
   display: "swap",
 });
 
-const siteUrl = "https://charan-rathore.github.io/charan-tetris-portfolio";
+const siteUrl = "https://charan-tetris-portfolio.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  alternates: { canonical: siteUrl },
   title: "Charan Rathore · Systris",
   description:
-    "Systris: tetris with systems. A playable Tetris portfolio · IntelliRAG, memoRABLE, ThermoSense, and more.",
+    "Systris: tetris with systems. Analyst at MiQ across MENA markets. A playable Tetris portfolio · IntelliRAG, memoRABLE, ThermoSense, and more.",
   openGraph: {
     title: "Charan Rathore · Systris",
     description: "I am the MCP between Charan and the world",

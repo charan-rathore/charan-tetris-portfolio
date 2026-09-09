@@ -1,0 +1,44 @@
+{
+  "miqConnection": true,
+  "gameScoresAfterDrop": true,
+  "pauseWorks": true,
+  "projectImages": true,
+  "githubRuntimeFeed": "Auto-refresh on \u00b7 Checked 01:13:35 am\nREFRESH \u21bb",
+  "activityDaySelection": "Aug 11 \u00b7 0 contributions placed on the board",
+  "contextLossRequested": true,
+  "fallbackAfterContextLoss": true,
+  "mobileNoOverflow": true,
+  "mobileNavigationVisible": true,
+  "mobileTouchTargets": [
+    {
+      "h": 53.1953125,
+      "name": "Move left",
+      "w": 45.6640625
+    },
+    {
+      "h": 53.1953125,
+      "name": "Rotate",
+      "w": 45.671875
+    },
+    {
+      "h": 53.1953125,
+      "name": "Move right",
+      "w": 45.6640625
+    },
+    {
+      "h": 53.1953125,
+      "name": "Soft drop",
+      "w": 45.671875
+    },
+    {
+      "h": 53.1953125,
+      "name": "Hard drop",
+      "w": 45.6640625
+    },
+    {
+      "h": 53.1953125,
+      "name": "Hold piece",
+      "w": 45.6640625
+    }
+  ]
+}

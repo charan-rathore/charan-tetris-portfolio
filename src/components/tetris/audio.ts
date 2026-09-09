@@ -15,12 +15,16 @@ function ensureContext(): AudioContext | null {
       (window as unknown as { webkitAudioContext?: typeof AudioContext })
         .webkitAudioContext;
     if (!Ctor) return null;
-    context = new Ctor();
+    try {
+      context = new Ctor();
+    } catch {
+      return null;
+    }
     master = context.createGain();
     master.gain.value = 0.32;
     master.connect(context.destination);
   }
-  if (context.state === "suspended") void context.resume();
+  if (context.state === "suspended") void context.resume().catch(() => {});
   return context;
 }
 

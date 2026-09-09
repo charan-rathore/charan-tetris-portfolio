@@ -2079,3 +2079,136 @@ p {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Resilient graphics and accessible arcade controls retain the original palette. */
+.hero-fallback-word { position: absolute; width: 92%; left: 4%; top: 22%; max-height: 40%; filter: drop-shadow(0 0 12px #4d7cff33); }
+.board-canvas-2d { width: 100%; height: 100%; object-fit: contain; }
+.game-instructions { text-align: center; color: var(--muted); font: 11px/1.7 var(--font-geist-mono), monospace; max-width: 540px; margin: 16px auto 8px; }
+.game-pause { display: block; margin: 8px auto; min-height: 44px; min-width: 100px; }
+.game-pause:disabled { opacity: .4; cursor: default; }
+.skip-link { position: fixed; top: -100px; left: 16px; z-index: 100; padding: 14px; background: var(--yellow); color: var(--bg); }
+.skip-link:focus { top: 12px; }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
+.tech-marquee:focus-within .tech-marquee-track, .tech-marquee:hover .tech-marquee-track { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* MCP connection console: the Tetris language becomes a human interface. */
+.hero--mcp { display: grid; grid-template-columns: .95fr 1.1fr; align-items: center; gap: clamp(24px, 5vw, 90px); padding-top: calc(var(--header-h) + 48px); min-height: min(900px, 100svh); }
+.hero--mcp::after { display: none; }
+.hero--mcp .hero-content { grid-row: 1; grid-column: 1; max-width: 630px; }
+.hero--mcp h1 { font-size: clamp(30px, 3.8vw, 62px); line-height: 1.15; max-width: 18ch; margin-top: 24px; }
+.hero-intro { max-width: 43ch; color: var(--muted); font-size: 16px; line-height: 1.8; margin-top: 24px; }
+.mcp-console { grid-column: 2; min-width: 0; border: 1px solid #30394e; background: #0a0e17; box-shadow: 0 24px 100px #0006; border-radius: 14px; overflow: hidden; }
+.mcp-console-top, .mcp-console-foot { display: flex; justify-content: space-between; gap: 12px; padding: 20px; color: #8e9cb2; font: 9px/1.8 var(--font-geist-mono), monospace; }
+.mcp-console-top { border-bottom: 1px solid #202839; }
+.mcp-console-top .pixel-label { font-size: 9px; color: #d8e2f2; }
+.mcp-console-top i { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: #3ee66c; margin-right: 6px; }
+.mcp-channel-tabs { display: flex; gap: 8px; padding: 18px 20px 0; }
+.mcp-channel-tabs button { flex: 1; min-height: 44px; border: 1px solid #30394e; border-radius: 6px; background: transparent; color: #9caac2; font: 10px var(--font-geist-mono), monospace; cursor: pointer; transition: border-color .2s, background .2s; }
+.mcp-channel-tabs button[aria-pressed=true] { border-color: var(--signal); color: var(--signal); background: #182132; }
+.mcp-diagram { display: block; width: 100%; margin: 12px 0; }
+.mcp-signal-line { stroke-dasharray: 8 12; animation: mcp-flow 3s linear infinite; }
+.mcp-output { margin: 0 20px; padding: 20px; border: 1px solid #263146; border-radius: 8px; background: #101723; }
+.mcp-output > span { font-size: clamp(14px, 1.3vw, 19px); color: #e8edf7; font-weight: 600; }
+.mcp-output i { color: var(--signal); margin: 0 8px; font-style: normal; }
+.mcp-output p { color: #a2aec2; font-size: 13px; line-height: 1.6; min-height: 42px; margin: 12px 0; }
+.mcp-output a { display: flex; align-items: center; justify-content: space-between; min-height: 44px; color: var(--signal); font: 10px var(--font-geist-mono), monospace; text-decoration: none; }
+.mcp-output a:hover { text-decoration: underline; }
+@keyframes mcp-flow { to { stroke-dashoffset: -100; } }
+@media (max-width: 850px) { .hero--mcp { grid-template-columns: 1fr; min-height: auto; padding-top: calc(var(--header-h) + 32px); } .hero--mcp .hero-content { grid-row: 1; } .mcp-console { grid-column: 1; grid-row: 2; } .hero--mcp h1 { max-width: 22ch; } }
+@media (prefers-reduced-motion: reduce) { .mcp-signal-line { animation: none; } }
+/* A full-width arcade cabinet with the original 10×20 playfield proportions. */
+@media (min-width: 900px) {
+  .arcade-shell { grid-template-columns: minmax(440px, 1.4fr) minmax(280px, .8fr); max-width: 1180px; margin: auto; gap: 32px; }
+  .arcade-board { aspect-ratio: 10 / 12; min-height: 620px; max-height: 860px; }
+  .arcade-hud-dock { position: sticky; top: calc(var(--header-h) + 20px); }
+  .arcade-hud-panel { grid-template-columns: 1fr; }
+  .arcade-hud-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.gh-sync-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; font: 11px/1.6 var(--font-geist-mono), monospace; color: var(--muted); }
+.gh-refresh { min-height: 44px; min-width: 100px; flex-shrink: 0; padding: 10px 14px; color: var(--cyan); border: 1px solid var(--line-bright); background: #101622; cursor: pointer; font: 10px var(--font-geist-mono), monospace; }
+.gh-refresh:disabled { opacity: .5; cursor: wait; }
+.gh-chart-bar { border: 0; cursor: pointer; min-height: 24px; width: 100%; background-image: repeating-linear-gradient(to top, transparent 0px, transparent 10px, #07090f 10px, #07090f 12px); }
+.gh-chart-bar[aria-pressed=true] { outline: 2px solid var(--yellow); outline-offset: 3px; }
+.gh-day-detail { font: 12px/1.6 var(--font-geist-mono), monospace; color: var(--cyan); min-height: 22px; margin-top: 16px; }
+.gh-freshness { font-size: 11px; line-height: 1.7; color: var(--muted); margin: 14px 0 24px; }
+@media (max-width: 820px) {
+ .site-header nav { display: flex; gap: 6px; }
+ .site-header nav button { font-size: 8px; padding: 10px 6px; min-height: 44px; }
+ .header-meta { display: none; }
+ .gh-chart { overflow-x: auto; min-width: 0; }
+ .gh-chart-col { min-width: 20px; }
+ .gh-sync-bar { flex-wrap: wrap; }
+}
+
+.mcp-diagram { max-height: clamp(170px, 27vh, 260px); }
+
+@media (max-width: 820px) {
+  .touch-controls { display: flex; flex-wrap: wrap; }
+  .touch-controls button { min-width: 44px; min-height: 44px; flex: 1; }
+  .gh-pulse, .gh-panels, .gh-chart-card, .gh-panel, .gh-recent { min-width: 0; max-width: 100%; }
+  .gh-chart { width: 100%; overflow-x: auto; }
+}
+
+/* Portfolio campaign: the work is the board, play is an optional side quest. */
+.hero--mcp { min-height: auto; padding-bottom: 44px; gap: clamp(24px,4vw,64px); }
+.mcp-console, .mcp-channel-tabs button, .mcp-output { border-radius: 0; }
+.mcp-bridge { position: relative; height: 230px; }
+.bridge-render { position: absolute; inset: 0; }
+.bridge-render canvas { width: 100%; height: 100%; }
+.bridge-labels { position: absolute; inset: auto 20px 12px; display:flex; justify-content:space-between; gap:8px; font:9px var(--font-geist-mono),monospace; color:var(--signal); }
+.mcp-bridge:has(.bridge-render canvas) .mcp-diagram { visibility: hidden; }
+.mcp-bridge:has(.bridge-render[data-failed=true]) .mcp-diagram { visibility: visible; }
+.bridge-render[data-failed=true] canvas { visibility:hidden; }
+.work-section, .about-section { padding-top: 56px; padding-bottom: 56px; }
+.stage-heading { margin-bottom: 28px; }
+.campaign-strip { max-width:var(--maxw); margin:0 auto 16px; padding:14px 16px; border:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; gap:16px; background:var(--bg-panel); font-size:12px; }
+.campaign-strip a { color:var(--yellow); min-height:44px; display:flex; align-items:center; font-size:11px; }
+.bonus-game { max-width:var(--maxw); margin:0 auto 24px; border:1px solid var(--line); background:var(--bg-panel); }
+.bonus-game summary { display:flex; align-items:center; gap:20px; min-height:72px; padding:16px 20px; cursor:pointer; list-style:none; }
+.bonus-game summary::-webkit-details-marker { display:none; }
+.bonus-game summary>span:nth-child(2) { flex:1; color:var(--muted); font-size:13px; }
+.bonus-game summary b { color:var(--yellow); font:11px var(--font-geist-mono),monospace; }
+.bonus-game[open] summary { border-bottom:1px solid var(--line); }
+.bonus-game .arcade { padding:24px; }
+.project-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
+.project-level { scroll-margin-top:100px; gap:12px; padding-bottom:12px; }
+.project-level.is-featured { grid-column:span 1; }
+.level-header { display:flex; justify-content:space-between; padding:14px 18px; border-bottom:1px solid var(--line); color:var(--piece); background:color-mix(in srgb,var(--piece) 7%,var(--bg-panel)); }
+.level-header .pixel-label { font-size:9px; }
+.level-state { color:var(--muted); }
+.is-landed .level-state { color:var(--piece); }
+.level-assembly { position:absolute; inset:44px 0 auto; height:220px; display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(3,1fr); pointer-events:none; z-index:2; overflow:hidden; }
+.level-assembly i { opacity:0; background:var(--piece); border:2px solid var(--bg); box-shadow:inset 4px 4px 0 #ffffff38,inset -4px -4px 0 #0004; }
+.is-landed .level-assembly i { animation:level-lock 850ms var(--drop-delay) both; }
+@keyframes level-lock { 0% { opacity:0; transform:translateY(-230px); } 15% { opacity:.94; } 55% { opacity:.94; transform:translateY(0); } 100% { opacity:0; transform:translateY(0); } }
+.level-foundation { margin:0 18px; display:grid; grid-template-columns:repeat(20,minmax(0,1fr)); gap:3px; height:12px; }
+.level-foundation i { background:color-mix(in srgb,var(--piece) 25%,var(--bg-panel)); border-top:2px solid color-mix(in srgb,var(--piece) 60%,transparent); }
+.level-foundation i:nth-child(5n) { opacity:.15; }
+.about-grid-live { grid-template-columns:1fr; gap:24px; margin-bottom:28px; }
+.about-copy { display:grid; grid-template-columns:1fr 1fr; gap:16px 32px; }
+.about-copy .about-lead { margin:0; }
+.about-copy blockquote { margin:0; }
+.about-copy>p:last-child { grid-column:1/-1; margin:0; }
+.gh-pulse { min-width:0; gap:14px; }
+.gh-chart { overflow-x:auto; height:170px; padding-bottom:24px; gap:3px; }
+.gh-chart-col { min-width:28px; flex:1 0 28px; }
+.gh-chart-bar, .gh-chart-bar.is-active { height:100%; min-height:44px; max-width:none; position:relative; border:1px solid #243348; border-radius:0; background:repeating-linear-gradient(to top,transparent 0 13px,#ffffff05 13px 14px); }
+.gh-day-stack { position:absolute; bottom:0; left:3px; right:3px; height:var(--stack-height); background:repeating-linear-gradient(to top,#4dd886 0 11px,#183626 11px 14px); border-top:2px solid #a0fcbc; pointer-events:none; }
+.gh-chart-bar:not(.is-active) .gh-day-stack { background:#253648; border-color:#4b5d74; }
+.gh-chart-bar:hover { border-color:var(--cyan); }
+.gh-chart-tick { bottom:-20px; }
+.gh-freshness { margin:0; }
+.contact-section { padding-top:56px; padding-bottom:24px; }
+.contact-form { text-align:left; width:min(100%,820px); margin:24px auto; padding:24px; border:1px solid var(--line); background:var(--bg-panel); }
+.contact-form-heading { display:flex; justify-content:space-between; gap:16px; margin-bottom:20px; color:var(--purple); }
+.contact-fields { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.contact-form label { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; color:var(--text); font-size:13px; }
+.contact-form input, .contact-form textarea { width:100%; min-height:48px; background:var(--bg); border:1px solid var(--line); border-radius:0; color:var(--text); padding:12px; font:16px/1.5 var(--font-geist-mono),monospace; }
+.contact-form textarea { resize:vertical; }
+.contact-form-bottom { display:flex; align-items:center; justify-content:space-between; gap:20px; }
+.contact-form-bottom>span { max-width:40ch; color:var(--muted); font-size:12px; line-height:1.6; }
+.contact-form-status { min-height:24px; margin-top:14px; color:var(--cyan); font-size:13px; line-height:1.6; }
+.contact-form .contact-trap { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+@media(max-width:820px) { .project-grid { grid-template-columns:minmax(0,1fr); } .campaign-strip { flex-wrap:wrap; gap:8px; } .bonus-game summary { flex-wrap:wrap; gap:12px; } .bonus-game summary>span:nth-child(2) { flex-basis:70%; } .bonus-game .arcade { padding:12px; } .about-copy { grid-template-columns:1fr; } .contact-fields { grid-template-columns:1fr; gap:0; } .contact-form { padding:18px; } .contact-form-bottom { flex-wrap:wrap; } .contact-form-bottom button { width:100%; } .gh-chart-col { min-width:44px; flex-basis:44px; } .mcp-console-foot { flex-wrap:wrap; } }
+@media(prefers-reduced-motion:reduce) { .is-landed .level-assembly i { animation:none; } }

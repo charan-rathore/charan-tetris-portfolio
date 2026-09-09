@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { LangCrushBoard } from "./LangCrushBoard";
 import { sfx } from "./tetris/audio";
 import { PIECES, PieceName } from "./tetris/types";
@@ -33,6 +33,9 @@ type GithubPayload = {
   languages: Language[];
   recent: RecentRepo[];
   fetchedAt: string;
+  partial?: boolean;
+  activityAvailable?: boolean;
+  refreshSeconds?: number;
 };
 
 const LANG_PIECES: PieceName[] = ["T", "I", "O", "S", "Z", "J", "L"];
@@ -87,34 +90,49 @@ export function GitHubPulse() {
   const [data, setData] = useState<GithubPayload | null>(null);
   const [error, setError] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
+  const [refreshing, setRefreshing] = useState(false);
+  const [selectedDay, setSelectedDay] = useState<BarDay | null>(null);
+  const requestRef = useRef<AbortController | null>(null);
+  const refresh = useCallback(async () => {
+    if (requestRef.current) return;
     const controller = new AbortController();
+    requestRef.current = controller;
+    setRefreshing(true);
     const timer = window.setTimeout(() => controller.abort(), CLIENT_TIMEOUT_MS);
-
-    const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-    fetch(`${base}/github.json`, { signal: controller.signal })
-      .then((response) => {
-        if (!response.ok) throw new Error("bad status");
-        return response.json();
-      })
-      .then((payload: GithubPayload) => {
-        if (!cancelled) setData(payload);
-      })
-      .catch(() => {
-        if (!cancelled) setError(true);
-      })
-      .finally(() => {
-        window.clearTimeout(timer);
-      });
-    return () => {
-      cancelled = true;
-      controller.abort();
+    try {
+      const response = await fetch("/api/github", { signal: controller.signal, cache: "no-store" });
+      if (!response.ok) throw new Error("GitHub unavailable");
+      const payload = await response.json() as GithubPayload;
+      setData(payload);
+      setError(false);
+    } catch {
+      if (!controller.signal.aborted) setError(true);
+      else if (requestRef.current === controller) setError(true);
+    } finally {
       window.clearTimeout(timer);
-    };
+      if (requestRef.current === controller) { requestRef.current = null; setRefreshing(false); }
+    }
   }, []);
+  useEffect(() => {
+    const initial = window.setTimeout(() => void refresh(), 0);
+    const onVisible = () => { if (!document.hidden) void refresh(); };
+    const interval = window.setInterval(onVisible, 30_000);
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("online", onVisible);
+    window.addEventListener("focus", onVisible);
+    return () => {
+      window.clearTimeout(initial);
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("online", onVisible);
+      window.removeEventListener("focus", onVisible);
+      const controller = requestRef.current;
+      requestRef.current = null;
+      controller?.abort();
+    };
+  }, [refresh]);
 
-  if (error) {
+  if (error && !data) {
     return (
       <div className="gh-pulse is-error">
         <p className="pixel-label">GITHUB LIVE FEED OFFLINE</p>
@@ -128,6 +146,7 @@ export function GitHubPulse() {
           >
             Open profile ↗
           </a>
+          <button className="gh-refresh" onClick={() => void refresh()} disabled={refreshing}>TRY AGAIN</button>
         </p>
       </div>
     );
@@ -151,11 +170,10 @@ export function GitHubPulse() {
     <div className="gh-pulse">
       <div className="gh-pulse-top">
         <div>
-          <span className="pixel-label accent-cyan">LIVE FROM GITHUB</span>
+          <span className="pixel-label accent-cyan">THE EVER-GROWING STACK</span>
           <h3>@{data.user}</h3>
           <p>
-            Activity for {formatRange(data.rangeStart, data.rangeEnd)}. Refreshes
-            hourly.
+            {formatRange(data.rangeStart, data.rangeEnd)} · Public contributions.
           </p>
         </div>
         <a
@@ -169,23 +187,31 @@ export function GitHubPulse() {
         </a>
       </div>
 
+      <div className="gh-sync-bar">
+        <span role="status">{error ? "Connection interrupted · showing last successful check" : data.partial ? "Partial feed · some GitHub data is unavailable" : "Auto-refresh on"} · Checked {new Date(data.fetchedAt).toLocaleTimeString("en-IN", {hour: "2-digit", minute: "2-digit", second: "2-digit"})}</span>
+        <button className="gh-refresh" onClick={() => void refresh()} disabled={refreshing}>{refreshing ? "CHECKING…" : "REFRESH ↻"}</button>
+      </div>
       <div className="gh-chart-card">
         <div className="gh-panel-head">
-          <span className="pixel-label">COMMITS · PAST MONTH</span>
+          <span className="pixel-label">CONTRIBUTIONS · 30 DAYS</span>
           <span className="pixel-label accent-yellow">{data.monthTotal} TOTAL</span>
         </div>
-        <div className="gh-chart" aria-label="Daily contributions bar chart">
+        <div className="gh-chart" aria-label="Daily contributions; select a day to inspect">
           {month.map((day) => (
             <div key={day.date} className="gh-chart-col">
-              <div
+              <button
                 className={`gh-chart-bar ${day.count > 0 ? "is-active" : ""}`}
-                title={`${shortDay(day.date)}: ${day.count} contribution${day.count === 1 ? "" : "s"}`}
-                style={{ height: `${day.height}%` }}
-              />
+                aria-label={`${shortDay(day.date)}: ${day.count} contributions`}
+                aria-pressed={selectedDay?.date === day.date}
+                onClick={() => setSelectedDay(day)}
+                title={`${shortDay(day.date)}: ${day.count} contributions`}
+                style={{ "--stack-height": `${Math.max(day.height, 4)}%` } as React.CSSProperties}
+              ><span className="gh-day-stack" aria-hidden="true" /></button>
               <span className="gh-chart-tick">{monthTick(day.date)}</span>
             </div>
           ))}
         </div>
+        <p className="gh-day-detail" aria-live="polite">{data.activityAvailable === false ? "Contribution calendar unavailable; repository activity is shown below." : selectedDay ? `${shortDay(selectedDay.date)} · ${selectedDay.count} contributions placed on the board` : "Tap a column to inspect that day. Stack height shows relative daily activity."}</p>
         <div className="gh-chart-meta">
           <span>
             {peak
@@ -199,6 +225,7 @@ export function GitHubPulse() {
         </div>
       </div>
 
+      <p className="gh-freshness">Checks every 30 seconds while this page is visible. GitHub and its contribution calendar can publish updates later; repository activity refreshes within {data.refreshSeconds ?? 180} seconds of upstream availability.</p>
       <div className="gh-panels">
         <div className="gh-panel gh-panel-lang">
           <div className="gh-panel-head">

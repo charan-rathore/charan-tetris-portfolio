@@ -1,18 +1,15 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { McpHero } from "./hero/McpHero";
 import { GitHubPulse } from "./GitHubPulse";
 import { sfx } from "./tetris/audio";
+import { ProjectLevel } from "./ProjectLevel";
+import { ContactForm } from "./ContactForm";
 import { GamePanel } from "./tetris/GamePanel";
 import { INTEL, useUnlockedIntel } from "./tetris/intel";
 import { PIECES, PieceName } from "./tetris/types";
-
-const HeroScene = dynamic(
-  () => import("./hero/HeroScene").then((module) => module.HeroScene),
-  { ssr: false },
-);
 
 type TechItem = {
   name: string;
@@ -147,8 +144,8 @@ const projects: Project[] = [
     label: "FLAGSHIP · RAG PLATFORM",
     title: "IntelliRAG",
     copy: "I wanted to know where RAG actually breaks. Ingestion → chunking → hybrid retrieval → rerank → citations → eval, built to measure failure modes honestly, not to claim production SOTA.",
-    image: "/projects/intellirag.jpg",
-    imageAlt: "Code and terminal on a developer workstation",
+    image: "/projects/tetris-art/intellirag.png",
+    imageAlt: "Scattered documents resolving through a Tetris-shaped knowledge block",
     metrics: [
       "12 PHASES SHIPPED",
       "100+ TESTS",
@@ -166,6 +163,7 @@ const projects: Project[] = [
       "Ollama",
     ),
     github: "https://github.com/charan-rathore/IntelliRAG",
+    live: "https://intellirag-live-own-track.vercel.app/",
     featured: true,
   },
   {
@@ -173,8 +171,8 @@ const projects: Project[] = [
     label: "MEMORY ENGINE · LIVE",
     title: "memoRABLE",
     copy: "What if documents became memory? Six source-linked blocks: click one and the original lines light up, then publish to email, web, or doc without rewriting the truth.",
-    image: "/projects/memorable.jpg",
-    imageAlt: "Open books and notes on a desk",
+    image: "/projects/tetris-art/memorable.png",
+    imageAlt: "An open book connecting to floating Tetris memory tiles",
     tech: tech("TypeScript", "Next.js", "Unlayer Elements", "pdf.js"),
     github: "https://github.com/charan-rathore/memoRABLE",
     live: "https://memo-rable.vercel.app",
@@ -184,8 +182,8 @@ const projects: Project[] = [
     label: "IOT + ML · LIVE",
     title: "ThermoSense",
     copy: "Can a forecast know your rooftop? Ground truth, API bias correction, ensemble models, and a public leaderboard. The product is the closed loop, not the model name.",
-    image: "/projects/thermosense.jpg",
-    imageAlt: "Storm clouds over a weather horizon",
+    image: "/projects/tetris-art/thermosense.png",
+    imageAlt: "A weather mast on a small Tetris island",
     tech: tech("Python", "FastAPI", "React", "MLflow", "LightGBM", "IoT"),
     github: "https://github.com/charan-rathore/Time-Series-Temperature-Modelling",
     live: "https://thermosense-black.vercel.app",
@@ -195,8 +193,8 @@ const projects: Project[] = [
     label: "FULL-STACK · LIVE",
     title: "Project Management Tool",
     copy: "Kanban with drag-and-drop tasks, team collaboration, and live updates. A small TypeScript stack that still has to feel fast when people fight over the board.",
-    image: "/projects/kanban.jpg",
-    imageAlt: "Team workshop around sticky notes and a planning board",
+    image: "/projects/tetris-art/kanban.png",
+    imageAlt: "People fitting Tetris pieces into an organized project board",
     tech: tech("TypeScript", "React", "Next.js", "Tailwind"),
     github: "https://github.com/charan-rathore/project-management-tool",
     live: "https://project-management-tool-nine-zeta.vercel.app",
@@ -206,8 +204,8 @@ const projects: Project[] = [
     label: "MULTI-AGENT AI",
     title: "Agentic Finance Advisor",
     copy: "Can an AI answer also explain how much it should be trusted? Multi-agent research with freshness, source agreement, and a confidence score you can inspect.",
-    image: "/projects/finance.jpg",
-    imageAlt: "Candlestick charts and market data on a trading desk",
+    image: "/projects/tetris-art/finance.png",
+    imageAlt: "Geometric observers studying a financial signal",
     tech: tech("Python", "LangChain", "Multi-Agent", "NLP"),
     github: "https://github.com/charan-rathore/agentic-finance-advisor",
   },
@@ -216,8 +214,8 @@ const projects: Project[] = [
     label: "COMPUTER VISION",
     title: "Drone Wildlife Detection",
     copy: "YOLOv8 on drone footage for blackbuck detection. Applied vision for conservation, not another toy detector notebook.",
-    image: "/projects/wildlife.jpg",
-    imageAlt: "Blackbuck antelope in its natural grassland habitat",
+    image: "/projects/tetris-art/wildlife.png",
+    imageAlt: "A geometric drone observing a blackbuck in sparse grassland",
     tech: tech("Python", "YOLOv8", "PyTorch"),
     github: "https://github.com/charan-rathore/Object-detection-from-drone-captured-videos",
   },
@@ -226,8 +224,8 @@ const projects: Project[] = [
     label: "CAD AUTOMATION",
     title: "3D Bolt Dataset Automation",
     copy: "1,000+ labeled STL bolts via the Fusion 360 API. Parametric generation to classification-ready data, because CAD ML starts with boring, correct labels.",
-    image: "/projects/cad.jpg",
-    imageAlt: "Python scripting and CAD-adjacent engineering software on a laptop",
+    image: "/projects/tetris-art/cad.png",
+    imageAlt: "An exploded modular bolt drawing with geometric construction lines",
     tech: tech("Python", "Fusion 360 API", "Deep Learning"),
     github: "https://github.com/charan-rathore/Automation-of-3D-Bolt-Dataset",
   },
@@ -235,10 +233,10 @@ const projects: Project[] = [
 
 const experience = [
   {
-    period: "2026 · NOW",
-    role: "AI Infrastructure & Product",
-    place: "AI Research Startup",
-    copy: "Building the systems layer behind Claude, ChatGPT, and next-generation foundation-model applications, where deep tech meets product.",
+    period: "NOW",
+    role: "Analyst",
+    place: "MiQ",
+    copy: "Working across MENA markets.",
     piece: "T" as PieceName,
   },
   {
@@ -388,7 +386,7 @@ function TechMarquee() {
             <div className="tech-chip-block" aria-hidden="true">
               <PieceGlyph name={item.piece} />
             </div>
-            <img
+            <Image
               src={`/logos/${item.file}`}
               alt=""
               width={28}
@@ -406,7 +404,10 @@ function TechMarquee() {
 
 function scrollToId(id: string) {
   playUi();
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  const target = document.getElementById(id);
+  const drawer = target?.closest("details");
+  if (drawer) drawer.open = true;
+  target?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
 }
 
 export function Portfolio() {
@@ -433,6 +434,7 @@ export function Portfolio() {
 
   return (
     <main>
+      <a className="skip-link" href="#work">Skip to projects</a>
       <div className="scanlines" aria-hidden="true" />
 
       <header className="site-header">
@@ -441,7 +443,7 @@ export function Portfolio() {
           className="wordmark pixel"
           onClick={() => {
             playUi();
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
           }}
           aria-label="Back to top"
         >
@@ -468,14 +470,14 @@ export function Portfolio() {
             onClick={() => playUi()}
           >
             <i />
-            OPEN TO OPPORTUNITIES
+            ANALYST @ MiQ · MENA
           </a>
           <span className="clock">{time || "--:--"} IST</span>
         </div>
       </header>
 
-      <section className="hero" id="top">
-        <HeroScene />
+      <section className="hero hero--mcp" id="top">
+        <McpHero />
         <div className="hero-content">
           <span className="pixel-label">
             PLAYER 1 &gt; SYSTRIS : TETRIS WITH SYSTEMS
@@ -484,58 +486,44 @@ export function Portfolio() {
             <span className="sr-only">Charan Rathore · </span>
             I am the MCP between Charan and the world
           </h1>
+          <p className="hero-intro">A little context. A lot of curiosity. Connecting ideas to systems, data to decisions, and people to what comes next.</p>
           <div className="hero-actions">
             <button
               type="button"
               className="btn-primary"
-              onClick={() => scrollToId("play")}
+              onClick={() => scrollToId("work")}
             >
-              ▶ PRESS START
+              ▶ BUILD THE STACK
             </button>
             <button
               type="button"
               className="btn-ghost"
               onClick={() => scrollToId("work")}
             >
-              SKIP TO WORK ↓
+              EXPLORE PROJECTS ↓
             </button>
           </div>
         </div>
-        <div className="hero-hint pixel-label" aria-hidden="true">
-          CLICK THE NAME TO REPLAY ↺
-        </div>
+
       </section>
 
       <TechMarquee />
 
-      <div className="stage-band" id="play-band">
-        <div className="stage-heading">
-          <span className="pixel-label accent-yellow">STAGE 01 · PLAY</span>
-          <h2>First, a vibe check.</h2>
-          <p>
-            Guideline mechanics, hand-tuned juice, zero mercy. Score decrypts
-            intel about me this page won&apos;t show you otherwise.
-          </p>
-        </div>
-        <GamePanel />
-      </div>
-
       <section className="work-section" id="work">
         <div className="stage-heading">
-          <span className="pixel-label accent-cyan">STAGE 02 · WORK</span>
-          <h2>Projects that define me.</h2>
-          <p>Not demos. Not tutorials. Systems built with production thinking.</p>
+          <span className="pixel-label accent-cyan">STAGE 02 · THE PROJECT STACK</span>
+          <h2>Watch the work fall into place.</h2>
+          <p>Seven projects. Seven pieces. Scroll to build the stack — every project opens automatically.</p>
         </div>
 
+        <div className="campaign-strip"><span className="pixel-label accent-cyan">AUTO PLAY · 7 LEVELS</span><span>Scroll to advance ↓</span><a href="#bonus-game" onClick={() => scrollToId("play")}>PLAY FOR BONUS INTEL ↗</a></div>
+        <details className="bonus-game" id="bonus-game">
+          <summary><span className="pixel-label">+ BONUS ROUND</span><span>Take the controls. Unlock the personal side quests.</span><b>PLAY ↗</b></summary>
+          <GamePanel />
+        </details>
         <div className="project-grid">
-          {projects.map((project) => (
-            <article
-              key={project.title}
-              className={`project-card ${project.featured ? "is-featured" : ""}`}
-              style={
-                { "--piece": PIECES[project.piece].color } as React.CSSProperties
-              }
-            >
+          {projects.map((project, index) => (
+            <ProjectLevel key={project.title} index={index} piece={project.piece} featured={project.featured}>
               <div className="project-media">
                 <Image
                   src={project.image}
@@ -570,7 +558,7 @@ export function Portfolio() {
                     title={`${item.name} docs`}
                   >
                     {item.logo ? (
-                      <img
+                      <Image
                         src={`/logos/${item.logo}`}
                         alt=""
                         width={14}
@@ -613,7 +601,7 @@ export function Portfolio() {
                   </a>
                 )}
               </div>
-            </article>
+            </ProjectLevel>
           ))}
         </div>
       </section>
@@ -621,9 +609,9 @@ export function Portfolio() {
       <section className="about-section" id="about">
         <div className="stage-heading">
           <span className="pixel-label accent-purple">STAGE 03 · PLAYER STATS</span>
-          <h2>How does it feel to be loved?</h2>
+          <h2>One commit. Another block.</h2>
           <p>
-            By systems that fail in known ways, and still call you back.
+            The board keeps growing. Explore the daily stack, language pieces, and the next repositories in the queue.
           </p>
         </div>
 
@@ -692,10 +680,11 @@ export function Portfolio() {
           href="mailto:ra7hore.charan@gmail.com"
           onClick={() => playUi()}
         >
-          <img src="/logos/gmail.svg" alt="" width={22} height={22} />
+          <Image src="/logos/gmail.svg" alt="" width={22} height={22} />
           <span>ra7hore.charan@gmail.com</span>
           <b>↗</b>
         </a>
+        <ContactForm />
         <div className="contact-links">
           <a
             className="contact-icon-link"
@@ -705,7 +694,7 @@ export function Portfolio() {
             onClick={() => playUi()}
             title="GitHub"
           >
-            <img src="/logos/github.svg" alt="GitHub" width={28} height={28} />
+            <Image src="/logos/github.svg" alt="GitHub" width={28} height={28} />
           </a>
           <a
             className="contact-icon-link"
@@ -715,7 +704,7 @@ export function Portfolio() {
             onClick={() => playUi()}
             title="LinkedIn"
           >
-            <img
+            <Image
               src="/logos/linkedin.svg"
               alt="LinkedIn"
               width={28}
@@ -731,7 +720,7 @@ export function Portfolio() {
               onClick={() => playUi()}
               title="Substack"
             >
-              <img
+              <Image
                 src="/logos/substack.svg"
                 alt="Substack"
                 width={28}
@@ -745,7 +734,7 @@ export function Portfolio() {
               onClick={() => scrollToId("play")}
               title="Substack locked · score 350"
             >
-              <img
+              <Image
                 src="/logos/substack.svg"
                 alt=""
                 width={22}
@@ -764,7 +753,7 @@ export function Portfolio() {
               onClick={() => playUi()}
               title="X"
             >
-              <img src="/logos/x.svg" alt="X" width={28} height={28} />
+              <Image src="/logos/x.svg" alt="X" width={28} height={28} />
             </a>
           ) : (
             <button
@@ -773,7 +762,7 @@ export function Portfolio() {
               onClick={() => scrollToId("play")}
               title="X locked · score 650"
             >
-              <img
+              <Image
                 src="/logos/x.svg"
                 alt=""
                 width={22}
