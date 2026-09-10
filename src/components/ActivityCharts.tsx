@@ -10,7 +10,7 @@ export function ActivityCharts({ days }: { days: Day[] }) {
       <svg viewBox="0 0 500 150" role="img" aria-label={`${running} contributions accumulated over ${days.length} days`}>
         {[25,55,85,115].map(y=><path key={y} d={`M12 ${y}H488`} stroke="#25344a" strokeDasharray="4 7"/>)}
         <path d={totals.map((d,i)=>`${i===0?'M':'H'}${12+i*476/Math.max(1,totals.length-1)}${i===0?' ': 'V'}${125-d.total/peak*104}`).join(' ')} fill="none" stroke="#b968ff" strokeWidth="2"/>
-        {totals.map((d,i)=><rect key={d.date} x={8+i*476/Math.max(1,totals.length-1)} y={121-d.total/peak*104} width="8" height="8" fill="#00e0ff"><title>{d.date}: {d.total} accumulated contributions</title></rect>)}
+        {totals.map((d,i)=><rect key={d.date} x={8+i*476/Math.max(1,totals.length-1)} y={121-d.total/peak*104} width="8" height="8" fill="#00e0ff"><title>{`${d.date}: ${d.total} accumulated contributions`}</title></rect>)}
       </svg><div className="activity-axis"><span>{days[0]?.date}</span><b>{running} PLACED</b><span>{days.at(-1)?.date}</span></div>
     </figure>
     <figure className="activity-cadence"><figcaption><span className="pixel-label accent-yellow">BUILD RHYTHM · WEEKDAYS</span><p>Where contributions land, grouped by UTC weekday.</p></figcaption>

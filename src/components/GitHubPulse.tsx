@@ -58,28 +58,19 @@ const LANG_COLORS: Record<string, string> = {
   Shell: "#89E051",
 };
 
-function formatRange(start: string, end: string) {
-  const a = new Date(`${start}T12:00:00`);
-  const b = new Date(`${end}T12:00:00`);
-  const opts: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
-  const year = b.getFullYear();
-  return `${a.toLocaleDateString("en-US", opts)} – ${b.toLocaleDateString("en-US", opts)} ${year}`;
-}
+const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 function shortDay(dateStr: string) {
-  const date = new Date(`${dateStr}T12:00:00`);
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return `${MONTH_NAMES[Number(dateStr.slice(5, 7)) - 1]} ${Number(dateStr.slice(8, 10))}`;
+}
+
+function formatRange(start: string, end: string) {
+  return `${shortDay(start)} – ${shortDay(end)} ${end.slice(0, 4)}`;
 }
 
 function monthTick(dateStr: string) {
-  const date = new Date(`${dateStr}T12:00:00`);
-  if (date.getDate() === 1) {
-    return date.toLocaleDateString("en-US", { month: "short" });
-  }
-  if (date.getDate() % 7 === 0) {
-    return String(date.getDate());
-  }
-  return "";
+  const day = Number(dateStr.slice(8, 10));
+  return day === 1 ? MONTH_NAMES[Number(dateStr.slice(5, 7)) - 1] : day % 7 === 0 ? String(day) : "";
 }
 
 function langSearchUrl(user: string, language: string) {
@@ -194,7 +185,7 @@ export function GitHubPulse() {
       </div>
 
       <div className="gh-sync-bar">
-        <span role="status">{error ? "Connection interrupted · showing last successful check" : data.stale || data.partial ? "Saved feed · an upstream source is unavailable" : "Auto-refresh on"} · Checked {new Date(data.checkedAt ?? data.fetchedAt).toLocaleTimeString("en-IN", {hour: "2-digit", minute: "2-digit", second: "2-digit"})}</span>
+        <span role="status">{error ? "Connection interrupted · showing last successful check" : data.stale || data.partial ? "Saved feed · an upstream source is unavailable" : "Auto-refresh on"} · Checked {(data.checkedAt ?? data.fetchedAt).slice(11,19) + " UTC"}</span>
         <button className="gh-refresh" onClick={() => void refresh()} disabled={refreshing}>{refreshing ? "CHECKING…" : "REFRESH ↻"}</button>
       </div>
       <div className="gh-chart-card">
@@ -234,7 +225,7 @@ export function GitHubPulse() {
         </div>
       </div>
 
-      <p className="gh-freshness">Calendar snapshot: {new Date(data.calendarUpdatedAt ?? data.fetchedAt).toLocaleString("en-IN")} · Contributions include commits, pull requests and issues. Checks every 30 seconds; cached delivery and upstream publication can delay updates. {data.stale ? "The last successful data is retained during this outage." : ""}</p>
+      <p className="gh-freshness">Calendar snapshot: {(data.calendarUpdatedAt ?? data.fetchedAt).slice(0,19).replace("T", " ") + " UTC"} · Contributions include commits, pull requests and issues. Checks every 30 seconds; cached delivery and upstream publication can delay updates. {data.stale ? "The last successful data is retained during this outage." : ""}</p>
       <ActivityCharts days={month} />
       <div className="gh-panels">
         <div className="gh-panel gh-panel-lang">
@@ -297,10 +288,7 @@ export function GitHubPulse() {
                       <b>{repo.name}</b>
                       <em>
                         {repo.language ?? "misc"} ·{" "}
-                        {new Date(repo.pushedAt).toLocaleDateString("en-IN", {
-                          day: "2-digit",
-                          month: "short",
-                        })}
+                        {repo.pushedAt.slice(0,10)}
                       </em>
                     </span>
                     <span className="gh-queue-go">↗</span>

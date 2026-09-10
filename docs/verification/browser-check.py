@@ -8,6 +8,7 @@ def run(*args):
  return r.get('data',{}).get('result')
 def ev(js):return run('eval',js)
 results={}
+run('set','viewport','1440','1000')
 run('find','role','button','click','--name','ANALYZE','--exact');results['miqConnection']=ev('document.querySelector(".mcp-output").innerText.includes("MiQ")')
 run('find','role','button','click','--name','PLAY','--exact');time.sleep(1)
 run('click','.arcade .start-button');run('press','ArrowLeft');run('press','Space');time.sleep(.5)

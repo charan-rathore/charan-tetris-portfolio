@@ -6,7 +6,7 @@ session=os.environ.get('PORTFOLIO_BROWSER_SESSION','portfolio-local');out=Path(_
 def run(*args):
  p=subprocess.run([B,'--session',session,'--json',*args],capture_output=True,text=True,timeout=40);r=json.loads(p.stdout)
  if not r.get('success'):raise RuntimeError(r)
- return r.get('data',{}).get('result')
+ data=r.get('data',{});return data.get('result',data)
 def ev(js):return run('eval',js)
 def scroll(selector):ev('document.querySelector('+json.dumps(selector)+').scrollIntoView({block:"center",behavior:"instant"})');time.sleep(.3)
 r={}
@@ -34,4 +34,4 @@ scroll('.contact-layout');r['mobileContactNoOverflow']=ev('document.documentElem
 r['mobilePromptTargets']=ev('Array.from(document.querySelectorAll(".contact-layout .conversation-starter button")).map(b=>({w:b.getBoundingClientRect().width,h:b.getBoundingClientRect().height}))')
 r['browserErrors']=run('errors')
 (out/(session+'-layout-results.json')).write_text(json.dumps(r,indent=2));print(json.dumps(r,indent=2))
-assert r['thinkingVisual'] and r['twoAdditionalCharts'] and r['projectCount']==7 and r['lastCellUseful'] and r['activeNavigation']=='ABOUT' and r['starterPrefillsDraft'] and r['existingDraftPreserved'] and r['mobileNoOverflow'] and r['mobileContactNoOverflow']
+assert r['thinkingVisual'] and r['twoAdditionalCharts'] and r['projectCount']==7 and r['lastCellUseful'] and r['activeNavigation']=='ABOUT' and r['starterPrefillsDraft'] and r['existingDraftPreserved'] and r['mobileNoOverflow'] and r['mobileContactNoOverflow'] and not r['browserErrors'].get('errors')
