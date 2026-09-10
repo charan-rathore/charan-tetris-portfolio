@@ -415,13 +415,13 @@ function scrollToId(id: string) {
 
 export function Portfolio() {
   const [time, setTime] = useState("");
-  const [activeSection, setActiveSection] = useState("");
+  const [activeSection, setActiveSection] = useState("play");
   useEffect(() => {
     let frame = 0;
     const update = () => {
       const line = innerHeight * .35;
       const ids = ["work", "about", "contact"];
-      let active = "";
+      let active = "play";
       for (const id of ids) { const node = document.getElementById(id); if (node && node.getBoundingClientRect().top <= line) active = id; }
       const play = document.getElementById("play");
       if (play?.closest("details")?.open) { const bounds = play.getBoundingClientRect(); if (bounds.top <= line && bounds.bottom > line) active = "play"; }

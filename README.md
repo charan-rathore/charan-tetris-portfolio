@@ -39,3 +39,5 @@ The hero connects a pixel-built thinking field to the moving Three.js human inte
 Desktop and mobile layouts are checked in visible Brave/Chromium. This is not a physical Android/iOS or Safari certification. Reduced motion, 2D graphics recovery, keyboard controls and touch targets are covered by the verification flow. Contact transport tests pass with a mock provider; real Resend acceptance/inbox delivery still requires the private configuration above.
 
 The player identity uses the public avatar supplied by Charan from [@huesofbanter](https://x.com/huesofbanter/photo), stored locally for reliable loading. The seven project illustrations remain unchanged.
+
+The opening thinking engine now renders a legally placed Tetris sequence with instanced Three.js cubes, a ghost landing position, live demo scoring and optional manual drops. Pause, reduced motion and a static graphics-loss fallback keep it usable. Small CSS 3D tetromino sculptures accompany the conversation starters. The existing seven project illustrations are unchanged.

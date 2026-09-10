@@ -28,3 +28,7 @@ This is desktop Brave with a mobile viewport, not physical Android/iOS or Safari
 Evidence: `production-browser-results.json`, `portfolio-final-layout-results.json`, `contact-production-result.json` and accompanying screenshots. Tests: 9/9, lint and production build passed.
 
 The final error-log check caught React hydration error #418 after the initial snapshot began server-rendering dates. Dates now use deterministic UTC/ISO output rather than visitor/server locale defaults. A regression renders the real GitHub component in four time zones and compares the complete markup. SVG chart titles also use a single text string as required by React. A fresh production browser session verified the correction after deployment: zero uncaught browser errors, active navigation, all seven projects and both new charts rendered correctly.
+
+## Immersive opening — September 11, 2026
+
+The new 3D thinking board passes visible Brave desktop/mobile checks: canvas and local X avatar load; pause stops scoring; manual drop increases it; both controls meet 44px minimum targets; the next-piece preview stays inside its control strip; no horizontal overflow at 390px; simulated WebGL context loss reveals the static Tetris mind; no uncaught browser errors. Evidence: `portfolio-review-thought-results.json`. Production build, lint and 9 tests pass. Production verification follows deployment.

@@ -1,4 +1,5 @@
 "use client";
+import { TetrisRelic } from "./TetrisRelic";
 
 export function ConversationStarter({ compact = false }: { compact?: boolean }) {
   const prompts = [
@@ -8,6 +9,7 @@ export function ConversationStarter({ compact = false }: { compact?: boolean }) 
   ];
   function choose(message:string) {window.dispatchEvent(new CustomEvent('contact-prompt',{detail:message}));document.getElementById('contact')?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});}
   return <aside className={`conversation-starter ${compact?'is-compact':''}`}>
+    <TetrisRelic />
     <span className="pixel-label accent-yellow">YOUR IDEA · NEXT IN QUEUE</span>
     <h3>The next piece could be yours.</h3>
     <p>Pick a starting point. I&apos;ll bring curiosity, context and a builder&apos;s perspective.</p>
