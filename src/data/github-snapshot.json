@@ -1,0 +1,259 @@
+{
+  "user": "charan-rathore",
+  "rangeStart": "2026-08-12",
+  "rangeEnd": "2026-09-10",
+  "monthTotal": 53,
+  "publicRepos": 19,
+  "followers": 7,
+  "stars": 3,
+  "month": [
+    {
+      "date": "2026-08-12",
+      "count": 13,
+      "level": 4,
+      "height": 100
+    },
+    {
+      "date": "2026-08-13",
+      "count": 0,
+      "level": 0,
+      "height": 4
+    },
+    {
+      "date": "2026-08-14",
+      "count": 0,
+      "level": 0,
+      "height": 4
+    },
+    {
+      "date": "2026-08-15",
+      "count": 0,
+      "level": 0,
+      "height": 4
+    },
+    {
+      "date": "2026-08-16",
+      "count": 0,
+      "level": 0,
+      "height": 4
+    },
+    {
+      "date": "2026-08-17",
+      "count": 0,
+      "level": 0,
+      "height": 4
+    },
+    {
+      "date": "2026-08-18",
+      "count": 0,
+      "level": 0,
+      "height": 4
+    },
+    {
+      "date": "2026-08-19",
+      "count": 0,
+      "level": 0,
+      "height": 4
+    },
+    {
+      "date": "2026-08-20",
+      "count": 0,
+      "level": 0,
+      "height": 4
+    },
+    {
+      "date": "2026-08-21",
+      "count": 1,
+      "level": 1,
+      "height": 7.6923076923076925
+    },
+    {
+      "date": "2026-08-22",
+      "count": 5,
+      "level": 2,
+      "height": 38.46153846153847
+    },
+    {
+      "date": "2026-08-23",
+      "count": 7,
+      "level": 3,
+      "height": 53.84615384615385
+    },
+    {
+      "date": "2026-08-24",
+      "count": 0,
+      "level": 0,
+      "height": 4
+    },
+    {
+      "date": "2026-08-25",
+      "count": 0,
+      "level": 0,
+      "height": 4
+    },
+    {
+      "date": "2026-08-26",
+      "count": 4,
+      "level": 2,
+      "height": 30.76923076923077
+    },
+    {
+      "date": "2026-08-27",
+      "count": 1,
+      "level": 1,
+      "height": 7.6923076923076925
+    },
+    {
+      "date": "2026-08-28",
+      "count": 1,
+      "level": 1,
+      "height": 7.6923076923076925
+    },
+    {
+      "date": "2026-08-29",
+      "count": 0,
+      "level": 0,
+      "height": 4
+    },
+    {
+      "date": "2026-08-30",
+      "count": 0,
+      "level": 0,
+      "height": 4
+    },
+    {
+      "date": "2026-08-31",
+      "count": 5,
+      "level": 2,
+      "height": 38.46153846153847
+    },
+    {
+      "date": "2026-09-01",
+      "count": 0,
+      "level": 0,
+      "height": 4
+    },
+    {
+      "date": "2026-09-02",
+      "count": 0,
+      "level": 0,
+      "height": 4
+    },
+    {
+      "date": "2026-09-03",
+      "count": 3,
+      "level": 1,
+      "height": 23.076923076923077
+    },
+    {
+      "date": "2026-09-04",
+      "count": 3,
+      "level": 1,
+      "height": 23.076923076923077
+    },
+    {
+      "date": "2026-09-05",
+      "count": 2,
+      "level": 1,
+      "height": 15.384615384615385
+    },
+    {
+      "date": "2026-09-06",
+      "count": 2,
+      "level": 1,
+      "height": 15.384615384615385
+    },
+    {
+      "date": "2026-09-07",
+      "count": 3,
+      "level": 1,
+      "height": 23.076923076923077
+    },
+    {
+      "date": "2026-09-08",
+      "count": 0,
+      "level": 0,
+      "height": 4
+    },
+    {
+      "date": "2026-09-09",
+      "count": 0,
+      "level": 0,
+      "height": 4
+    },
+    {
+      "date": "2026-09-10",
+      "count": 3,
+      "level": 1,
+      "height": 23.076923076923077
+    }
+  ],
+  "languages": [
+    {
+      "name": "Python",
+      "count": 5
+    },
+    {
+      "name": "Jupyter Notebook",
+      "count": 4
+    },
+    {
+      "name": "TypeScript",
+      "count": 3
+    },
+    {
+      "name": "HTML",
+      "count": 1
+    },
+    {
+      "name": "JavaScript",
+      "count": 1
+    }
+  ],
+  "recent": [
+    {
+      "name": "IntelliRAG",
+      "url": "https://github.com/charan-rathore/IntelliRAG",
+      "language": "Python",
+      "stars": 3,
+      "pushedAt": "2026-09-10T07:43:53Z",
+      "description": "Production-grade RAG platform built from scratch \u2014 async pipelines, 5 chunking strategies, RAGAS evaluation, Celery workers, PostgreSQL lifecycle management"
+    },
+    {
+      "name": "charan-tetris-portfolio",
+      "url": "https://github.com/charan-rathore/charan-tetris-portfolio",
+      "language": "TypeScript",
+      "stars": 0,
+      "pushedAt": "2026-09-10T07:42:29Z",
+      "description": "Playable Tetris portfolio (Next.js + Three.js)"
+    },
+    {
+      "name": "charan-rathore",
+      "url": "https://github.com/charan-rathore/charan-rathore",
+      "language": null,
+      "stars": 0,
+      "pushedAt": "2026-09-10T04:12:35Z",
+      "description": "GitHub profile README \u2014 dynamically updated with animated SVGs and project showcase"
+    },
+    {
+      "name": "infer-tab",
+      "url": "https://github.com/charan-rathore/infer-tab",
+      "language": "Python",
+      "stars": 0,
+      "pushedAt": "2026-09-09T15:24:07Z",
+      "description": null
+    },
+    {
+      "name": "charan-tetris-live-fix",
+      "url": "https://github.com/charan-rathore/charan-tetris-live-fix",
+      "language": "TypeScript",
+      "stars": 0,
+      "pushedAt": "2026-08-26T19:17:12Z",
+      "description": "First-paint CHARAN fix for the Systris portfolio (SSR wordmark). Merge back into charan-tetris-portfolio."
+    }
+  ],
+  "fetchedAt": "2026-09-10T10:18:41.892Z",
+  "partial": false,
+  "activityAvailable": true,
+  "refreshSeconds": 180
+}

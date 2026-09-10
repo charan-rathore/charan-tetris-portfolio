@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { ThinkingField } from "./hero/ThinkingField";
+import { ConversationStarter } from "./ConversationStarter";
 import { McpHero } from "./hero/McpHero";
 import { GitHubPulse } from "./GitHubPulse";
 import { sfx } from "./tetris/audio";
@@ -413,6 +415,22 @@ function scrollToId(id: string) {
 
 export function Portfolio() {
   const [time, setTime] = useState("");
+  const [activeSection, setActiveSection] = useState("");
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      const line = innerHeight * .35;
+      const ids = ["work", "about", "contact"];
+      let active = "";
+      for (const id of ids) { const node = document.getElementById(id); if (node && node.getBoundingClientRect().top <= line) active = id; }
+      const play = document.getElementById("play");
+      if (play?.closest("details")?.open) { const bounds = play.getBoundingClientRect(); if (bounds.top <= line && bounds.bottom > line) active = "play"; }
+      setActiveSection(active); frame = 0;
+    };
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+    schedule(); window.addEventListener("scroll",schedule,{passive:true});window.addEventListener("resize",schedule);
+    return () => {cancelAnimationFrame(frame);window.removeEventListener("scroll",schedule);window.removeEventListener("resize",schedule);};
+  }, []);
   const unlocked = useUnlockedIntel();
   const lockedChannels = INTEL.filter(
     (item) => item.href && !item.href.startsWith("mailto:") && !unlocked.has(item.id),
@@ -451,16 +469,16 @@ export function Portfolio() {
           CR
         </button>
         <nav aria-label="Primary">
-          <button type="button" onClick={() => scrollToId("play")}>
+          <button type="button" aria-current={activeSection === "play" ? "location" : undefined} onClick={() => { setActiveSection("play"); scrollToId("play"); }}>
             PLAY
           </button>
-          <button type="button" onClick={() => scrollToId("work")}>
+          <button type="button" aria-current={activeSection === "work" ? "location" : undefined} onClick={() => { setActiveSection("work"); scrollToId("work"); }}>
             WORK
           </button>
-          <button type="button" onClick={() => scrollToId("about")}>
+          <button type="button" aria-current={activeSection === "about" ? "location" : undefined} onClick={() => { setActiveSection("about"); scrollToId("about"); }}>
             ABOUT
           </button>
-          <button type="button" onClick={() => scrollToId("contact")}>
+          <button type="button" aria-current={activeSection === "contact" ? "location" : undefined} onClick={() => { setActiveSection("contact"); scrollToId("contact"); }}>
             CONTACT
           </button>
         </nav>
@@ -480,6 +498,7 @@ export function Portfolio() {
       <section className="hero hero--mcp" id="top">
         <McpHero />
         <div className="hero-content">
+          <ThinkingField />
           <span className="pixel-label">
             PLAYER 1 &gt; SYSTRIS : TETRIS WITH SYSTEMS
           </span>
@@ -605,6 +624,7 @@ export function Portfolio() {
               </div>
             </ProjectLevel>
           ))}
+          <ConversationStarter compact />
         </div>
       </section>
 
@@ -686,7 +706,7 @@ export function Portfolio() {
           <span>ra7hore.charan@gmail.com</span>
           <b>↗</b>
         </a>
-        <ContactForm />
+        <div className="contact-layout"><ConversationStarter /><ContactForm /></div>
         <div className="contact-links">
           <a
             className="contact-icon-link"

@@ -1,0 +1,22 @@
+{
+  "url": "https://charan-tetris-portfolio.vercel.app/",
+  "commit": "79bc2ab2bf1022a1f61c7222714c6dc3f6cd9062",
+  "deployment": "dpl_4vEsHBELaMcGzUEU5Qg11cQY4DkL",
+  "state": "READY",
+  "githubCI": "success",
+  "unitTests": 7,
+  "browser": "headed Brave on this Mac",
+  "viewports": [
+    [
+      1440,
+      1000
+    ],
+    [
+      390,
+      844
+    ]
+  ],
+  "uncaughtBrowserErrors": 0,
+  "contactDelivery": "requires RESEND_API_KEY and CONTACT_FROM_EMAIL; no real emails sent",
+  "physicalAndroidTested": false
+}

@@ -1,9 +1,9 @@
-import subprocess,json,time
+import subprocess,json,time,os
 from pathlib import Path
 B='/Users/charanrathore/.npm/_npx/6de2aa2fded2970c/node_modules/agent-browser/bin/agent-browser-darwin-arm64';out=Path(__file__).parent
 
 def run(*args):
- p=subprocess.run([B,'--session','portfolio-local','--json',*args],capture_output=True,text=True,timeout=40);r=json.loads(p.stdout)
+ p=subprocess.run([B,'--session',os.environ.get('PORTFOLIO_BROWSER_SESSION','portfolio-local'),'--json',*args],capture_output=True,text=True,timeout=40);r=json.loads(p.stdout)
  if not r.get('success'):raise RuntimeError(r)
  return r.get('data',{}).get('result')
 def ev(js):return run('eval',js)
@@ -12,6 +12,7 @@ run('find','role','button','click','--name','ANALYZE','--exact');results['miqCon
 run('find','role','button','click','--name','PLAY','--exact');time.sleep(1)
 run('click','.arcade .start-button');run('press','ArrowLeft');run('press','Space');time.sleep(.5)
 results['gameScoresAfterDrop']=ev('Number(document.querySelector(".stat b").textContent)>0')
+run('eval','document.querySelector(".game-pause").scrollIntoView({block:"center",behavior:"instant"})');time.sleep(.3)
 run('click','.game-pause');results['pauseWorks']=ev('document.querySelector(".board-overlay").innerText.includes("PAUSED")')
 run('screenshot',str(out/'arcade-desktop.png'))
 run('eval','document.querySelector(".bonus-game").open=false; document.querySelector(".project-grid").scrollIntoView()');time.sleep(1.2)
@@ -35,4 +36,4 @@ run('screenshot',str(out/'hero-mobile.png'))
 run('find','role','button','click','--name','PLAY','--exact');time.sleep(.7)
 results['mobileTouchTargets']=ev('Array.from(document.querySelectorAll(".touch-controls button")).map(b=>({name:b.ariaLabel,w:b.getBoundingClientRect().width,h:b.getBoundingClientRect().height}))')
 run('screenshot',str(out/'arcade-mobile.png'))
-(out/'browser-results.json').write_text(json.dumps(results,indent=2));print(json.dumps(results,indent=2))
+(out/('production-browser-results.json' if os.environ.get('PORTFOLIO_BROWSER_SESSION') else 'browser-results.json')).write_text(json.dumps(results,indent=2));print(json.dumps(results,indent=2))

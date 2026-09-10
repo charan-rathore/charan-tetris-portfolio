@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { ActivityCharts } from "./ActivityCharts";
+import initialSnapshot from "../data/github-snapshot.json";
 import { LangCrushBoard } from "./LangCrushBoard";
 import { sfx } from "./tetris/audio";
 import { PIECES, PieceName } from "./tetris/types";
@@ -33,6 +35,10 @@ type GithubPayload = {
   languages: Language[];
   recent: RecentRepo[];
   fetchedAt: string;
+  stale?: boolean;
+  checkedAt?: string;
+  repositoryUpdatedAt?: string;
+  calendarUpdatedAt?: string;
   partial?: boolean;
   activityAvailable?: boolean;
   refreshSeconds?: number;
@@ -87,7 +93,7 @@ function repoPiece(index: number): PieceName {
 const CLIENT_TIMEOUT_MS = 8000;
 
 export function GitHubPulse() {
-  const [data, setData] = useState<GithubPayload | null>(null);
+  const [data, setData] = useState<GithubPayload | null>({...initialSnapshot, stale: true});
   const [error, setError] = useState(false);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -188,10 +194,11 @@ export function GitHubPulse() {
       </div>
 
       <div className="gh-sync-bar">
-        <span role="status">{error ? "Connection interrupted · showing last successful check" : data.partial ? "Partial feed · some GitHub data is unavailable" : "Auto-refresh on"} · Checked {new Date(data.fetchedAt).toLocaleTimeString("en-IN", {hour: "2-digit", minute: "2-digit", second: "2-digit"})}</span>
+        <span role="status">{error ? "Connection interrupted · showing last successful check" : data.stale || data.partial ? "Saved feed · an upstream source is unavailable" : "Auto-refresh on"} · Checked {new Date(data.checkedAt ?? data.fetchedAt).toLocaleTimeString("en-IN", {hour: "2-digit", minute: "2-digit", second: "2-digit"})}</span>
         <button className="gh-refresh" onClick={() => void refresh()} disabled={refreshing}>{refreshing ? "CHECKING…" : "REFRESH ↻"}</button>
       </div>
       <div className="gh-chart-card">
+        <div className="gh-selection" aria-live="polite">{selectedDay ? `${selectedDay.date} · ${selectedDay.count} contributions` : "HOVER, TAP OR FOCUS A DAY TO INSPECT"}</div>
         <div className="gh-panel-head">
           <span className="pixel-label">CONTRIBUTIONS · 30 DAYS</span>
           <span className="pixel-label accent-yellow">{data.monthTotal} TOTAL</span>
@@ -204,6 +211,8 @@ export function GitHubPulse() {
                 aria-label={`${shortDay(day.date)}: ${day.count} contributions`}
                 aria-pressed={selectedDay?.date === day.date}
                 onClick={() => setSelectedDay(day)}
+                onMouseEnter={() => setSelectedDay(day)}
+                onFocus={() => setSelectedDay(day)}
                 title={`${shortDay(day.date)}: ${day.count} contributions`}
                 style={{ "--stack-height": `${Math.max(day.height, 4)}%` } as React.CSSProperties}
               ><span className="gh-day-stack" aria-hidden="true" /></button>
@@ -225,7 +234,8 @@ export function GitHubPulse() {
         </div>
       </div>
 
-      <p className="gh-freshness">Checks every 30 seconds while this page is visible. GitHub and its contribution calendar can publish updates later; repository activity refreshes within {data.refreshSeconds ?? 180} seconds of upstream availability.</p>
+      <p className="gh-freshness">Calendar snapshot: {new Date(data.calendarUpdatedAt ?? data.fetchedAt).toLocaleString("en-IN")} · Contributions include commits, pull requests and issues. Checks every 30 seconds; cached delivery and upstream publication can delay updates. {data.stale ? "The last successful data is retained during this outage." : ""}</p>
+      <ActivityCharts days={month} />
       <div className="gh-panels">
         <div className="gh-panel gh-panel-lang">
           <div className="gh-panel-head">
