@@ -2,7 +2,7 @@
 
 Public host: https://charan-tetris-portfolio.vercel.app/
 
-Tested application commit: `fee4799bcec5d7e388252fdbfd7514625b800b5a`. Vercel production deployment `dpl_CF24PqLekS6fSMH4Q7ARuhxn3Y5t` is READY. GitHub Portfolio checks passed: https://github.com/charan-rathore/charan-tetris-portfolio/actions/runs/34481770392.
+Final tested application commit: `7b230ae82f311f4da98b0c16b60644f5db4dc344`. Vercel production deployment `dpl_rfQxnFJCJJsX4AFYYL7hq4jo3752` is READY. GitHub Portfolio checks passed: https://github.com/charan-rathore/charan-tetris-portfolio/actions/runs/34484273388.
 
 ## Observed passes
 
@@ -25,6 +25,6 @@ Submitted one clearly labeled verification message through the actual public for
 
 This is desktop Brave with a mobile viewport, not physical Android/iOS or Safari certification. Contribution data includes commits, pull requests and issues; upstream publication and caching can delay updates. Instant commit visibility is not promised. Contact throttling is per-instance and needs shared controls before broad promotion.
 
-Evidence: `production-browser-results.json`, `portfolio-production-layout-results.json`, `contact-production-result.json` and accompanying screenshots. Tests: 9/9, lint and production build passed.
+Evidence: `production-browser-results.json`, `portfolio-final-layout-results.json`, `contact-production-result.json` and accompanying screenshots. Tests: 9/9, lint and production build passed.
 
-The final error-log check caught React hydration error #418 after the initial snapshot began server-rendering dates. Dates now use deterministic UTC/ISO output rather than visitor/server locale defaults. A regression renders the real GitHub component in four time zones and compares the complete markup. SVG chart titles also use a single text string as required by React. A fresh production browser session verifies the correction after deployment.
+The final error-log check caught React hydration error #418 after the initial snapshot began server-rendering dates. Dates now use deterministic UTC/ISO output rather than visitor/server locale defaults. A regression renders the real GitHub component in four time zones and compares the complete markup. SVG chart titles also use a single text string as required by React. A fresh production browser session verified the correction after deployment: zero uncaught browser errors, active navigation, all seven projects and both new charts rendered correctly.
