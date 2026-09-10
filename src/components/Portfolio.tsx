@@ -499,9 +499,12 @@ export function Portfolio() {
         <McpHero />
         <div className="hero-content">
           <ThinkingField />
-          <span className="pixel-label">
-            PLAYER 1 &gt; SYSTRIS : TETRIS WITH SYSTEMS
-          </span>
+          <div className="player-identity">
+            <a className="player-avatar" href="https://x.com/huesofbanter" target="_blank" rel="noreferrer" aria-label="Charan on X: huesofbanter">
+              <Image src="/charan-x-avatar.jpg" alt="Charan’s X profile avatar" width={52} height={52} priority />
+            </a>
+            <span className="pixel-label">PLAYER 1 &gt; SYSTRIS : TETRIS WITH SYSTEMS<small>@huesofbanter · Charan Rathore</small></span>
+          </div>
           <h1>
             <span className="sr-only">Charan Rathore · </span>
             I am the MCP between Charan and the world

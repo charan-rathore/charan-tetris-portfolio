@@ -37,3 +37,5 @@ The seven approved project image files remain under `public/projects/tetris-art`
 The hero connects a pixel-built thinking field to the moving Three.js human interface. Build, Analyze and Connect change the direction and lighting of tetromino signals. Seven automatic Tetris sequences assemble the project levels; optional play unlocks bonus intel. Active navigation follows the visible section. The unused final grid cell and contact side column now offer message starters that fill a draft without replacing anything already typed.
 
 Desktop and mobile layouts are checked in visible Brave/Chromium. This is not a physical Android/iOS or Safari certification. Reduced motion, 2D graphics recovery, keyboard controls and touch targets are covered by the verification flow. Contact transport tests pass with a mock provider; real Resend acceptance/inbox delivery still requires the private configuration above.
+
+The player identity uses the public avatar supplied by Charan from [@huesofbanter](https://x.com/huesofbanter/photo), stored locally for reliable loading. The seven project illustrations remain unchanged.
