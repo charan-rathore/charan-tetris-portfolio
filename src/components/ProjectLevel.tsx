@@ -16,7 +16,6 @@ export function ProjectLevel({ index, piece, featured, children }: { index: numb
   }, []);
   return <article ref={ref} className={`project-card project-level ${featured ? "is-featured" : ""} ${landed ? "is-landed" : ""}`} style={{ "--piece": PIECES[piece].color } as CSSProperties}>
     <div className="level-header"><span className="pixel-label">LEVEL {String(index + 1).padStart(2, "0")}</span><span className="pixel-label level-state">{landed ? "PIECE LOCKED ↓" : "NEXT IN QUEUE"}</span></div>
-    <div className="level-assembly" aria-hidden="true">{Array.from({ length: 12 }, (_, i) => <i key={i} style={{ "--drop-delay": `${(i % 4) * 75 + Math.floor(i / 4) * 110}ms` } as CSSProperties} />)}</div>
     {children}
     <div className="level-foundation" aria-hidden="true">{Array.from({length: 20}, (_, i) => <i key={i} />)}</div>
   </article>;

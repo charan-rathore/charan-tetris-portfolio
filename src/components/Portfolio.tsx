@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { McpHero } from "./hero/McpHero";
 import { GitHubPulse } from "./GitHubPulse";
 import { sfx } from "./tetris/audio";
+import { ProjectGameplay } from "./ProjectGameplay";
 import { ProjectLevel } from "./ProjectLevel";
 import { ContactForm } from "./ContactForm";
 import { GamePanel } from "./tetris/GamePanel";
@@ -532,6 +533,7 @@ export function Portfolio() {
                   sizes="(max-width: 820px) 100vw, 50vw"
                   className="project-photo"
                 />
+                <ProjectGameplay level={index} title={project.title} systems={project.tech} />
               </div>
               <div className="project-top">
                 <PieceGlyph name={project.piece} />

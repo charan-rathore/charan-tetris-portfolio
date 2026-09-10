@@ -20,7 +20,7 @@ export function McpHero() {
       <div className="mcp-channel-tabs" role="group" aria-label="Explore a connection">
         {channels.map((item, i) => <button key={item.name} aria-pressed={i === channel} onClick={() => setChannel(i)}>{item.name}</button>)}
       </div>
-      <div className="mcp-bridge"><BridgeScene color={active.color} /><div className="bridge-labels"><span>CHARAN</span><span>CONTEXT FITS HERE</span><span>THE WORLD</span></div>
+      <div className="mcp-bridge"><BridgeScene color={active.color} mode={channel} /><div className="bridge-labels"><span>CHARAN</span><span>CONTEXT FITS HERE</span><span>THE WORLD</span></div>
       <svg className="mcp-diagram" viewBox="0 0 600 300" role="img" aria-label={`${active.input} connects through Charan to ${active.output}`}>
         <defs>
           <pattern id="mcp-grid" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="0.8" fill="#30394e" /></pattern>
