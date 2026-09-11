@@ -1,0 +1,20 @@
+{
+  "canvas": true,
+  "avatarLoaded": true,
+  "pauseStopsScoring": true,
+  "manualDropScores": true,
+  "noMobileOverflow": true,
+  "nextPieceInsideControls": true,
+  "buttonTargets": [
+    {
+      "height": 44,
+      "width": 80.609375
+    },
+    {
+      "height": 44,
+      "width": 44
+    }
+  ],
+  "staticFallback": true,
+  "browserErrors": []
+}
