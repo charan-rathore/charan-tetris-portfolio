@@ -2158,7 +2158,7 @@ p {
 .bridge-render { position: absolute; inset: 0; }
 .bridge-render canvas { width: 100%; height: 100%; }
 .bridge-labels { position: absolute; inset: auto 20px 12px; display:flex; justify-content:space-between; gap:8px; font:9px var(--font-geist-mono),monospace; color:var(--signal); }
-.mcp-bridge:has(.bridge-render canvas) .mcp-diagram { visibility: hidden; }
+.mcp-bridge:has(.bridge-render[data-ready=true]) .mcp-diagram { visibility: hidden; }
 .mcp-bridge:has(.bridge-render[data-failed=true]) .mcp-diagram { visibility: visible; }
 .bridge-render[data-failed=true] canvas { visibility:hidden; }
 .work-section, .about-section { padding-top: 56px; padding-bottom: 56px; }
@@ -2293,7 +2293,7 @@ button, a, input, textarea, summary { scroll-margin-top: calc(var(--header-h) + 
 .thought-scene canvas { display:block; width:100%; height:100%; }
 .thought-fallback { position:absolute; inset:35px 30px; opacity:.65; }
 .thought-fallback svg { width:100%; height:100%; }
-.thought-playfield:has(.thought-scene canvas) .thought-fallback { display:none; }
+.thought-playfield:has(.thought-scene[data-ready=true]) .thought-fallback { display:none; }
 .thought-playfield:has(.thought-scene[data-failed=true]) .thought-fallback { display:block; }
 .thought-scene[data-failed=true] canvas { visibility:hidden; }
 .thought-story { position:absolute; left:58%; top:58px; right:16px; pointer-events:none; }

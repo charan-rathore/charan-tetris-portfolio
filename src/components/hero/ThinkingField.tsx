@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useCallback, useState } from "react";
 import { PIECES } from "../tetris/types";
 import type { ThoughtProgress } from "./ThoughtScene";
+import { SceneBoundary } from "../SceneBoundary";
 const ThoughtScene = dynamic(
   () => import("./ThoughtScene").then((module) => module.ThoughtScene),
   { ssr: false },
@@ -43,7 +44,7 @@ export function ThinkingField() {
         </div>
         <div className="thought-playfield">
           <ThinkingFallback />
-          <ThoughtScene drop={drop} paused={paused} onProgress={update} />
+          <SceneBoundary fallback={null}><ThoughtScene drop={drop} paused={paused} onProgress={update} /></SceneBoundary>
         </div>
         <div className="thought-story">
           <span className="pixel-label accent-cyan">

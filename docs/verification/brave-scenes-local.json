@@ -1,0 +1,21 @@
+{
+  "url": "http://localhost:3005/",
+  "browser": "Brave",
+  "graphics": [
+    {
+      "loss": true,
+      "ready": true,
+      "restored": true,
+      "selector": ".bridge-render"
+    },
+    {
+      "loss": true,
+      "ready": true,
+      "restored": true,
+      "selector": ".thought-scene"
+    }
+  ],
+  "controls": "mode changes, pause, manual drop pass",
+  "mobile": "no overflow; targets at least 44px",
+  "errors": []
+}

@@ -37,6 +37,8 @@ export function ThoughtScene({
   useEffect(() => {
     const el = host.current;
     if (!el) return;
+    delete el.dataset.failed;
+    delete el.dataset.ready;
     let renderer: THREE.WebGLRenderer;
     try {
       renderer = new THREE.WebGLRenderer({
@@ -45,6 +47,7 @@ export function ThoughtScene({
         powerPreference: "low-power",
       });
     } catch {
+      el.dataset.failed = "true";
       return;
     }
     renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
@@ -222,6 +225,7 @@ export function ThoughtScene({
       );
       camera.lookAt(aim);
       renderer.render(scene, camera);
+      if (!renderer.getContext().isContextLost()) el.dataset.ready = "true";
     };
     const resize = () => {
       const { width, height } = el.getBoundingClientRect();
@@ -282,10 +286,19 @@ export function ThoughtScene({
     const lost = (event: Event) => {
       event.preventDefault();
       failed = true;
+      delete el.dataset.ready;
       el.dataset.failed = "true";
       cancelAnimationFrame(frame);
     };
     renderer.domElement.addEventListener("webglcontextlost", lost);
+    const restored = () => {
+      failed = false;
+      delete el.dataset.failed;
+      last = 0;
+      resize();
+      frame = requestAnimationFrame(loop);
+    };
+    renderer.domElement.addEventListener("webglcontextrestored", restored);
     resize();
     report();
     frame = requestAnimationFrame(loop);
@@ -296,6 +309,7 @@ export function ThoughtScene({
       el.removeEventListener("pointermove", move);
       el.removeEventListener("pointerleave", leave);
       renderer.domElement.removeEventListener("webglcontextlost", lost);
+      renderer.domElement.removeEventListener("webglcontextrestored", restored);
       cubeGeometry.dispose();
       cubeMaterial.dispose();
       ghostMaterial.dispose();
@@ -307,6 +321,7 @@ export function ThoughtScene({
       gridMaterial.dispose();
       renderer.dispose();
       renderer.domElement.remove();
+      delete el.dataset.ready;
     };
   }, [onProgress]);
   return <div ref={host} className="thought-scene" aria-hidden="true" />;

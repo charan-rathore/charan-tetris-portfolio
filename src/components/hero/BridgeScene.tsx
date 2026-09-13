@@ -9,9 +9,11 @@ export function BridgeScene({ color, mode }: { color: string; mode: number }) {
   useEffect(() => {
     const el = host.current;
     if (!el) return;
+    delete el.dataset.failed;
+    delete el.dataset.ready;
     let renderer: THREE.WebGLRenderer;
     try { renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "low-power" }); }
-    catch { return; }
+    catch { el.dataset.failed = "true"; return; }
     renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
     el.appendChild(renderer.domElement);
     const scene = new THREE.Scene();
@@ -41,15 +43,16 @@ export function BridgeScene({ color, mode }: { color: string; mode: number }) {
     const grid = new THREE.GridHelper(14, 14, 0x36526b, 0x172333); grid.position.y = -1.55; scene.add(grid);
     const resize = () => { const {width,height} = el.getBoundingClientRect(); renderer.setSize(width,height); camera.aspect = width/Math.max(height,1); camera.updateProjectionMatrix(); };
     const observer = new ResizeObserver(resize); observer.observe(el); resize();
-    let visible = true, frame = 0, previous = 0;
+    let visible = true, frame = 0, previous = 0, elapsed = 0, failed = false;
     const visibility = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; }); visibility.observe(el);
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
-    const began = performance.now();
     const render = (now: number) => {
+      if (failed) return;
       frame = requestAnimationFrame(render);
-      if (!visible || document.hidden || now - previous < 32) return;
+      if (!visible || document.hidden) { previous = now; return; }
+      if (now - previous < 32) return;
+      elapsed += previous ? Math.min(now - previous, 100) / 1000 : 0;
       previous = now;
-      const elapsed = (now-began)/1000;
       blocks.forEach((b,i) => { const fall = reduced.matches ? 0 : Math.max(0, 1 - Math.max(0, elapsed - i*.07)/.75); b.position.y = positions[i][1]-1 + fall*fall*7; });
       root.rotation.y = -.12;
       const progress = reduced.matches ? .7 : ((elapsed*.23)%1);
@@ -59,11 +62,14 @@ export function BridgeScene({ color, mode }: { color: string; mode: number }) {
       material.emissiveIntensity = reduced.matches ? .3 : .3 + Math.sin(elapsed*2)*.15;
       exitMaterial.emissiveIntensity = reduced.matches ? .7 : .6+Math.max(0,Math.sin(elapsed*3))*.9;
       renderer.render(scene,camera);
+      if (!renderer.getContext().isContextLost()) el.dataset.ready = "true";
     };
     frame = requestAnimationFrame(render);
-    const lost = (event: Event) => { event.preventDefault(); el.dataset.failed = "true"; cancelAnimationFrame(frame); };
+    const lost = (event: Event) => { event.preventDefault(); failed = true; delete el.dataset.ready; el.dataset.failed = "true"; cancelAnimationFrame(frame); };
+    const restored = () => { failed = false; delete el.dataset.failed; previous = 0; resize(); frame = requestAnimationFrame(render); };
     renderer.domElement.addEventListener("webglcontextlost", lost);
-    return () => { cancelAnimationFrame(frame); observer.disconnect(); visibility.disconnect(); renderer.domElement.removeEventListener("webglcontextlost",lost); geometry.dispose(); material.dispose(); dim.dispose(); pathGeometry.dispose(); pathMaterial.dispose(); signalGeometry.dispose(); signalMaterial.dispose(); exitGeometry.dispose(); exitMaterial.dispose(); grid.geometry.dispose(); (grid.material as THREE.Material).dispose(); renderer.dispose(); renderer.domElement.remove(); };
+    renderer.domElement.addEventListener("webglcontextrestored", restored);
+    return () => { cancelAnimationFrame(frame); observer.disconnect(); visibility.disconnect(); renderer.domElement.removeEventListener("webglcontextlost",lost); renderer.domElement.removeEventListener("webglcontextrestored",restored); geometry.dispose(); material.dispose(); dim.dispose(); pathGeometry.dispose(); pathMaterial.dispose(); signalGeometry.dispose(); signalMaterial.dispose(); exitGeometry.dispose(); exitMaterial.dispose(); grid.geometry.dispose(); (grid.material as THREE.Material).dispose(); renderer.dispose(); renderer.domElement.remove(); delete el.dataset.ready; };
   }, [color, mode]);
   return <div className="bridge-render" ref={host} aria-hidden="true" />;
 }
