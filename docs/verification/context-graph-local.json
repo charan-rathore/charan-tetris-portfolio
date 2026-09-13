@@ -1,0 +1,11 @@
+{
+  "url": "http://localhost:3005",
+  "fiveLayerTraversal": true,
+  "sharedToolBranches": true,
+  "evidenceUrl": true,
+  "search": true,
+  "readingView": true,
+  "mobileOverflow": false,
+  "touchTargets": "at least 44px",
+  "errors": []
+}
