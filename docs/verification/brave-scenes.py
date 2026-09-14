@@ -22,21 +22,9 @@ ev('window.scrollTo({top:0,behavior:"instant"})')
 assert ev('!!navigator.brave')
 time.sleep(2)
 result = {'url': ev('location.href'), 'browser': 'Brave'}
-result['graphics'] = ev('''(async()=>{
-  const results=[];
-  for(const selector of ['.bridge-render','.thought-scene']) {
-    const el=document.querySelector(selector);
-    const fallback=document.querySelector(selector==='.bridge-render'?'.mcp-diagram':'.thought-fallback');
-    const ready=el.dataset.ready==='true';
-    const ext=el.querySelector('canvas').getContext('webgl2').getExtension('WEBGL_lose_context');
-    ext.loseContext(); await new Promise(r=>setTimeout(r,500));
-    const loss=el.dataset.failed==='true' && getComputedStyle(fallback).display!=='none';
-    ext.restoreContext(); await new Promise(r=>setTimeout(r,1000));
-    results.push({selector,ready,loss,restored:el.dataset.ready==='true'&&!el.dataset.failed});
-  }
-  return results;
-})()''')
-assert all(all(row[key] for key in ['ready', 'loss', 'restored']) for row in result['graphics'])
+result['graphics'] = ev('[...document.querySelectorAll(".vector-opening")].map(el=>({renderer:el.dataset.renderer,svg:!!el.querySelector("svg"),canvas:!!el.querySelector("canvas")}))')
+assert len(result['graphics']) == 2
+assert all(row['renderer'] == 'isometric-svg' and row['svg'] and not row['canvas'] for row in result['graphics'])
 for mode in ['ANALYZE', 'CONNECT', 'BUILD']:
     run('find', 'role', 'button', 'click', '--name', mode, '--exact')
     time.sleep(.4)

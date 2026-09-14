@@ -27,6 +27,7 @@ const siteUrl = "https://charan-tetris-portfolio.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  other: { "build-revision": process.env.VERCEL_GIT_COMMIT_SHA || "local" },
   alternates: { canonical: siteUrl },
   title: "Charan Rathore · Systris",
   description:

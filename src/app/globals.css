@@ -2218,3 +2218,12 @@ button, a, input, textarea, summary { scroll-margin-top: calc(var(--header-h) + 
 
 .thought-playfield { left:-9%; top:38px; width:76%; height:calc(100% - 84px); }
 .thought-controls .thought-next { margin:0 auto 0 0; }
+
+/* One opening design in both hardware-accelerated and software browsers. */
+.vector-opening svg { display:block; width:100%; height:100%; overflow:visible; font-family:var(--font-mono); }
+.bridge-current { animation:bridge-flow 2s linear infinite; }
+.bridge-core { animation:bridge-arrive .7s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes bridge-flow { to { stroke-dashoffset:-100; } }
+@keyframes bridge-arrive { from { transform:translateY(-35px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+@media(prefers-reduced-motion:reduce) { .bridge-current,.bridge-core { animation:none; } }
+.thought-playfield { left:0; width:58%; }
