@@ -7,8 +7,9 @@ export function ContactForm() {
   const [pending, setPending] = useState(false);
   const began = useRef(0);
   const messageRef = useRef<HTMLTextAreaElement>(null);
+  const lastPrompt = useRef("");
   useEffect(() => {
-    const onPrompt = (event: Event) => { const message = (event as CustomEvent).detail; if (typeof message !== "string" || !messageRef.current) return; if (!messageRef.current.value.trim()) messageRef.current.value = message; messageRef.current.focus({preventScroll:true}); };
+    const onPrompt = (event: Event) => { const message = (event as CustomEvent).detail; if (typeof message !== "string" || !messageRef.current) return; if (!messageRef.current.value.trim() || messageRef.current.value === lastPrompt.current) { messageRef.current.value = message; lastPrompt.current = message; } messageRef.current.focus({preventScroll:true}); };
     window.addEventListener("contact-prompt",onPrompt);return () => window.removeEventListener("contact-prompt",onPrompt);
   }, []);
   async function submit(event: FormEvent<HTMLFormElement>) {

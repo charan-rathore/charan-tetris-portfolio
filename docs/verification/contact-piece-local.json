@@ -1,0 +1,7 @@
+{
+  "url": "http://localhost:3005",
+  "selectionRotationAndActualPrefill": "all three conversations pass",
+  "mobileOverflow": false,
+  "touchTargets": "44px minimum",
+  "errors": []
+}

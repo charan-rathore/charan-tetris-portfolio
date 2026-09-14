@@ -2227,3 +2227,16 @@ button, a, input, textarea, summary { scroll-margin-top: calc(var(--header-h) + 
 @keyframes bridge-arrive { from { transform:translateY(-35px); opacity:0; } to { transform:translateY(0); opacity:1; } }
 @media(prefers-reduced-motion:reduce) { .bridge-current,.bridge-core { animation:none; } }
 .thought-playfield { left:0; width:58%; }
+/* A closing move, with a real selection and a matching space in the board. */
+.conversation-game { overflow:hidden; }
+.conversation-game .conversation-board { display:block; width:100%; max-width:440px; margin:-12px auto -12px; }
+.conversation-board svg { display:block; width:100%; height:auto; font-family:var(--font-mono); }
+.conversation-falling { transform:translateY(-45px); animation:conversation-hover 3s ease-in-out infinite; }
+.conversation-falling.is-landed { animation:none; transform:translateY(0); transition:transform .5s cubic-bezier(.5,0,.9,.6); }
+@keyframes conversation-hover { 0%,100% { transform:translateY(-45px); } 50% { transform:translateY(-54px); } }
+.conversation-options button[aria-pressed=true] { background:#162238; border-color:var(--purple); }
+.conversation-game .conversation-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+.conversation-game .conversation-actions button { min-height:48px; padding:10px 14px; width:auto; flex:1; justify-content:center; font-size:12px; }
+.conversation-game .conversation-actions button:last-child { background:var(--yellow); color:#080b12; border-color:var(--yellow); flex:2; }
+.conversation-game.is-compact .conversation-board { max-width:320px; }
+@media(prefers-reduced-motion:reduce) { .conversation-falling { animation:none; } .conversation-falling.is-landed { transition:none; } }
