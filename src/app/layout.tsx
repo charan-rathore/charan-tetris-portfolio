@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
-const geistSans = localFont({
-  src: "./fonts/geist-latin.woff2",
+const oxanium = localFont({
+  src: "./fonts/oxanium-variable.ttf",
   variable: "--font-geist-sans",
-  weight: "100 900",
+  weight: "200 800",
   display: "swap",
 });
 
@@ -50,7 +50,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${pixel.variable} h-full antialiased`}
+      className={`${oxanium.variable} ${geistMono.variable} ${pixel.variable} h-full antialiased`}
     >
       <body>
         {children}

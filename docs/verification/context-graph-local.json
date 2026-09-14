@@ -1,11 +1,12 @@
 {
   "url": "http://localhost:3005",
-  "fiveLayerTraversal": true,
-  "sharedToolBranches": true,
+  "progressiveStoryTraversal": true,
   "evidenceUrl": true,
-  "search": true,
+  "weightedEdges": true,
+  "pagination": true,
   "readingView": true,
   "mobileOverflow": false,
+  "nodeOverlap": false,
   "touchTargets": "at least 44px",
   "errors": []
 }

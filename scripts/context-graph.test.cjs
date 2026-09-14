@@ -2,7 +2,7 @@
 const test = require('node:test'), assert = require('node:assert/strict'), fs = require('node:fs'), ts = require('typescript');
 require.extensions['.ts'] = (mod, file) => mod._compile(ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText, file);
 const { contextGraph, childrenOf, parentsOf, pathTo } = require('../src/data/context-graph.ts');
-const { projects, TECH_LOGOS } = require('../src/data/portfolio.ts');
+const { projects } = require('../src/data/portfolio.ts');
 
 test('every context node has an unbroken, labeled path through all five layers to evidence', () => {
   const byId = new Map(contextGraph.nodes.map(n => [n.id, n]));
@@ -23,13 +23,17 @@ test('every context node has an unbroken, labeled path through all five layers t
   }
 });
 
-test('the graph retains every project and technology from the portfolio, with shared nodes', () => {
+test('every project explains its choice, result and evidence with honest importance weights', () => {
   for (const p of projects) {
     const node = contextGraph.nodes.find(n => n.label === p.title && n.depth === 1);
     assert.ok(node);
-    assert.deepEqual(childrenOf(node.id).map(n => n.node.label).sort(), p.tech.map(t => t.name).sort());
+    const choice = childrenOf(node.id)[0].node;
+    assert.equal(choice.depth, 2);
+    assert.deepEqual(choice.tools, p.tech.map(t => t.name));
+    assert.ok(choice.detail.length > 60);
+    const impact = childrenOf(choice.id)[0].node;
+    assert.equal(impact.depth, 3);
+    assert.ok(childrenOf(impact.id).some(e => e.node.href === p.github));
   }
-  for (const t of TECH_LOGOS) assert.ok(contextGraph.nodes.some(n => n.depth === 2 && n.label === t.name), t.name);
-  const python = contextGraph.nodes.filter(n => n.depth === 2 && n.label === 'Python');
-  assert.equal(python.length, 1); assert.ok(parentsOf(python[0].id).length >= 5);
+  for (const edge of contextGraph.links) assert.ok([1, 2, 3].includes(edge.importance));
 });

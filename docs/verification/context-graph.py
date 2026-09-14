@@ -11,31 +11,36 @@ def run(*args):
     d=r.get('data',{});return d.get('result',d)
 def ev(js):return run('eval',js)
 def choose(label):
-    # Click a real UI control by its exact displayed title.
-    js='''(()=>{const el=[...document.querySelectorAll('.well-choices button')].find(el=>el.querySelector('strong').textContent===LABEL);if(!el)throw new Error('Choice missing');el.click()})()'''.replace('LABEL',json.dumps(label))
-    ev(js);time.sleep(.2)
-run('set','viewport','1440','1100');run('open',url);time.sleep(1)
-ev('document.querySelector(".well-console").scrollIntoView({behavior:"instant"})')
-assert not ev('!!document.querySelector(".tech-marquee")')
-choose('AI with evidence');choose('IntelliRAG');choose('Python')
-assert 'context in Agentic Finance Advisor' in ev('document.querySelector(".well-choices").innerText')
-choose('Expose confidence')
-assert ev('document.querySelector(".well-evidence").href')=='https://github.com/charan-rathore/agentic-finance-advisor'
-assert 'LAYER 05' in ev('document.querySelector(".well-depth-label").innerText')
-ev('document.querySelector(".well-console").scrollIntoView({behavior:"instant"})');run('screenshot',str(out/'desktop.png'))
-run('fill','.well-search input','Redis');time.sleep(.2)
-assert 'Redis' in ev('document.querySelector(".well-results").innerText')
-run('click','.well-results button');time.sleep(.2)
-assert 'Check the evidence' in ev('document.querySelector(".well-choices").innerText')
-run('click','.well-toolbar button');time.sleep(.2)
-assert ev('getComputedStyle(document.querySelector(".well-visual")).display')=='none'
-run('click','.well-toolbar button')
+    ev("(()=>{const el=[...document.querySelectorAll('.dial-node')].find(el=>el.querySelector('strong').textContent==="+json.dumps(label)+");if(!el)throw new Error('Choice missing');el.click()})()")
+    time.sleep(.15)
+run('set','viewport','1440','1000');run('open',url);time.sleep(.5)
+assert ev('!!navigator.brave')
+assert ev('document.querySelectorAll(".dial-node").length')==3
+assert not ev('!!document.querySelector(".well-plane,.tech-marquee")')
+choose('Trust the answer');choose('IntelliRAG');choose('Keep evidence in reach')
+assert 'FastAPI' in ev('document.querySelector(".dial-story").innerText')
+choose('An answer you can check')
+assert ev('new Set([...document.querySelectorAll("[data-story-edge]")].map(e=>e.getAttribute("stroke-width"))).size')==2
+choose('Inspect the code')
+assert ev('document.querySelector(".dial-open").href')=='https://github.com/charan-rathore/IntelliRAG'
+assert ev('document.querySelectorAll(".dial-trail [aria-current]").length')==1
+assert ev('document.querySelectorAll(".dial-node").length')==0
+run('click','.dial-trail button');choose('Find the signal')
+first=ev('[...document.querySelectorAll(".dial-node")].map(e=>e.textContent)')
+run('click','.dial-legend button')
+assert first!=ev('[...document.querySelectorAll(".dial-node")].map(e=>e.textContent)')
+ev('document.querySelector(".dial-layout").scrollIntoView({behavior:"instant",block:"center"})')
+run('screenshot',str(out/'desktop.png'))
+run('click','.dial-heading button')
+assert ev('!!document.querySelector(".is-reading")')
+run('click','.dial-heading button')
 run('set','viewport','390','844')
 if ev('location.href')=='about:blank':run('open',url)
-time.sleep(.4)
-ev('document.querySelector(".well-console").scrollIntoView({behavior:"instant"})')
+run('click','.dial-trail button')
+ev('document.querySelector(".dial-layout").scrollIntoView({behavior:"instant",block:"start"})')
 assert ev('document.documentElement.scrollWidth<=innerWidth')
-assert ev('[...document.querySelectorAll(".well-node,.well-choices button,.well-depths button")].every(el=>{const r=el.getBoundingClientRect();return r.width>=44&&r.height>=44})')
+assert ev('[...document.querySelectorAll(".dial-node")].every(el=>{const r=el.getBoundingClientRect();return r.width>=44&&r.height>=44})')
+assert ev('''(()=>{const r=[...document.querySelectorAll('.dial-node')].map(e=>e.getBoundingClientRect());return r.every((a,i)=>r.every((b,j)=>i===j||a.right<=b.left||b.right<=a.left||a.bottom<=b.top||b.bottom<=a.top))})()''')
 run('screenshot',str(out/'mobile.png'))
-result={'url':url,'fiveLayerTraversal':True,'sharedToolBranches':True,'evidenceUrl':True,'search':True,'readingView':True,'mobileOverflow':False,'touchTargets':'at least 44px','errors':run('errors').get('errors',[])}
+result={'url':url,'progressiveStoryTraversal':True,'evidenceUrl':True,'weightedEdges':True,'pagination':True,'readingView':True,'mobileOverflow':False,'nodeOverlap':False,'touchTargets':'at least 44px','errors':run('errors').get('errors',[])}
 assert not result['errors'];(out/'results.json').write_text(json.dumps(result,indent=2));print(json.dumps(result,indent=2))
