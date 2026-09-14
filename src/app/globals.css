@@ -2240,3 +2240,9 @@ button, a, input, textarea, summary { scroll-margin-top: calc(var(--header-h) + 
 .conversation-game .conversation-actions button:last-child { background:var(--yellow); color:#080b12; border-color:var(--yellow); flex:2; }
 .conversation-game.is-compact .conversation-board { max-width:320px; }
 @media(prefers-reduced-motion:reduce) { .conversation-falling { animation:none; } .conversation-falling.is-landed { transition:none; } }
+.contact-layout .contact-form { display:flex; flex-direction:column; align-self:start; }
+.contact-constellation { position:relative; flex:none; height:180px; overflow:hidden; margin-top:16px; background:radial-gradient(ellipse at 40% 80%,#06335044,transparent 65%); }
+.contact-constellation svg { position:absolute; inset:auto 0 0; width:100%; height:auto; }
+.contact-star-piece { animation:contact-orbit 5s ease-in-out infinite alternate; }
+@keyframes contact-orbit { to { transform:translateY(-12px); } }
+@media(prefers-reduced-motion:reduce) { .contact-star-piece { animation:none; } }
