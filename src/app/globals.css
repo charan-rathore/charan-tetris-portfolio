@@ -2246,3 +2246,15 @@ button, a, input, textarea, summary { scroll-margin-top: calc(var(--header-h) + 
 .contact-star-piece { animation:contact-orbit 5s ease-in-out infinite alternate; }
 @keyframes contact-orbit { to { transform:translateY(-12px); } }
 @media(prefers-reduced-motion:reduce) { .contact-star-piece { animation:none; } }
+
+/* A compact end-game: the board stays legible without a tall invitation card. */
+.conversation-game { gap:12px; padding:24px; justify-content:flex-start; }
+.conversation-game h3 { font-size:clamp(26px,2.3vw,34px); max-width:17ch; }
+.conversation-game>p { line-height:1.5; }
+.conversation-game .conversation-board { max-width:270px; margin:-5px auto -9px; }
+.conversation-game .conversation-options { gap:7px; }
+.conversation-game .conversation-options button { padding:8px 12px; min-height:48px; gap:10px; font-size:13px; }
+.conversation-game .conversation-actions { margin-top:2px; }
+.conversation-game .conversation-note { font-size:11px; line-height:1.5; }
+.conversation-options b { display:flex; align-items:center; }
+.conversation-game.is-compact .conversation-board { max-width:245px; }

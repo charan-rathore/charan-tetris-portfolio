@@ -30,7 +30,7 @@ export function ConversationStarter({ compact = false }: { compact?: boolean }) 
   return <aside className={`conversation-starter conversation-game ${compact ? 'is-compact' : ''}`}>
     <span className="pixel-label accent-yellow">YOUR IDEA · NEXT IN QUEUE</span>
     <h3>The next piece could be yours.</h3>
-    <p>Choose a starting point. Give it a turn. Let’s see where it fits.</p>
+    <p>Pick a piece. Rotate it. Drop it into your next conversation.</p>
     <div className="conversation-board" aria-label={`Conversation board: ${item.title}`}>
       <svg viewBox="0 0 400 240" aria-hidden="true">
         <path d="M140 66 303 147 199 199 36 118V132L199 213 303 161V147M199 199V213" fill="#0b1927" stroke="#38556d" />
@@ -38,10 +38,10 @@ export function ConversationStarter({ compact = false }: { compact?: boolean }) 
         <g className={`conversation-falling ${landed ? 'is-landed' : ''}`} style={{ color:piece.color }}>
           {cells.map(([x, y], i) => <IsoBlock key={i} {...point(x, y)} color={piece.color} size={17} height={13} />)}
         </g>
-        <text x="370" y="220" textAnchor="end" fill={piece.color} fontSize="10" fontFamily="inherit">{landed ? 'YOUR MOVE. LET’S TALK.' : 'ONE SPACE. YOUR POSSIBILITY.'}</text>
+        <text x="370" y="220" textAnchor="end" fill={piece.color} fontSize="10" fontFamily="inherit">{landed ? 'LINE COMPLETE. MESSAGE READY.' : 'ONE SPACE. YOUR POSSIBILITY.'}</text>
       </svg>
     </div>
-    <div className="conversation-options" role="group" aria-label="Choose a conversation">{prompts.map((p, i) => <button key={p.title} aria-pressed={i === selected} onClick={() => reset(i)}><b aria-hidden="true" style={{ color:PIECES[p.piece].color }}>{p.piece}</b><span>{p.title}</span><i aria-hidden="true">{i === selected ? '◆' : '+'}</i></button>)}</div>
+    <div className="conversation-options" role="group" aria-label="Choose a conversation">{prompts.map((p, i) => <button key={p.title} aria-pressed={i === selected} onClick={() => reset(i)}><b aria-hidden="true"><svg viewBox="0 0 56 44" width="42" height="34">{PIECES[p.piece].rotations[0].map(([x,y],j)=><rect key={j} x={x*12+2} y={y*12+2} width="10" height="10" fill={PIECES[p.piece].color} />)}</svg></b><span>{p.title}</span><i aria-hidden="true">{i === selected ? '◆' : '+'}</i></button>)}</div>
     <div className="conversation-actions"><button onClick={() => { reset(); setRotation((rotation + 1) % 4); }} aria-label="Rotate your conversation piece">↻ Rotate</button><button onClick={landed ? () => reset() : drop}>{landed ? 'Try another fit ↶' : 'Drop & start a message ↓'}</button></div>
     <p className="conversation-note" role="status">{landed ? 'The form is ready. Your own draft stays safe; send when ready.' : 'A starting message, ready for your own words.'}</p>
   </aside>;
