@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
-const oxanium = localFont({
-  src: "./fonts/oxanium-variable.ttf",
+const chakra = localFont({
+  src: [{ path: "./fonts/chakra-petch-regular.ttf", weight: "400" }, { path: "./fonts/chakra-petch-semibold.ttf", weight: "600" }],
   variable: "--font-geist-sans",
-  weight: "200 800",
   display: "swap",
 });
 
@@ -34,7 +33,7 @@ export const metadata: Metadata = {
     "Systris: tetris with systems. Analyst at MiQ across MENA markets. A playable Tetris portfolio · IntelliRAG, memoRABLE, ThermoSense, and more.",
   openGraph: {
     title: "Charan Rathore · Systris",
-    description: "I am the MCP between Charan and the world",
+    description: "I build systems that make the pieces click.",
     type: "website",
     url: siteUrl,
   },
@@ -50,7 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${oxanium.variable} ${geistMono.variable} ${pixel.variable} h-full antialiased`}
+      className={`${chakra.variable} ${geistMono.variable} ${pixel.variable} h-full antialiased`}
     >
       <body>
         {children}

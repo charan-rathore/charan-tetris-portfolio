@@ -155,9 +155,9 @@ export function Portfolio() {
           </div>
           <h1>
             <span className="sr-only">Charan Rathore · </span>
-            I am the MCP between Charan and the world
+            I build systems that make the pieces click.
           </h1>
-          <p className="hero-intro">A little context. A lot of curiosity. Connecting ideas to systems, data to decisions, and people to what comes next.</p>
+          <p className="hero-intro">I’m Charan. I build tools that connect evidence, turn data into decisions, and make complex work easier to understand. Explore the pieces behind them.</p>
           <div className="hero-actions">
             <button
               type="button"
