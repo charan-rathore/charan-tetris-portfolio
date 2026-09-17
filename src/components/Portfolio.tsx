@@ -17,6 +17,7 @@ import { PIECES, PieceName } from "./tetris/types";
 import { projects, experience, RESUME_URL } from "../data/portfolio";
 import { KnowledgeWell } from "./graph/KnowledgeWell";
 import { WorkingSystem } from "./WorkingSystem";
+import { ContactCoin } from "./ContactCoin";
 
 function PieceGlyph({ name }: { name: PieceName }) {
   const cells = PIECES[name].rotations[0];
@@ -63,6 +64,7 @@ function scrollToId(id: string) {
 }
 
 export function Portfolio() {
+  const [ambient, setAmbient] = useState(true);
   const [time, setTime] = useState("");
   const [activeSection, setActiveSection] = useState("play");
   useEffect(() => {
@@ -101,7 +103,7 @@ export function Portfolio() {
   }, []);
 
   return (
-    <main>
+    <main data-ambient={ambient ? 'on' : 'paused'}>
       <a className="skip-link" href="#work">Skip to projects</a>
       <div className="scanlines" aria-hidden="true" />
 
@@ -141,6 +143,7 @@ export function Portfolio() {
             ANALYST @ MiQ · MENA
           </a>
           <span className="clock">{time || "--:--"} IST</span>
+          <button className="ambient-toggle" type="button" aria-pressed={!ambient} onClick={()=>setAmbient(!ambient)} aria-label={ambient?'Pause ambient motion':'Resume ambient motion'}>{ambient?'Ⅱ':'▷'}</button>
         </div>
       </header>
 
@@ -185,7 +188,7 @@ export function Portfolio() {
         <div className="stage-heading">
           <span className="pixel-label accent-cyan">STAGE 02 · THE PROJECT STACK</span>
           <h2>Watch the work fall into place.</h2>
-          <p>Seven projects. Seven pieces. Scroll to build the stack — every project opens automatically.</p>
+          <p>Seven projects. Seven pieces. Scroll to build the stack. every project opens automatically.</p>
         </div>
 
         <div className="campaign-strip"><span className="pixel-label accent-cyan">AUTO PLAY · 7 LEVELS</span><span>Scroll to advance ↓</span><a href="#bonus-game" onClick={() => scrollToId("play")}>PLAY FOR BONUS INTEL ↗</a></div>
@@ -340,6 +343,7 @@ export function Portfolio() {
       </section>
 
       <section className="contact-section" id="contact">
+        <ContactCoin />
         <span className="pixel-label accent-yellow">STAGE 04 · CONTINUE?</span>
         <h2>
           INSERT COIN.
@@ -351,13 +355,15 @@ export function Portfolio() {
           problem. Usually reply within 24 hours.
         </p>
         <a
-          className="contact-cta contact-cta-mail"
-          href="mailto:ra7hore.charan@gmail.com"
+          className="contact-cta contact-cta-mail contact-gmail-icon"
+          href="https://mail.google.com/mail/?view=cm&fs=1&to=ra7hore.charan%40gmail.com"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Write to Charan in Gmail"
+          title="Write to Charan in Gmail"
           onClick={() => playUi()}
         >
-          <Image src="/logos/gmail.svg" alt="" width={22} height={22} />
-          <span>ra7hore.charan@gmail.com</span>
-          <b>↗</b>
+          <Image src="/logos/gmail.svg" alt="" width={32} height={32} />
         </a>
         <div className="contact-layout"><ConversationStarter /><ContactForm /></div>
         <div className="contact-links">

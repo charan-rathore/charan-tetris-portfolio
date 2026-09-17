@@ -1,0 +1,15 @@
+{
+  "url": "http://localhost:3008",
+  "font": "plex, \"plex Fallback\", system-ui, sans-serif",
+  "widths": [
+    1440,
+    768,
+    390
+  ],
+  "labelsClear": true,
+  "liveClock": true,
+  "coinFocus": true,
+  "gmailIconOnly": true,
+  "ambientPause": true,
+  "errors": []
+}

@@ -2286,3 +2286,42 @@ button, a, input, textarea, summary { scroll-margin-top: calc(var(--header-h) + 
 .working-detail dd { margin:0; color:#cfdae9; font-size:15px; line-height:1.65; }
 .working-detail a { display:inline-flex; min-height:44px; align-items:center; color:#efdba9; font-size:14px; }
 @media(max-width:760px) { .working-system { grid-template-columns:1fr; gap:24px; margin-bottom:60px; } .working-detail { min-height:0; padding:22px; } }
+
+/* Quiet star field: distant points at the edges, clear reading surfaces. */
+body { background:radial-gradient(ellipse at 6% 8%,#18344c44,transparent 38%),radial-gradient(ellipse at 96% 38%,#3a24532b,transparent 35%),radial-gradient(circle at 17px 31px,#aac3e95c 0 .7px,transparent 1.1px),radial-gradient(circle at 113px 83px,#839cbc45 0 .7px,transparent 1px),#06080e; background-size:100% 1800px,100% 2600px,347px 293px,229px 379px,auto; }
+.scanlines { opacity:.12; }
+.hero--mcp { gap:32px; align-items:start; padding-bottom:28px; }
+.hero--mcp h1 { font-weight:600; letter-spacing:-.035em; line-height:1.07; }
+.hero-intro { font-size:17px; line-height:1.65; max-width:48ch; }
+.mcp-console { background:linear-gradient(150deg,#111b2deb,#090d17ed); }
+.mcp-bridge { height:auto; aspect-ratio:2 / 1; margin:4px 8px 0; background:radial-gradient(ellipse at 50% 50%,color-mix(in srgb,var(--signal) 11%,transparent),transparent 66%); }
+.bridge-render svg { display:block; width:100%; height:100%; }
+.bridge-choices { display:grid; grid-template-columns:1fr 1fr 1.2fr; gap:7px; margin:0 16px 14px; }
+.bridge-choices button { display:flex; flex-direction:column; position:relative; text-align:left; min-height:78px; padding:12px 10px; background:#0b1320; border:1px solid #283449; color:#b7c4d8; cursor:pointer; }
+.bridge-choices small { font:10px var(--font-mono); color:var(--port-color); }
+.bridge-choices span { font:500 15px/1.25 var(--font-sans); margin-top:7px; }
+.bridge-choices b { position:absolute; right:9px; top:8px; color:var(--port-color); font-weight:400; }
+.bridge-choices button[aria-pressed=true] { border-color:var(--port-color); background:color-mix(in srgb,var(--port-color) 10%,#0b1320); color:#f0f4fc; }
+.bridge-choices button:focus-visible { outline:2px solid var(--port-color); outline-offset:3px; }
+.mcp-output { margin:0 16px; padding:15px; background:#0a101cbd; }
+.mcp-output p { font-size:14px; line-height:1.6; }
+.mcp-console-foot { font-size:8px; padding:12px 16px; }
+.ambient-toggle { width:36px; min-height:36px; border:1px solid var(--line); cursor:pointer; color:#a8bdd7; }
+[data-ambient=paused] .ambient-motion,[data-ambient=paused] .bridge-current,[data-ambient=paused] .bridge-core { animation-play-state:paused; }
+.contact-gmail-icon { width:64px; height:64px; min-width:64px; padding:14px!important; justify-content:center; border-radius:50%; background:#121b2a; border:1px solid #3e4d66; }
+.contact-gmail-icon:hover { border-color:#efce78; background:#1a2639; }
+.contact-coin { display:flex; flex-direction:column; align-items:center; margin:0 auto 22px; gap:12px; cursor:pointer; border:0; color:#efd185; }
+.coin-scene { display:block; width:96px; height:96px; perspective:600px; }
+.coin-object { display:block; position:relative; width:96px; height:96px; transform-style:preserve-3d; animation:coin-turn 14s linear infinite; }
+.coin-front,.coin-back,.coin-rim { display:flex; position:absolute; inset:0; border-radius:50%; backface-visibility:hidden; align-items:center; justify-content:center; }
+.coin-front,.coin-back { background:radial-gradient(circle at 30% 25%,#ffe8a1,#c49235 65%,#7f541b); border:5px double #a57428; color:#654012; font:600 32px var(--font-sans); box-shadow:inset 0 0 0 3px #f8d67b; transform:translateZ(5px); }
+.coin-front { flex-direction:column; text-shadow:0 1px #fff1b3; }
+.coin-front span { font:7px var(--font-mono); letter-spacing:1px; }
+.coin-back { transform:rotateY(180deg) translateZ(5px); }
+.coin-rim { background:#aa7b2a; border:2px dashed #f5ca66; }
+.contact-coin:focus-visible { outline:2px solid #efd185; outline-offset:8px; }
+.contact-coin:hover .coin-object { animation-play-state:paused; }
+.contact-coin.is-inserted .coin-object { animation:none; transform:rotateY(25deg) rotateX(15deg); }
+@keyframes coin-turn { from {transform:rotateX(15deg) rotateY(0)} to {transform:rotateX(15deg) rotateY(360deg)} }
+@media(max-width:850px) { .hero--mcp { gap:24px; } .mcp-console { width:100%; } .bridge-choices { margin-inline:12px; gap:6px; } .bridge-choices span {font-size:14px;} .mcp-console-foot {flex-wrap:wrap;} }
+@media(prefers-reduced-motion:reduce) { .ambient-motion,.bridge-current,.bridge-core {animation:none!important;} }

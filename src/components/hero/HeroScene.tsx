@@ -144,7 +144,7 @@ export function HeroScene() {
     blocks.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     group.add(blocks);
 
-    // Far silhouettes — quiet atmosphere.
+    // Far silhouettes. quiet atmosphere.
     const farMaterial = new THREE.MeshBasicMaterial({
       color: "#101628",
       transparent: true,
@@ -159,7 +159,7 @@ export function HeroScene() {
     farMesh.position.z = -14;
     scene.add(farMesh);
 
-    // Mid “systems” layer — colorful pieces that fall, fail, and recover.
+    // Mid “systems” layer. colorful pieces that fall, fail, and recover.
     const midMaterial = new THREE.MeshStandardMaterial({
       roughness: 0.35,
       metalness: 0.2,
@@ -228,7 +228,7 @@ export function HeroScene() {
     const farDrifts = Array.from({ length: farCount }, (_, i) => spawnDrift(i, true));
     const midDrifts = Array.from({ length: midCount }, (_, i) => spawnDrift(i + 3, false));
 
-    // Upper “sky well” — uses empty space above CHARAN without crossing the name.
+    // Upper “sky well”. uses empty space above CHARAN without crossing the name.
     const skyCount = 10;
     const skyMesh = new THREE.InstancedMesh(
       blockGeometry,
@@ -255,7 +255,7 @@ export function HeroScene() {
       color: palette[index % palette.length].clone(),
     }));
 
-    // Side rails — further out, quieter framing (not competing with the word).
+    // Side rails. further out, quieter framing (not competing with the word).
     const railCells: { x: number; y: number; color: THREE.Color }[] = [];
     for (let side = -1; side <= 1; side += 2) {
       for (let row = 0; row < 9; row += 1) {
@@ -474,7 +474,7 @@ export function HeroScene() {
       farMesh.count = farIndex;
       farMesh.instanceMatrix.needsUpdate = true;
 
-      // Mid systems layer — side corridors only (never over the word).
+      // Mid systems layer. side corridors only (never over the word).
       let midIndex = 0;
       const nameClearance = cols / 2 + 4.2;
       for (const piece of midDrifts) {
@@ -525,7 +525,7 @@ export function HeroScene() {
       midMesh.instanceMatrix.needsUpdate = true;
       if (midMesh.instanceColor) midMesh.instanceColor.needsUpdate = true;
 
-      // Sky belt above CHARAN — fills empty headroom, stops above the word.
+      // Sky belt above CHARAN. fills empty headroom, stops above the word.
       let skyIndex = 0;
       for (const piece of skyDrifts) {
         piece.y -= piece.speed * dt;

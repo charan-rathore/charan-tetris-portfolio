@@ -235,7 +235,7 @@ export function GameplayPreview() {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
       dropAccum += dt;
-      // ~4.5 cells/sec — readable “ideal” pace
+      // ~4.5 cells/sec. readable “ideal” pace
       while (dropAccum >= 0.22) {
         dropAccum -= 0.22;
         hardishStep();

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
-const chakra = localFont({
-  src: [{ path: "./fonts/chakra-petch-regular.ttf", weight: "400" }, { path: "./fonts/chakra-petch-semibold.ttf", weight: "600" }],
+const plex = localFont({
+  src: [{ path: "./fonts/ibm-plex-sans-variable.ttf", weight: "100 700" }],
   variable: "--font-geist-sans",
   display: "swap",
 });
@@ -49,7 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${chakra.variable} ${geistMono.variable} ${pixel.variable} h-full antialiased`}
+      className={`${plex.variable} ${geistMono.variable} ${pixel.variable} h-full antialiased`}
     >
       <body>
         {children}

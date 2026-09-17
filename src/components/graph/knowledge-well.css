@@ -45,3 +45,16 @@
 .is-reading .dial-node { position:static; transform:none; width:100%; text-align:left; padding:15px; }
 @media(max-width:760px) { .context-dial { margin:56px auto; padding:0 20px; } .dial-heading { display:block; } .dial-heading button { padding-left:0; } .dial-layout { grid-template-columns:1fr; gap:12px; } .dial-node strong { font-size:12px; } .dial-node small { font-size:9px; } .dial-node { padding:8px 5px; } .dial-center strong { font-size:11px; } .dial-center span { font-size:7px; } .dial-story { padding:20px 0; } .dial-legend { font-size:10px; } }
 @media(prefers-reduced-motion:reduce) { .dial-piece { animation:none; } .dial-node { transition:none; } }
+.context-dial { margin:40px auto 48px; }
+.dial-layout { grid-template-columns:1fr 1fr; gap:32px; }
+.dial-stage { max-width:520px; margin-inline:auto; }
+.dial-heading h2 { font-weight:500; line-height:1.12; }
+.dial-center { top:54%; left:32%; width:36%; }
+.dial-center time { display:block; font:500 clamp(13px,2vw,22px)/1.4 var(--font-mono); color:#e4ecf8; font-variant-numeric:tabular-nums; margin-top:5px; }
+.dial-center small { display:block; font-size:10px; color:#8b9bb3; }
+.dial-orbit-spin { transform-origin:250px 250px; animation:dial-orbit-turn 120s linear infinite; }
+@keyframes dial-orbit-turn { to { transform:rotate(360deg); } }
+.dial-node { min-height:78px; box-shadow:0 8px 24px #0003; }
+.dial-node:active { background:color-mix(in srgb,var(--node-color) 18%,#0c1523); }
+@media(max-width:760px) { .dial-layout {grid-template-columns:1fr;gap:0;} .context-dial {margin-block:32px;} .dial-stage {width:100%;max-width:440px;} .dial-center time {font-size:14px;} .dial-center small {font-size:9px;} }
+@media(prefers-reduced-motion:reduce) { .dial-orbit-spin {animation:none;} }

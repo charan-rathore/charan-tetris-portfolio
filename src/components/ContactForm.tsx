@@ -24,7 +24,7 @@ export function ContactForm() {
       const response = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...body, elapsed: Date.now()-began.current }), signal: AbortSignal.timeout(15_000) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Your message could not be sent. Please try again.");
-      setStatus("Message accepted for delivery. Thank you — Charan can reply directly to your email.");
+      setStatus("Message accepted for delivery. Thank you. Charan can reply directly to your email.");
       form.reset(); began.current = 0;
     } catch (error) { setStatus(error instanceof Error && error.name !== "TimeoutError" ? error.message : "The connection timed out. Your message is still here; please retry."); }
     finally { setPending(false); }
