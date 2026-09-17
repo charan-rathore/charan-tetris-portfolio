@@ -8,11 +8,12 @@ import { HIDDEN_ROWS, ROWS, PIECES, pieceCells, type PieceName } from "./tetris/
 export function ProjectGameplay({ level, title, systems }: { level: number; title: string; systems: { name: string }[] }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const [replay, setReplay] = useState(0);
+  const [skip, setSkip] = useState(false);
   useEffect(() => {
     const el = canvas.current; const ctx = el?.getContext("2d");
     if (!el || !ctx) return;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
-    let visible = false, finished = reduced.matches, last = 0, time = 0, index = 0, score = 0, lines = 0, frame = 0;
+    let visible = false, finished = reduced.matches || skip, last = 0, time = 0, elapsed = 0, index = 0, score = 0, lines = 0, frame = 0;
     let board = demoBoard(level), target = planDrop(board,"I");
     const sequence: PieceName[] = ["I","T","L","S","J","O","Z","I","T","L","O","I"];
     const count = Math.min(12,6+systems.length);
@@ -48,7 +49,12 @@ export function ProjectGameplay({ level, title, systems }: { level: number; titl
     const loop = (now:number) => {
       frame=requestAnimationFrame(loop);
       if(!visible||document.hidden||finished){last=now;return;}
-      const dt=last?Math.min(now-last,60):0;last=now;time+=dt;
+      // A filled board can have no legal next move. Still reveal the project.
+      if(!target){finished=true;el.dataset.done="true";return;}
+      const wallDelta=last?now-last:0;
+      elapsed+=wallDelta;
+      if(elapsed>=10000){finished=true;el.dataset.done="true";return;}
+      const dt=Math.min(wallDelta,250);last=now;time+=dt;
       if(time>=stepMs&&target){
         board=mergePiece(board,target,PIECES[target.name].color);const cleared=fullRows(board);board=collapseRows(board,cleared);
         lines+=cleared.length;score+=(cleared.length===4?800:cleared.length*100)+target.y*2;
@@ -62,6 +68,6 @@ export function ProjectGameplay({ level, title, systems }: { level: number; titl
     const resize=new ResizeObserver(draw);resize.observe(el);draw();frame=requestAnimationFrame(loop);
     const motion=()=>{if(reduced.matches){finished=true;el.dataset.done="true";}};reduced.addEventListener("change",motion);
     return()=>{cancelAnimationFrame(frame);observer.disconnect();resize.disconnect();reduced.removeEventListener("change",motion);};
-  },[level,replay,systems]);
-  return <><canvas ref={canvas} className="project-gameplay" aria-hidden="true" /><button type="button" className="project-replay" aria-label={`Replay the automatic Tetris sequence for ${title}`} onClick={()=>setReplay(n=>n+1)}>↻ REPLAY BUILD</button></>;
+  },[level,replay,systems,skip]);
+  return <><canvas ref={canvas} className="project-gameplay" aria-hidden="true" /><button type="button" className="project-skip" onClick={()=>setSkip(true)} aria-label={`Show ${title} artwork now`}>SHOW ARTWORK ↓</button><button type="button" className="project-replay" aria-label={`Replay the automatic Tetris sequence for ${title}`} onClick={()=>{setSkip(false);setReplay(n=>n+1);}}>↻ REPLAY BUILD</button></>;
 }

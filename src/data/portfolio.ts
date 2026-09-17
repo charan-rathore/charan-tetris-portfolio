@@ -132,15 +132,14 @@ export const projects: Project[] = [
     piece: "T",
     label: "FLAGSHIP · RAG PLATFORM",
     title: "IntelliRAG",
-    copy: "I wanted to know where RAG actually breaks. Ingestion → chunking → hybrid retrieval → rerank → citations → eval, built to measure failure modes honestly, not to claim production SOTA.",
+    copy: "The docs explain each API. A support question asks how the rules fit together. I’m building a way to connect that evidence, inspect the answer, and measure where the system still fails.",
     image: "/projects/tetris-art/intellirag.png",
     imageAlt: "Scattered documents resolving through a Tetris-shaped knowledge block",
     metrics: [
-      "12 PHASES SHIPPED",
-      "100+ TESTS",
-      "HYBRID MRR 1.0",
-      "RERANK +12.5%",
-      "E2E P95 12.6MS",
+      "PINNED SOURCE EVIDENCE",
+      "20 SUPPORT SCENARIOS",
+      "54 RAG CHECKS",
+      "PUBLISHED FAILURES",
     ],
     tech: tech(
       "Python",
@@ -319,4 +318,3 @@ export const TECH_LOGOS: {
   },
   { name: "Git", file: "git.svg", piece: "I", href: "https://git-scm.com/doc" },
 ];
-

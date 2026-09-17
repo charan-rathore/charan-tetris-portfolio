@@ -16,6 +16,7 @@ import { PIECES, PieceName } from "./tetris/types";
 
 import { projects, experience, RESUME_URL } from "../data/portfolio";
 import { KnowledgeWell } from "./graph/KnowledgeWell";
+import { WorkingSystem } from "./WorkingSystem";
 
 function PieceGlyph({ name }: { name: PieceName }) {
   const cells = PIECES[name].rotations[0];
@@ -280,6 +281,7 @@ export function Portfolio() {
       </section>
 
       <section className="about-section" id="about">
+        <WorkingSystem />
         <div className="stage-heading">
           <span className="pixel-label accent-purple">STAGE 03 · PLAYER STATS</span>
           <h2>One commit. Another block.</h2>
