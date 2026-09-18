@@ -20,6 +20,7 @@ import { WorkingSystem } from "./WorkingSystem";
 import { ContactCoin } from "./ContactCoin";
 import { TwoSeconds } from "./TwoSeconds";
 import { HuesSignature } from "./HuesSignature";
+import { LineClears } from "./arcade/LineClears";
 
 function PieceGlyph({ name }: { name: PieceName }) {
   const cells = PIECES[name].rotations[0];
@@ -108,6 +109,7 @@ export function Portfolio() {
     <main data-ambient={ambient ? 'on' : 'paused'}>
       <a className="skip-link" href="#work">Skip to projects</a>
       <div className="scanlines" aria-hidden="true" />
+      <LineClears />
 
       <header className="site-header">
         <button
