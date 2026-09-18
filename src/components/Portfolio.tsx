@@ -23,6 +23,7 @@ import { HuesSignature } from "./HuesSignature";
 import { LineClears } from "./arcade/LineClears";
 import { ArcadeRail } from "./arcade/ArcadeRail";
 import { Controls } from "./arcade/Controls";
+import { GhostRail } from "./arcade/GhostRail";
 import { HoldButton } from "./arcade/HoldButton";
 import { projectSlug } from "./arcade/hold";
 
@@ -115,6 +116,7 @@ export function Portfolio() {
       <div className="scanlines" aria-hidden="true" />
       <LineClears />
       <ArcadeRail />
+      <GhostRail />
       <Controls />
 
       <header className="site-header">

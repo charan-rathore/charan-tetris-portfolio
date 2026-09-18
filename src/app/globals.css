@@ -2309,9 +2309,28 @@ button, a, input, textarea, summary { scroll-margin-top: calc(var(--header-h) + 
 /* Where the rail appears, the page keeps a bezel clear for it. */
 @media(min-width:1380px) {
   .arcade-rail { display:flex; }
-  .hero--mcp,.context-dial,.work-section,.about-section,.contact-section { padding-right:calc(var(--gutter) + 62px); }
+  .hero--mcp,.context-dial,.work-section,.about-section,.contact-section { padding-right:calc(var(--gutter) + 62px); padding-left:calc(var(--gutter) + 28px); }
 }
 @media(prefers-reduced-motion:reduce) { .arcade-rail { transition:none; } }
+
+/* The well seen edgewise: how far the reader has fallen, and the ghost
+   outline resting on the next stage down. Lives in the left gutter. */
+.ghost-rail { position:fixed; left:12px; top:50%; z-index:32; display:none; flex-direction:column; align-items:center; gap:9px; transform:translateY(-50%); }
+.ghost-cap,.ghost-depth { font-size:7px; color:#56687e; letter-spacing:.1em; }
+.ghost-depth { font:9px/1 var(--font-mono); color:#7d8da3; font-variant-numeric:tabular-nums; }
+.ghost-depth::after { content:"%"; margin-left:1px; font-size:7px; color:#46576b; }
+.ghost-track { position:relative; width:14px; height:min(46vh,360px); border:1px solid #1c2939; background:#070c14cc; }
+.ghost-band { position:absolute; left:0; width:100%; padding:0; border:0; border-top:1px solid #0b131f; background:var(--piece); opacity:.16; cursor:pointer; transition:opacity .2s ease; }
+.ghost-band:hover { opacity:.55; }
+.ghost-band.is-cleared { opacity:.5; }
+.ghost-band.is-here { opacity:.75; }
+.ghost-band em { position:absolute; left:23px; top:50%; display:none; padding:4px 7px; transform:translateY(-50%); border:1px solid #2c4054; background:#060b12f5; color:#dce8f6; font:8px/1 var(--font-px); letter-spacing:.07em; font-style:normal; white-space:nowrap; }
+.ghost-band:hover em { display:block; }
+/* The reader's piece, and the ghost that shows where the next stage catches it. */
+.ghost-piece { position:absolute; left:-4px; top:calc(var(--depth,0) * 100%); width:22px; height:4px; background:var(--cyan); transform:translateY(-50%); box-shadow:0 0 8px #34e5ff88; }
+.ghost-drop { position:absolute; left:-4px; top:calc(var(--ghost,1) * 100%); width:22px; height:5px; border:1px dashed #3e5a78; transform:translateY(-50%); transition:top .18s ease-out; }
+@media(min-width:1380px) { .ghost-rail { display:flex; } }
+@media(prefers-reduced-motion:reduce) { .ghost-band,.ghost-drop { transition:none; } }
 
 /* Keyboard controls: the move readout, the hint tab, and the control sheet. */
 .arcade-move { position:fixed; left:50%; bottom:26px; z-index:36; padding:9px 14px; transform:translateX(-50%); border:1px solid #2c4054; background:#060b12f2; color:#dce8f6; font:9px/1 var(--font-px); letter-spacing:.09em; pointer-events:none; animation:move-note 1.6s ease-out forwards; }
