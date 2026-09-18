@@ -18,6 +18,8 @@ import { projects, experience, RESUME_URL } from "../data/portfolio";
 import { KnowledgeWell } from "./graph/KnowledgeWell";
 import { WorkingSystem } from "./WorkingSystem";
 import { ContactCoin } from "./ContactCoin";
+import { TwoSeconds } from "./TwoSeconds";
+import { HuesSignature } from "./HuesSignature";
 
 function PieceGlyph({ name }: { name: PieceName }) {
   const cells = PIECES[name].rotations[0];
@@ -285,6 +287,7 @@ export function Portfolio() {
 
       <section className="about-section" id="about">
         <WorkingSystem />
+        <TwoSeconds />
         <div className="stage-heading">
           <span className="pixel-label accent-purple">STAGE 03 · PLAYER STATS</span>
           <h2>One commit. Another block.</h2>
@@ -462,7 +465,7 @@ export function Portfolio() {
         )}
         <footer className="site-footer">
           <span>© 2026 CHARAN RATHORE</span>
-          <span className="pixel-label">NO CONTINUES REQUIRED</span>
+          <HuesSignature />
           <span>NEXT.JS + THREE.JS</span>
         </footer>
       </section>

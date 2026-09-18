@@ -2287,6 +2287,64 @@ button, a, input, textarea, summary { scroll-margin-top: calc(var(--header-h) + 
 .working-detail a { display:inline-flex; min-height:44px; align-items:center; color:#efdba9; font-size:14px; }
 @media(max-width:760px) { .working-system { grid-template-columns:1fr; gap:24px; margin-bottom:60px; } .working-detail { min-height:0; padding:22px; } }
 
+/* The footer signs off in the seven piece colours. */
+.hues-signature { display:flex; align-items:center; gap:10px; padding:6px 10px; border:1px solid transparent; color:#93a3ba; }
+.hues-signature:hover { border-color:#37294a; }
+.hues-swatches { display:flex; gap:3px; }
+.hues-swatches i { width:9px; height:9px; opacity:.55; transition:opacity .18s,transform .18s; }
+.hues-swatches i[data-lit=yes] { opacity:1; transform:translateY(-3px); }
+.hues-name { color:#cbd7e8; }
+.hues-signature small { font-size:10.5px; color:#7c8ba1; min-width:26ch; }
+.hues-signature:hover .hues-name { color:#fff; }
+@media(max-width:700px) { .hues-signature { flex-wrap:wrap; gap:6px; } .hues-signature small { min-width:0; } }
+
+/* The two seconds you never see: the gap after Enter, drawn as one Tetris line. */
+.two-seconds { display:grid; grid-template-columns:1fr 1fr; gap:44px; align-items:center; max-width:var(--maxw); margin:0 auto 84px; }
+.second-intro h2 { margin:20px 0 18px; font-size:clamp(30px,3.6vw,48px); line-height:1.08; letter-spacing:-.035em; }
+.second-intro>p { max-width:46ch; color:#9eabc0; font-size:16px; line-height:1.72; }
+.second-prompt { display:flex; align-items:center; gap:12px; margin:24px 0 14px; padding:12px 12px 12px 15px; border:1px solid #2a3546; background:#080d17; }
+.second-prompt-text { flex:1; color:#cfdae9; font:14px/1.5 var(--font-mono); }
+.second-prompt-text i { display:inline-block; width:8px; height:15px; margin-left:3px; vertical-align:-2px; background:var(--cyan); animation:second-caret 1.05s steps(1) infinite; }
+.second-prompt[data-state=spent] .second-prompt-text { color:#7d8da3; }
+.second-prompt[data-state=spent] .second-prompt-text i { animation:none; opacity:.25; }
+@keyframes second-caret { 50% { opacity:0; } }
+.second-key { min-height:40px; padding:0 14px; border:1px solid #3a4c64; border-bottom-width:3px; background:#101a28; color:#d8e5f5; font:10px var(--font-px); letter-spacing:.08em; cursor:pointer; }
+.second-key:hover { border-color:var(--cyan); color:#fff; }
+.second-readout { display:flex; align-items:baseline; gap:10px; margin-bottom:18px; }
+.second-readout b { font:600 26px/1 var(--font-mono); color:#eaf4ff; font-variant-numeric:tabular-nums; }
+.second-readout span { color:#7f8ea5; font:11px var(--font-mono); }
+.second-skip { margin-left:auto; min-height:32px; padding:0 10px; border:1px solid #33415a; background:none; color:#8fa2ba; font:9px var(--font-px); letter-spacing:.08em; cursor:pointer; }
+.second-skip:hover { border-color:#8fa2ba; color:#dce7f5; }
+.second-stop { border-left:3px solid; padding:2px 0 2px 16px; min-height:172px; }
+.second-stop h3 { margin:9px 0 10px; font-size:21px; line-height:1.25; }
+.second-stop p { color:#a6b3c7; font-size:14.5px; line-height:1.7; max-width:44ch; }
+.second-exits { display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; }
+.second-exits a { display:inline-flex; align-items:center; min-height:44px; padding:0 14px; border:1px solid #33415a; color:#dbe6f4; font:9px var(--font-px); letter-spacing:.07em; }
+.second-exits a:hover { border-color:var(--cyan); }
+.second-exits a.is-banter { border-color:#6d4a86; color:#e6cdff; }
+.second-exits a.is-banter:hover { border-color:var(--purple); background:#1b1026; }
+.second-exits p { flex:1 0 100%; margin-top:4px; color:#7f8ea5; font-size:12.5px; line-height:1.65; max-width:52ch; }
+.second-board svg { display:block; width:100%; height:auto; }
+.second-ledger { display:grid; gap:9px; margin:6px 0 0; padding-top:14px; border-top:1px solid #1e2b3a; }
+.second-ledger>div { display:grid; grid-template-columns:130px 1fr; gap:12px; align-items:center; opacity:.45; transition:opacity .3s; }
+.second-ledger>div[data-reached=yes] { opacity:1; }
+.second-ledger dt { display:flex; align-items:center; gap:8px; font:9px var(--font-px); letter-spacing:.08em; color:#cbd7e8; }
+.second-ledger dt i { width:9px; height:9px; background:var(--hue); }
+.second-ledger dd { display:flex; align-items:center; gap:10px; margin:0; font:11px var(--font-mono); color:#8496ad; }
+.second-ledger dd span { min-width:11ch; }
+.second-ledger dd b { height:6px; background:var(--hue); opacity:.8; }
+.second-ledger dd small { font-size:10.5px; color:#6d7f96; white-space:nowrap; }
+.second-ledger p { margin:4px 0 0; color:#7f8ea5; font-size:12.5px; line-height:1.65; }
+.second-board text { font-family:var(--font-mono); letter-spacing:.06em; }
+.second-cell { animation:second-land .34s cubic-bezier(.2,.9,.3,1) backwards; }
+@keyframes second-land { from { transform:translateY(-38px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+.second-board[data-clearing=yes] .second-cell { animation:second-clear 1s ease-out .05s both; }
+@keyframes second-clear { 0%,55% { filter:none; } 70% { filter:brightness(2.4); } 100% { filter:none; } }
+.second-flash { font-family:var(--font-px)!important; font-size:11px!important; animation:second-flash 1s ease-out; }
+@keyframes second-flash { from { opacity:0; transform:scale(.9); } 35% { opacity:1; } to { opacity:.75; } }
+@media(max-width:860px) { .two-seconds { grid-template-columns:1fr; gap:20px; margin-bottom:56px; } .second-stop { min-height:0; } }
+@media(prefers-reduced-motion:reduce) { .second-cell,.second-flash,.second-prompt-text i { animation:none; } }
+
 /* Quiet star field: distant points at the edges, clear reading surfaces. */
 body { background:radial-gradient(ellipse at 6% 8%,#18344c44,transparent 38%),radial-gradient(ellipse at 96% 38%,#3a24532b,transparent 35%),radial-gradient(circle at 17px 31px,#aac3e95c 0 .7px,transparent 1.1px),radial-gradient(circle at 113px 83px,#839cbc45 0 .7px,transparent 1px),#06080e; background-size:100% 1800px,100% 2600px,347px 293px,229px 379px,auto; }
 .scanlines { opacity:.12; }
