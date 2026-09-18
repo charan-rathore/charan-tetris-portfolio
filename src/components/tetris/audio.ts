@@ -157,6 +157,20 @@ export const sfx = {
     tone(1108.73, 0.28, { type: "sine", volume: 0.25, delay: 0.26 });
   },
 
+  /** A credit tumbling down the slot: two bright clinks, then it seats. */
+  coin() {
+    tone(1244.51, 0.05, { type: "square", volume: 0.22 });
+    tone(1661.22, 0.06, { type: "square", volume: 0.18, delay: 0.06 });
+    tone(830.61, 0.13, { type: "triangle", volume: 0.2, delay: 0.14, slide: -140 });
+  },
+
+  /** The same clink climbing back out when the credit is refunded. */
+  coinReturn() {
+    tone(659.25, 0.06, { type: "triangle", volume: 0.16 });
+    tone(880, 0.05, { type: "square", volume: 0.14, delay: 0.07 });
+    tone(1174.66, 0.1, { type: "square", volume: 0.16, delay: 0.13 });
+  },
+
   /** Soft UI click for portfolio links / chips (keeps the Tetris timbre). */
   ui() {
     tone(detune(660), 0.035, { type: "square", volume: 0.14 });
