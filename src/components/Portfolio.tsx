@@ -22,6 +22,7 @@ import { TwoSeconds } from "./TwoSeconds";
 import { HuesSignature } from "./HuesSignature";
 import { LineClears } from "./arcade/LineClears";
 import { ArcadeRail } from "./arcade/ArcadeRail";
+import { Controls } from "./arcade/Controls";
 import { HoldButton } from "./arcade/HoldButton";
 import { projectSlug } from "./arcade/hold";
 
@@ -114,6 +115,7 @@ export function Portfolio() {
       <div className="scanlines" aria-hidden="true" />
       <LineClears />
       <ArcadeRail />
+      <Controls />
 
       <header className="site-header">
         <button
@@ -206,7 +208,7 @@ export function Portfolio() {
         </details>
         <div className="project-grid">
           {projects.map((project, index) => (
-            <ProjectLevel key={project.title} id={projectSlug(project.title)} index={index} piece={project.piece} featured={project.featured}>
+            <ProjectLevel key={project.title} id={projectSlug(project.title)} title={project.title} index={index} piece={project.piece} featured={project.featured}>
               <div className="project-media">
                 <Image
                   src={project.image}
