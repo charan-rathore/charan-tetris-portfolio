@@ -2321,7 +2321,25 @@ body { background:radial-gradient(ellipse at 6% 8%,#18344c44,transparent 38%),ra
 .coin-rim { background:#aa7b2a; border:2px dashed #f5ca66; }
 .contact-coin:focus-visible { outline:2px solid #efd185; outline-offset:8px; }
 .contact-coin:hover .coin-object { animation-play-state:paused; }
-.contact-coin.is-inserted .coin-object { animation:none; transform:rotateY(25deg) rotateX(15deg); }
+.contact-coin.is-inserted .coin-scene { animation:coin-insert 0.9s cubic-bezier(0.34,1.2,0.64,1) forwards; }
+.contact-coin.is-inserted .coin-object { animation:coin-insert-spin 0.9s cubic-bezier(0.34,1.2,0.64,1) forwards; }
 @keyframes coin-turn { from {transform:rotateX(15deg) rotateY(0)} to {transform:rotateX(15deg) rotateY(360deg)} }
+@keyframes coin-insert {
+  0% { transform:translateY(0) scale(1); opacity:1; }
+  40% { transform:translateY(180px) scale(0.7); opacity:1; }
+  70% { transform:translateY(260px) scale(0.45); opacity:0.85; }
+  100% { transform:translateY(300px) scale(0.25); opacity:0; }
+}
+@keyframes coin-insert-spin {
+  0% { transform:rotateX(15deg) rotateY(0deg); }
+  100% { transform:rotateX(75deg) rotateY(720deg); }
+}
+/* Gmail M glow when coin is inserted */
+.contact-section.coin-dropped .contact-gmail-icon { animation:gmail-receive 0.6s ease-out 0.5s forwards; }
+@keyframes gmail-receive {
+  0% { box-shadow:0 0 0 rgba(239,206,120,0); border-color:#3e4d66; }
+  50% { box-shadow:0 0 40px rgba(239,206,120,0.6),0 0 80px rgba(239,206,120,0.3); border-color:#efd185; }
+  100% { box-shadow:0 0 20px rgba(239,206,120,0.25); border-color:#a08045; }
+}
 @media(max-width:850px) { .hero--mcp { gap:24px; } .mcp-console { width:100%; } .bridge-choices { margin-inline:12px; gap:6px; } .bridge-choices span {font-size:14px;} .mcp-console-foot {flex-wrap:wrap;} }
 @media(prefers-reduced-motion:reduce) { .ambient-motion,.bridge-current,.bridge-core {animation:none!important;} }

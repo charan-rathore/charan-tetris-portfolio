@@ -5,7 +5,7 @@ import { useId, useState } from "react";
 const stages = [
   { name: "Notice", verb: "Find the real question.", color: "#ffd56a", input: "A behavior that doesn’t make sense.",
     decision: "Start with what someone is trying to do. In seller analytics, that means following the journey before deciding what to measure.",
-    tradeoff: "A clean dashboard is useful only if it changes a decision.", proof: "Seller funnel analytics · Flipkart", href: "#about", piece: "01" },
+    tradeoff: "A clean dashboard is useful only if it changes a decision.", proof: "Read the breakdown · Substack", href: "https://substack.com/@charanrathore", piece: "01" },
   { name: "Connect", verb: "Keep the context attached.", color: "#66d9ef", input: "Scattered evidence. An answer that needs checking.",
     decision: "In IntelliRAG, bring the relevant passages into the answer and keep the citations in reach. Let people inspect what the system used.",
     tradeoff: "An honest gap in the evidence is more useful than a confident guess.", proof: "Inspect IntelliRAG", href: "https://intellirag-live-own-track.vercel.app/", piece: "02" },
