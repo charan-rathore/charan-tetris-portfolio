@@ -2287,6 +2287,37 @@ button, a, input, textarea, summary { scroll-margin-top: calc(var(--header-h) + 
 .working-detail a { display:inline-flex; min-height:44px; align-items:center; color:#efdba9; font-size:14px; }
 @media(max-width:760px) { .working-system { grid-template-columns:1fr; gap:24px; margin-bottom:60px; } .working-detail { min-height:0; padding:22px; } }
 
+/* The cabinet HUD: score, lines, the next stage, and a project on hold.
+   A slim strip in the page margin that opens on hover or keyboard focus. */
+.arcade-rail { position:fixed; right:8px; top:50%; z-index:33; display:none; flex-direction:column; gap:6px; width:54px; padding:8px 6px; transform:translateY(-50%); border:1px solid #223146; background:#070c14f2; transition:width .22s ease,padding .22s ease; }
+.arcade-rail:hover,.arcade-rail:focus-within { width:196px; padding:10px; border-color:#31455e; }
+.rail-score { display:flex; flex-direction:column; align-items:center; gap:2px; padding-bottom:7px; border-bottom:1px solid #1c2939; }
+.rail-score .pixel-label { font-size:7px; color:#6e819a; }
+.rail-score b { font:600 17px/1 var(--font-mono); color:#eaf4ff; font-variant-numeric:tabular-nums; }
+.rail-score small { font:8px var(--font-px); letter-spacing:.06em; color:var(--yellow); }
+.rail-slot { display:flex; flex-direction:column; align-items:center; gap:5px; }
+.rail-slot>.pixel-label { font-size:7px; color:#6e819a; }
+.rail-slot button { display:flex; align-items:center; gap:8px; width:100%; min-height:40px; justify-content:center; padding:4px; border:1px solid #223146; background:#0b131f; color:#cfdae9; cursor:pointer; }
+.rail-slot button:hover { border-color:var(--cyan); }
+.rail-slot button:focus-visible,.hold-button:focus-visible { outline:2px solid var(--cyan); outline-offset:2px; }
+.rail-glyph { width:26px; height:20px; flex:none; }
+.rail-slot em,.rail-empty em { display:none; font-style:normal; font:8px/1.4 var(--font-px); letter-spacing:.06em; text-align:left; }
+.arcade-rail:hover em,.arcade-rail:focus-within em { display:block; }
+.rail-empty { display:flex; align-items:center; gap:8px; justify-content:center; width:100%; min-height:40px; margin:0; padding:4px; border:1px dashed #223146; color:#56687e; font-size:13px; }
+.rail-release { font:7px var(--font-px)!important; letter-spacing:.06em; min-height:26px!important; color:#8b9cb3!important; }
+.arcade-rail:not(:hover):not(:focus-within) .rail-release { display:none; }
+/* Where the rail appears, the page keeps a bezel clear for it. */
+@media(min-width:1380px) {
+  .arcade-rail { display:flex; }
+  .hero--mcp,.context-dial,.work-section,.about-section,.contact-section { padding-right:calc(var(--gutter) + 62px); }
+}
+@media(prefers-reduced-motion:reduce) { .arcade-rail { transition:none; } }
+
+/* Hold a project from its own card. */
+.hold-button { margin-left:auto; padding:6px 9px; border:1px solid #2a3546; background:none; color:#8fa2ba; font:9px var(--font-px); letter-spacing:.1em; cursor:pointer; }
+.hold-button:hover { border-color:var(--cyan); color:var(--cyan); }
+.hold-button.is-held { border-color:var(--yellow); color:var(--yellow); background:#1b1706; }
+
 /* Reading to the end of a stage clears its bottom edge like a finished line. */
 .clear-layer { position:fixed; inset:0; z-index:34; pointer-events:none; }
 .clear-flash { position:absolute; left:0; right:0; height:2px; background:linear-gradient(90deg,#ffffff00,#eaf4ff,#ffffff00); box-shadow:0 0 22px #9fd4ff88; animation:clear-sweep .55s ease-out forwards; }

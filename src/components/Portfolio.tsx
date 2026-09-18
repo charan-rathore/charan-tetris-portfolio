@@ -21,6 +21,9 @@ import { ContactCoin } from "./ContactCoin";
 import { TwoSeconds } from "./TwoSeconds";
 import { HuesSignature } from "./HuesSignature";
 import { LineClears } from "./arcade/LineClears";
+import { ArcadeRail } from "./arcade/ArcadeRail";
+import { HoldButton } from "./arcade/HoldButton";
+import { projectSlug } from "./arcade/hold";
 
 function PieceGlyph({ name }: { name: PieceName }) {
   const cells = PIECES[name].rotations[0];
@@ -110,6 +113,7 @@ export function Portfolio() {
       <a className="skip-link" href="#work">Skip to projects</a>
       <div className="scanlines" aria-hidden="true" />
       <LineClears />
+      <ArcadeRail />
 
       <header className="site-header">
         <button
@@ -202,7 +206,7 @@ export function Portfolio() {
         </details>
         <div className="project-grid">
           {projects.map((project, index) => (
-            <ProjectLevel key={project.title} index={index} piece={project.piece} featured={project.featured}>
+            <ProjectLevel key={project.title} id={projectSlug(project.title)} index={index} piece={project.piece} featured={project.featured}>
               <div className="project-media">
                 <Image
                   src={project.image}
@@ -280,6 +284,7 @@ export function Portfolio() {
                     GITHUB ↗
                   </a>
                 )}
+                <HoldButton title={project.title} piece={project.piece} />
               </div>
             </ProjectLevel>
           ))}

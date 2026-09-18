@@ -9,20 +9,22 @@
  */
 
 import { useSyncExternalStore } from "react";
+import type { PieceName } from "../tetris/types";
 
 export type Stage = {
   /** Element id of the section that owns the line. */
   id: string;
   label: string;
   points: number;
+  piece: PieceName;
 };
 
 export const STAGES: Stage[] = [
-  { id: "top", label: "THE HUMAN INTERFACE", points: 100 },
-  { id: "context", label: "THE CONTEXT GRAPH", points: 100 },
-  { id: "work", label: "THE PROJECT STACK", points: 200 },
-  { id: "about", label: "PLAYER STATS", points: 200 },
-  { id: "contact", label: "CONTINUE?", points: 400 },
+  { id: "top", label: "THE HUMAN INTERFACE", points: 100, piece: "T" },
+  { id: "context", label: "THE CONTEXT GRAPH", points: 100, piece: "I" },
+  { id: "work", label: "THE PROJECT STACK", points: 200, piece: "O" },
+  { id: "about", label: "PLAYER STATS", points: 200, piece: "S" },
+  { id: "contact", label: "CONTINUE?", points: 400, piece: "L" },
 ];
 
 /** Distance below the header at which a stage counts as read to the end. */
