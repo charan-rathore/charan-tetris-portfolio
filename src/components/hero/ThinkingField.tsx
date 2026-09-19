@@ -17,6 +17,7 @@ export function ThinkingField() {
     score: 0,
     lines: 0,
     placed: 0,
+    // First falling piece is I; NEXT IDEA starts on the piece after it.
     next: "T",
   });
   const update = useCallback(
