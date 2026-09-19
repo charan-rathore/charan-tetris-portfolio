@@ -70,11 +70,15 @@ export function ThinkingField() {
             <div
               aria-label={`Next piece: ${progress.next}`}
               style={{ color: PIECES[progress.next].color }}
+              data-next={progress.next}
             >
               {PIECES[progress.next].rotations[0].map(([x, y], i) => (
-                <i key={i} style={{ left: x * 8, top: y * 8 }} />
+                <i key={i} style={{ left: x * 11, top: y * 11 }} />
               ))}
             </div>
+            <span className="thought-next-name" style={{ color: PIECES[progress.next].color }}>
+              {progress.next}
+            </span>
           </div>
           <button
             type="button"
