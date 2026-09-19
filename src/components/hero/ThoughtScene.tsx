@@ -5,7 +5,7 @@ import { collapseRows, fullRows, mergePiece } from '../tetris/engine';
 import { PIECES, pieceCells, type PieceName } from '../tetris/types';
 import { IsoBlock } from './IsoBlock';
 
-export type ThoughtProgress = { score: number; lines: number; placed: number; next: PieceName };
+export type ThoughtProgress = { score: number; lines: number; placed: number; current: PieceName; next: PieceName };
 
 /**
  * Fixed falling order: index N is the piece currently falling,
@@ -39,8 +39,14 @@ export function ThoughtScene({ drop, paused, onProgress }: { drop: number; pause
     observer.observe(el);
 
     // report() is always called right after m.target and m.index are settled for the NEW falling piece.
-    // At that point: falling = sequence[m.index], NEXT IDEA = sequence[m.index + 1].
-    const report = () => onProgress({ score: m.score, lines: m.lines, placed: m.placed, next: nextAfter(m.index) });
+    // At that point: current = sequence[m.index] (falling), next = sequence[m.index + 1] (NEXT IDEA).
+    const report = () => onProgress({
+      score: m.score,
+      lines: m.lines,
+      placed: m.placed,
+      current: sequence[m.index],
+      next: nextAfter(m.index),
+    });
     report();
 
     const advance = () => {

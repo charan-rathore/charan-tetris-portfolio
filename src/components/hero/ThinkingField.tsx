@@ -18,8 +18,8 @@ export function ThinkingField() {
     score: 0,
     lines: 0,
     placed: 0,
-    // sequence[0] = 'I' is the first falling piece; NEXT IDEA shows sequence[1] = 'T'.
-    next: "T",
+    current: "I",   // sequence[0] = 'I' is the first piece to fall
+    next: "T",      // sequence[1] = 'T' is what NEXT IDEA shows first
   });
   const update = useCallback((value: ThoughtProgress) => setProgress(value), []);
   const chapter = Math.floor(progress.placed / 4) % CHAPTERS.length;
@@ -65,20 +65,26 @@ export function ThinkingField() {
           </div>
         </div>
         <div className="thought-controls">
-          <div className="thought-next">
-            <span>NEXT IDEA</span>
-            <div
-              aria-label={`Next piece: ${progress.next}`}
-              style={{ color: PIECES[progress.next].color }}
-              data-next={progress.next}
-            >
-              {PIECES[progress.next].rotations[0].map(([x, y], i) => (
-                <i key={i} style={{ left: x * 11, top: y * 11 }} />
-              ))}
+          <div className="thought-now-next">
+            <div className="thought-now" aria-label={`Falling: ${progress.current}`}>
+              <span>NOW</span>
+              <div style={{ color: PIECES[progress.current].color }} data-piece={progress.current}>
+                {PIECES[progress.current].rotations[0].map(([x, y], i) => (
+                  <i key={i} style={{ left: x * 9, top: y * 9 }} />
+                ))}
+              </div>
+              <span style={{ color: PIECES[progress.current].color }}>{progress.current}</span>
             </div>
-            <span className="thought-next-name" style={{ color: PIECES[progress.next].color }}>
-              {progress.next}
-            </span>
+            <span className="thought-arrow" aria-hidden="true">→</span>
+            <div className="thought-next" aria-label={`Next piece: ${progress.next}`}>
+              <span>NEXT IDEA</span>
+              <div style={{ color: PIECES[progress.next].color }} data-piece={progress.next}>
+                {PIECES[progress.next].rotations[0].map(([x, y], i) => (
+                  <i key={i} style={{ left: x * 11, top: y * 11 }} />
+                ))}
+              </div>
+              <span style={{ color: PIECES[progress.next].color }}>{progress.next}</span>
+            </div>
           </div>
           <button
             type="button"
