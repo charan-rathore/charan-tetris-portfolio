@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { PIECES } from "../tetris/types";
 import type { ThoughtProgress } from "./ThoughtScene";
 import { ThoughtScene } from "./ThoughtScene";
+
 const CHAPTERS = [
   ["Curiosity finds the gap.", "Ask a better question."],
   ["Evidence changes the shape.", "Test the idea. Keep what holds."],
@@ -17,19 +18,22 @@ export function ThinkingField() {
     score: 0,
     lines: 0,
     placed: 0,
-    // First falling piece is I; NEXT IDEA starts on the piece after it.
+    // sequence[0] = 'I' is the first falling piece; NEXT IDEA shows sequence[1] = 'T'.
     next: "T",
   });
-  const update = useCallback(
-    (value: ThoughtProgress) => setProgress(value),
-    [],
-  );
+  const update = useCallback((value: ThoughtProgress) => setProgress(value), []);
   const chapter = Math.floor(progress.placed / 4) % CHAPTERS.length;
+
+  // Clicking the stage drops the current piece immediately — a hidden interaction.
+  const handleStageClick = () => {
+    if (!paused) setDrop(n => n + 1);
+  };
+
   return (
     <div
       className="thinking-field"
       role="group"
-      aria-label="Charan’s thinking engine, played as a real Tetris sequence"
+      aria-label="Charan's thinking engine, played as a real Tetris sequence"
     >
       <div className="thought-stage">
         <div className="thought-stage-top">
@@ -38,7 +42,15 @@ export function ThinkingField() {
             <i /> {paused ? "PAUSED" : "AUTO PLAY"}
           </span>
         </div>
-        <div className="thought-playfield">
+        {/* Clicking the playfield drops the current piece — discoverable, not labelled. */}
+        <div
+          className="thought-playfield thought-playfield--clickable"
+          onClick={handleStageClick}
+          role="button"
+          tabIndex={0}
+          aria-label="Click to drop the current idea"
+          onKeyDown={e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); handleStageClick(); } }}
+        >
           <ThoughtScene drop={drop} paused={paused} onProgress={update} />
         </div>
         <div className="thought-story">
@@ -56,7 +68,7 @@ export function ThinkingField() {
           <div className="thought-next">
             <span>NEXT IDEA</span>
             <div
-              aria-label={`Next piece ${progress.next}`}
+              aria-label={`Next piece: ${progress.next}`}
               style={{ color: PIECES[progress.next].color }}
             >
               {PIECES[progress.next].rotations[0].map(([x, y], i) => (
@@ -64,18 +76,11 @@ export function ThinkingField() {
               ))}
             </div>
           </div>
-          <button type="button" onClick={() => setDrop((n) => n + 1)}>
-            DROP IDEA ↓
-          </button>
           <button
             type="button"
-            aria-label={
-              paused
-                ? "Resume the thinking engine"
-                : "Pause the thinking engine"
-            }
+            aria-label={paused ? "Resume the thinking engine" : "Pause the thinking engine"}
             aria-pressed={paused}
-            onClick={() => setPaused((value) => !value)}
+            onClick={() => setPaused(v => !v)}
           >
             {paused ? "▶" : "Ⅱ"}
           </button>
