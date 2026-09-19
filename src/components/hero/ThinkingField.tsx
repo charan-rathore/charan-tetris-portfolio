@@ -35,7 +35,7 @@ export function ThinkingField() {
       role="group"
       aria-label="Charan's thinking engine, played as a real Tetris sequence"
     >
-      <div className="thought-stage">
+      <div className="thought-stage" data-now={progress.current} data-next={progress.next}>
         <div className="thought-stage-top">
           <span>COGNITIVE ENGINE</span>
           <span>
