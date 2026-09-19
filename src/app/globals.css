@@ -2225,9 +2225,11 @@ button, a, input, textarea, summary { scroll-margin-top: calc(var(--header-h) + 
 .vector-opening svg { display:block; width:100%; height:100%; overflow:visible; font-family:var(--font-mono); }
 .bridge-current { animation:bridge-flow 2s linear infinite; }
 .bridge-core { animation:bridge-arrive .7s cubic-bezier(.2,.8,.2,1) both; }
+.bridge-dial { transform-origin:300px 178px; animation:bridge-dial-turn 120s linear infinite; }
 @keyframes bridge-flow { to { stroke-dashoffset:-100; } }
 @keyframes bridge-arrive { from { transform:translateY(-35px); opacity:0; } to { transform:translateY(0); opacity:1; } }
-@media(prefers-reduced-motion:reduce) { .bridge-current,.bridge-core { animation:none; } }
+@keyframes bridge-dial-turn { to { transform:rotate(360deg); } }
+@media(prefers-reduced-motion:reduce) { .bridge-current,.bridge-core,.bridge-dial { animation:none; } }
 .thought-playfield { left:0; width:58%; }
 /* A closing move, with a real selection and a matching space in the board. */
 .conversation-game { overflow:hidden; }
@@ -2447,7 +2449,7 @@ body { background:radial-gradient(ellipse at 6% 8%,#18344c44,transparent 38%),ra
 .mcp-output p { font-size:14px; line-height:1.6; }
 .mcp-console-foot { font-size:8px; padding:12px 16px; }
 .ambient-toggle { width:36px; min-height:36px; border:1px solid var(--line); cursor:pointer; color:#a8bdd7; }
-[data-ambient=paused] .ambient-motion,[data-ambient=paused] .bridge-current,[data-ambient=paused] .bridge-core { animation-play-state:paused; }
+[data-ambient=paused] .ambient-motion,[data-ambient=paused] .bridge-current,[data-ambient=paused] .bridge-core,[data-ambient=paused] .bridge-dial { animation-play-state:paused; }
 .contact-gmail-icon { width:64px; height:64px; min-width:64px; padding:14px!important; justify-content:center; border-radius:50%; background:#121b2a; border:1px solid #3e4d66; }
 .contact-gmail-icon:hover { border-color:#efce78; background:#1a2639; }
 /* The credit loop: one coin arcs into the mail slot, the message box inherits
@@ -2523,4 +2525,4 @@ body { background:radial-gradient(ellipse at 6% 8%,#18344c44,transparent 38%),ra
   .contact-coin.is-drop .coin-scene { visibility:hidden; }
 }
 @media(max-width:850px) { .hero--mcp { gap:24px; } .mcp-console { width:100%; } .bridge-choices { margin-inline:12px; gap:6px; } .bridge-choices span {font-size:14px;} .mcp-console-foot {flex-wrap:wrap;} }
-@media(prefers-reduced-motion:reduce) { .ambient-motion,.bridge-current,.bridge-core {animation:none!important;} }
+@media(prefers-reduced-motion:reduce) { .ambient-motion,.bridge-current,.bridge-core,.bridge-dial {animation:none!important;} }
