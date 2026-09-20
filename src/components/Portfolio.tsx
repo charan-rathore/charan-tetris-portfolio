@@ -17,6 +17,7 @@ import { PIECES, PieceName } from "./tetris/types";
 import { projects, experience, RESUME_URL } from "../data/portfolio";
 import { KnowledgeWell } from "./graph/KnowledgeWell";
 import { WorkingSystem } from "./WorkingSystem";
+import { TetrisMarquee } from "./TetrisMarquee";
 import { ContactCoin } from "./ContactCoin";
 import { TwoSeconds } from "./TwoSeconds";
 import { HuesSignature } from "./HuesSignature";
@@ -126,6 +127,28 @@ export function Portfolio() {
   const [ambient, setAmbient] = useState(true);
   const [time, setTime] = useState("");
   const [activeSection, setActiveSection] = useState("play");
+
+  // Cursor-beam spotlight — updates CSS vars on the <main> element so the
+  // radial glow follows the mouse anywhere on the page.
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      const main = document.querySelector<HTMLElement>('main[data-ambient]');
+      if (!main) return;
+      main.style.setProperty('--beam-x', `${e.clientX}px`);
+      main.style.setProperty('--beam-y', `${e.clientY}px`);
+      main.style.setProperty('--beam-opacity', '1');
+    };
+    const onLeave = () => {
+      const main = document.querySelector<HTMLElement>('main[data-ambient]');
+      main?.style.setProperty('--beam-opacity', '0');
+    };
+    window.addEventListener('mousemove', onMove, { passive: true });
+    document.documentElement.addEventListener('mouseleave', onLeave);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      document.documentElement.removeEventListener('mouseleave', onLeave);
+    };
+  }, []);
   useEffect(() => {
     let frame = 0;
     const update = () => {
@@ -245,6 +268,8 @@ export function Portfolio() {
 
       </section>
 
+      <TetrisMarquee />
+
       <KnowledgeWell />
 
       <section className="work-section" id="work">
@@ -337,6 +362,8 @@ export function Portfolio() {
           <ConversationStarter compact />
         </div>
       </section>
+
+      <TetrisMarquee />
 
       <section className="about-section" id="about">
         <WorkingSystem />
