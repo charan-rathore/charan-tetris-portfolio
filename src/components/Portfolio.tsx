@@ -63,6 +63,57 @@ function playUi() {
   sfx.ui();
 }
 
+/**
+ * Wraps project-media + the Tetris gameplay canvas.
+ * Owns skip/replay state so the SHOW ARTWORK button can be rendered
+ * BELOW the media element rather than overlaid on the animation.
+ */
+function ProjectMedia({ project, index }: { project: (typeof projects)[number]; index: number }) {
+  const [skip, setSkip] = useState(false);
+  const [replay, setReplay] = useState(0);
+  return (
+    <>
+      <div className="project-media">
+        <Image
+          src={project.image}
+          alt={project.imageAlt}
+          fill
+          sizes="(max-width: 820px) 100vw, 50vw"
+          className="project-photo"
+        />
+        <ProjectGameplay
+          level={index}
+          systems={project.tech}
+          skip={skip}
+          replay={replay}
+        />
+        {/* Replay stays inside the media (appears on hover once animation completes) */}
+        {skip && (
+          <button
+            type="button"
+            className="project-replay"
+            aria-label={`Replay the automatic Tetris sequence for ${project.title}`}
+            onClick={() => { setSkip(false); setReplay(n => n + 1); }}
+          >
+            ↻ REPLAY BUILD
+          </button>
+        )}
+      </div>
+      {/* SHOW ARTWORK lives below the media — never hides the animation */}
+      {!skip && (
+        <button
+          type="button"
+          className="project-skip-bar"
+          onClick={() => setSkip(true)}
+          aria-label={`Show ${project.title} artwork now`}
+        >
+          SHOW ARTWORK ↓
+        </button>
+      )}
+    </>
+  );
+}
+
 function scrollToId(id: string) {
   playUi();
   const target = document.getElementById(id);
@@ -211,16 +262,7 @@ export function Portfolio() {
         <div className="project-grid">
           {projects.map((project, index) => (
             <ProjectLevel key={project.title} id={projectSlug(project.title)} title={project.title} index={index} piece={project.piece} featured={project.featured}>
-              <div className="project-media">
-                <Image
-                  src={project.image}
-                  alt={project.imageAlt}
-                  fill
-                  sizes="(max-width: 820px) 100vw, 50vw"
-                  className="project-photo"
-                />
-                <ProjectGameplay level={index} title={project.title} systems={project.tech} />
-              </div>
+              <ProjectMedia project={project} index={index} />
               <div className="project-top">
                 <PieceGlyph name={project.piece} />
                 <span className="pixel-label">{project.label}</span>

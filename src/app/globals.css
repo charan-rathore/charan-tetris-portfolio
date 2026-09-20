@@ -2108,9 +2108,10 @@ p {
 .project-gameplay { position:absolute; inset:0; width:100%; height:100%; z-index:3; pointer-events:none; opacity:1; transition:opacity .65s ease; }
 .project-gameplay[data-done=true] { opacity:0; }
 .project-replay { position:absolute; bottom:10px; right:10px; z-index:4; min-height:44px; padding:10px 12px; border:1px solid #59728b; background:#070c16ed; color:#c6e9ff; font:9px var(--font-geist-mono),monospace; cursor:pointer; opacity:0; transition:opacity .2s; }
-.project-media:hover .project-replay, .project-media:focus-within .project-replay, .project-gameplay[data-done=true]~.project-replay { opacity:1; }
-.project-skip { position:absolute; bottom:10px; left:10px; z-index:4; min-height:44px; padding:10px 12px; border:1px solid #59728b; background:#070c16ed; color:#c6e9ff; font:9px var(--font-geist-mono),monospace; cursor:pointer; }
-.project-gameplay[data-done=true]~.project-skip { display:none; }
+.project-media:hover .project-replay, .project-media:focus-within .project-replay { opacity:1; }
+/* SHOW ARTWORK sits below the media, never on top of the animation */
+.project-skip-bar { display:flex; align-items:center; width:100%; min-height:40px; padding:8px 16px; border:0; border-top:1px solid #1e3346; background:#080e1a; color:#6b8aaa; font:9px/1 var(--font-geist-mono),monospace; letter-spacing:.08em; cursor:pointer; transition:background .15s,color .15s; }
+.project-skip-bar:hover { background:#0f1e30; color:#a8cce8; }
 .mcp-bridge { background:radial-gradient(ellipse at 55% 65%,color-mix(in srgb,var(--signal) 9%,transparent),transparent 65%); }
 @media(max-width:820px) { .project-replay { opacity:1; } }
 @media(prefers-reduced-motion:reduce) { .project-gameplay { display:none; } .project-replay { display:none; } }
@@ -2240,11 +2241,11 @@ button, a, input, textarea, summary { scroll-margin-top: calc(var(--header-h) + 
   bounding box, so "center" lands exactly on the ellipse center in SVG space
   regardless of how the SVG is scaled in the page.
 */
-.bridge-orbit { transform-box:fill-box; transform-origin:center; animation:bridge-orbit-turn 90s linear infinite; }
+/* .bridge-orbit rotation is driven by RAF in BridgeScene.tsx via SVG rotate(angle cx cy) */
+.bridge-orbit { will-change:transform; }
 @keyframes bridge-flow { to { stroke-dashoffset:-100; } }
 @keyframes bridge-arrive { from { transform:translateY(-35px); opacity:0; } to { transform:translateY(0); opacity:1; } }
-@keyframes bridge-orbit-turn { to { transform:rotate(360deg); } }
-@media(prefers-reduced-motion:reduce) { .bridge-current,.bridge-core,.bridge-orbit { animation:none; } }
+@media(prefers-reduced-motion:reduce) { .bridge-current,.bridge-core { animation:none; } }
 .thought-playfield { left:0; width:58%; }
 /* A closing move, with a real selection and a matching space in the board. */
 .conversation-game { overflow:hidden; }
@@ -2464,7 +2465,7 @@ body { background:radial-gradient(ellipse at 6% 8%,#18344c44,transparent 38%),ra
 .mcp-output p { font-size:14px; line-height:1.6; }
 .mcp-console-foot { font-size:8px; padding:12px 16px; }
 .ambient-toggle { width:36px; min-height:36px; border:1px solid var(--line); cursor:pointer; color:#a8bdd7; }
-[data-ambient=paused] .ambient-motion,[data-ambient=paused] .bridge-current,[data-ambient=paused] .bridge-core,[data-ambient=paused] .bridge-orbit { animation-play-state:paused; }
+[data-ambient=paused] .ambient-motion,[data-ambient=paused] .bridge-current,[data-ambient=paused] .bridge-core { animation-play-state:paused; }
 .contact-gmail-icon { width:64px; height:64px; min-width:64px; padding:14px!important; justify-content:center; border-radius:50%; background:#121b2a; border:1px solid #3e4d66; }
 .contact-gmail-icon:hover { border-color:#efce78; background:#1a2639; }
 /* The credit loop: one coin arcs into the mail slot, the message box inherits
@@ -2540,4 +2541,4 @@ body { background:radial-gradient(ellipse at 6% 8%,#18344c44,transparent 38%),ra
   .contact-coin.is-drop .coin-scene { visibility:hidden; }
 }
 @media(max-width:850px) { .hero--mcp { gap:24px; } .mcp-console { width:100%; } .bridge-choices { margin-inline:12px; gap:6px; } .bridge-choices span {font-size:14px;} .mcp-console-foot {flex-wrap:wrap;} }
-@media(prefers-reduced-motion:reduce) { .ambient-motion,.bridge-current,.bridge-core,.bridge-orbit {animation:none!important;} }
+@media(prefers-reduced-motion:reduce) { .ambient-motion,.bridge-current,.bridge-core {animation:none!important;} }
