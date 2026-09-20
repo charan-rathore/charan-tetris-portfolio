@@ -90,7 +90,8 @@ export function BridgeScene({ color, mode }: { color: string; mode: number }) {
     if (!el) return;
     // Re-trigger CSS animation by removing + re-adding the class
     el.classList.remove('bridge-pulse-fire');
-    void el.offsetWidth; // force reflow
+    // SVGCircleElement has no offsetWidth — getBBox() forces the same reflow.
+    void el.getBBox();
     el.classList.add('bridge-pulse-fire');
   }, [mode]);
 
