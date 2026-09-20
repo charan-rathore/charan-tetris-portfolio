@@ -2285,6 +2285,54 @@ button, a, input, textarea, summary { scroll-margin-top: calc(var(--header-h) + 
 }
 
 @media(prefers-reduced-motion:reduce) { .bridge-current,.bridge-core,.bridge-pulse-fire { animation:none; } }
+
+/* ── Tetris Marquee (paper.design infinite horizontal strip, Tetris-adapted) ───────── */
+.tetris-marquee {
+  overflow:hidden;
+  height:76px;
+  display:flex;
+  align-items:center;
+  border-block:1px solid #15263a;
+  background:linear-gradient(to right,#070d18,#090f1e 40%,#090f1e 60%,#070d18);
+  /* soft fade at edges to blend with the page */
+  -webkit-mask:linear-gradient(to right,transparent 0%,black 7%,black 93%,transparent 100%);
+  mask:linear-gradient(to right,transparent 0%,black 7%,black 93%,transparent 100%);
+  isolation:isolate;
+}
+.tetris-marquee-track {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  /* track is doubled in JSX; animate by exactly -50% = one full set */
+  animation:tetris-scroll 28s linear infinite;
+  will-change:transform;
+}
+.marquee-piece { width:76px; height:50px; flex:none; display:block; }
+@keyframes tetris-scroll { to { transform:translateX(-50%); } }
+@media(prefers-reduced-motion:reduce) { .tetris-marquee-track { animation:none; } }
+
+/* ── Cursor-beam spotlight (paper.design lighting depth, Tetris dark-space adapted) ── */
+/*
+  The <main> element exposes --beam-x / --beam-y CSS vars (updated by JS
+  mousemove). A fixed pseudo-element renders the spotlight so it follows the
+  cursor at the viewport level, independent of scroll position.
+*/
+main[data-ambient]::after {
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background:radial-gradient(
+    ellipse 700px 500px at var(--beam-x,50%) var(--beam-y,50%),
+    color-mix(in srgb,#00e0ff 5%,transparent) 0%,
+    transparent 70%
+  );
+  opacity:var(--beam-opacity,0);
+  transition:opacity .4s ease;
+}
+main[data-ambient][data-ambient=paused]::after { opacity:0; }
+
 .thought-playfield { left:0; width:58%; }
 /* A closing move, with a real selection and a matching space in the board. */
 .conversation-game { overflow:hidden; }
