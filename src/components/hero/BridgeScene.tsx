@@ -5,21 +5,22 @@ import { IsoBlock } from './IsoBlock';
 
 const CX = 300;
 const CY = 162;
-const PORT_R = 128;
-const DOCK_R = 54; // cable leaves the platform face, never the interior
+const PORT_R = 148;
+const DOCK_R = 62;
 const PORT_NAMES = ['T', 'O', 'L'] as const;
 const BASE_RADS = [210, 330, 90].map(d => (d * Math.PI) / 180);
 
 /**
  * Human-interface switchboard.
  *
- * Outer marks rotate slowly on the ellipse. The three port tetrominos orbit
- * on a circle. The *active* port is joined to the platform by a short isometric
- * cable that docks at the platform face — never a line through the core.
+ * Satellites orbit. The active one is joined to the platform face by an
+ * isometric elbow trace drawn *on top* of the hex — never a line through
+ * the core, never hidden under the platform.
  */
 export function BridgeScene({ color, mode }: { color: string; mode: number }) {
   const orbitRef = useRef<SVGGElement>(null);
   const portsRef = useRef<SVGGElement>(null);
+  const glowRef = useRef<SVGPathElement>(null);
   const cableRef = useRef<SVGPathElement>(null);
   const pulseRef = useRef<SVGPathElement>(null);
   const dockRef = useRef<SVGCircleElement>(null);
@@ -48,7 +49,6 @@ export function BridgeScene({ color, mode }: { color: string; mode: number }) {
       const portDeg = -(r.ms / 42_000) * 360 % 360;
       portsRef.current?.setAttribute('transform', `rotate(${portDeg.toFixed(2)} ${CX} ${CY})`);
 
-      // Active satellite world position (base angle + current rotation).
       const a = BASE_RADS[r.mode] + (portDeg * Math.PI) / 180;
       const sx = CX + Math.cos(a) * PORT_R;
       const sy = CY + Math.sin(a) * PORT_R;
@@ -57,18 +57,18 @@ export function BridgeScene({ color, mode }: { color: string; mode: number }) {
       const len = Math.hypot(dx, dy) || 1;
       const ux = dx / len;
       const uy = dy / len;
-      // Dock sits on the platform face, toward the satellite.
       const dockX = CX + ux * DOCK_R;
       const dockY = CY + uy * DOCK_R;
-      // Jack sits just short of the satellite so the cable meets the piece, not its centre.
-      const jackX = CX + ux * (PORT_R - 18);
-      const jackY = CY + uy * (PORT_R - 18);
-      // Control point: isometric elbow, bowed slightly outward.
-      const midX = (dockX + jackX) / 2;
-      const midY = (dockY + jackY) / 2;
-      const cpx = midX - uy * 22 + ux * 6;
-      const cpy = midY + ux * 22 + uy * 6;
-      const d = `M${dockX.toFixed(1)} ${dockY.toFixed(1)} Q${cpx.toFixed(1)} ${cpy.toFixed(1)} ${jackX.toFixed(1)} ${jackY.toFixed(1)}`;
+      const jackX = CX + ux * (PORT_R - 20);
+      const jackY = CY + uy * (PORT_R - 20);
+
+      // Isometric elbow: first along the 2:1 iso axis, then into the piece.
+      const spanX = jackX - dockX;
+      const elbowX = dockX + spanX * 0.58;
+      const elbowY = dockY + spanX * 0.58 * 0.5;
+      const d = `M${dockX.toFixed(1)} ${dockY.toFixed(1)} L${elbowX.toFixed(1)} ${elbowY.toFixed(1)} L${jackX.toFixed(1)} ${jackY.toFixed(1)}`;
+
+      glowRef.current?.setAttribute('d', d);
       cableRef.current?.setAttribute('d', d);
       pulseRef.current?.setAttribute('d', d);
       dockRef.current?.setAttribute('cx', dockX.toFixed(1));
@@ -160,7 +160,6 @@ export function BridgeScene({ color, mode }: { color: string; mode: number }) {
           })}
         </g>
 
-        {/* Satellites only — cables are drawn separately so they never cut the core. */}
         <g ref={portsRef}>
           {BASE_RADS.map((a, i) => {
             const x = CX + Math.cos(a) * PORT_R;
@@ -180,14 +179,9 @@ export function BridgeScene({ color, mode }: { color: string; mode: number }) {
           })}
         </g>
 
-        {/* Soft under-stroke so the cable reads as a trace, not a raw line. */}
-        <path ref={cableRef} fill="none" stroke={color} strokeOpacity=".35" strokeWidth="5" strokeLinecap="round" />
-        <path ref={pulseRef} className="bridge-current" fill="none" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeDasharray="7 18" />
-        <circle ref={dockRef} r="3.4" fill={color} stroke="#071221" strokeWidth="1.4" />
-        <circle ref={jackRef} r="2.4" fill="#f4fbff" stroke={color} strokeWidth="1.2" />
-
         <circle ref={ringRef} cx={CX} cy={CY} r="20" fill="none" stroke={color} strokeWidth="2" />
 
+        {/* Platform first, so the cable can sit on the face instead of under it. */}
         <path d="M229 148 300 115 371 148V176L300 213 229 176Z" fill="#071221" stroke={color} strokeOpacity=".7" />
         <path d="M229 148 300 185 371 148M300 185V213" stroke={color} strokeOpacity=".4" fill="none" />
 
@@ -201,6 +195,13 @@ export function BridgeScene({ color, mode }: { color: string; mode: number }) {
             />
           ))}
         </g>
+
+        {/* Cable on top of the platform — isometric elbow, glow + pulse. */}
+        <path ref={glowRef} fill="none" stroke={color} strokeOpacity=".22" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
+        <path ref={cableRef} fill="none" stroke={color} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+        <path ref={pulseRef} className="bridge-current" fill="none" stroke="#ffffff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="6 22" />
+        <circle ref={dockRef} r="4.2" fill={color} stroke="#071221" strokeWidth="1.6" />
+        <circle ref={jackRef} r="3" fill="#f4fbff" stroke={color} strokeWidth="1.4" />
       </svg>
     </div>
   );
