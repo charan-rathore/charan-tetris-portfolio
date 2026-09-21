@@ -2289,25 +2289,19 @@ button, a, input, textarea, summary { scroll-margin-top: calc(var(--header-h) + 
 
 @media(prefers-reduced-motion:reduce) { .bridge-current,.bridge-core,.bridge-pulse-fire { animation:none; } }
 
-/* ── Paper fold (paper.design circular peel, Tetris-adapted) ───────── */
+/* ── Paper peel (paper.design circular sheet, no tetromino bar) ───────── */
 .paper-fold {
   position:relative;
-  height:110px;
+  height:168px;
   overflow:hidden;
-  margin:8px 0 4px;
+  margin:12px 0 0;
   pointer-events:none;
 }
-.paper-fold svg { display:block; width:100%; height:110px; }
-.paper-fold-arc--slow { animation:paper-arc-drift 22s linear infinite; }
-.paper-fold-piece { animation:paper-piece-breathe 5.6s ease-in-out infinite; }
-.paper-fold-piece:nth-child(even) { animation-delay:-2.4s; }
-@keyframes paper-arc-drift { to { stroke-dashoffset:-558; } }
-@keyframes paper-piece-breathe {
-  0%,100% { transform:translateY(0); }
-  50% { transform:translateY(-5px); }
-}
+.paper-fold svg { display:block; width:100%; height:168px; }
+.paper-fold-arc--slow { animation:paper-arc-drift 18s linear infinite; }
+@keyframes paper-arc-drift { to { stroke-dashoffset:-1008; } }
 @media(prefers-reduced-motion:reduce) {
-  .paper-fold-arc--slow,.paper-fold-piece { animation:none; }
+  .paper-fold-arc--slow { animation:none; }
 }
 
 /* ── Thesis sheet — a folded page in the about column ───────── */
