@@ -14,10 +14,10 @@ import { GamePanel } from "./tetris/GamePanel";
 import { INTEL, useUnlockedIntel } from "./tetris/intel";
 import { PIECES, PieceName } from "./tetris/types";
 
-import { projects, experience, RESUME_URL } from "../data/portfolio";
+import { projects, experience, RESUME_URL, THESIS } from "../data/portfolio";
 import { KnowledgeWell } from "./graph/KnowledgeWell";
 import { WorkingSystem } from "./WorkingSystem";
-import { TetrisMarquee } from "./TetrisMarquee";
+import { PaperFold } from "./PaperFold";
 import { ContactCoin } from "./ContactCoin";
 import { TwoSeconds } from "./TwoSeconds";
 import { HuesSignature } from "./HuesSignature";
@@ -263,12 +263,21 @@ export function Portfolio() {
             >
               EXPLORE PROJECTS ↓
             </button>
+            <a
+              className="btn-ghost"
+              href={THESIS.href}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => playUi()}
+            >
+              READ THE PAPER ↗
+            </a>
           </div>
         </div>
 
       </section>
 
-      <TetrisMarquee />
+      <PaperFold />
 
       <KnowledgeWell />
 
@@ -363,7 +372,7 @@ export function Portfolio() {
         </div>
       </section>
 
-      <TetrisMarquee />
+      <PaperFold />
 
       <section className="about-section" id="about">
         <WorkingSystem />
@@ -395,6 +404,19 @@ export function Portfolio() {
 
           <GitHubPulse />
         </div>
+
+        <a
+          className="thesis-sheet"
+          href={THESIS.href}
+          target="_blank"
+          rel="noreferrer"
+          onClick={() => playUi()}
+        >
+          <span className="pixel-label">THE PAPER · {THESIS.venue} {THESIS.id}</span>
+          <h3>{THESIS.title}</h3>
+          <p>{THESIS.copy}</p>
+          <span className="thesis-sheet-cta">READ ON ARXIV ↗</span>
+        </a>
 
         <div className="xp-list">
           {experience.map((item) => (
@@ -474,6 +496,17 @@ export function Portfolio() {
               width={28}
               height={28}
             />
+          </a>
+          <a
+            className="contact-icon-link"
+            href={THESIS.href}
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => playUi()}
+            title="Latest paper on arXiv"
+          >
+            <span className="contact-arxiv" aria-hidden="true">arXiv</span>
+            <span className="sr-only">Latest paper on arXiv</span>
           </a>
           {unlocked.has("substack") ? (
             <a

@@ -246,6 +246,15 @@ export const experience = [
 export const RESUME_URL =
   "https://drive.google.com/file/d/1vjBP8P8sgW30tyGk3gxGDrOI_ZUInl6u/view?usp=drive_link";
 
+export const THESIS_URL = "https://arxiv.org/abs/2512.15312";
+export const THESIS = {
+  href: THESIS_URL,
+  id: "2512.15312",
+  title: "Evaluating LLMs for Zeolite Synthesis Event Extraction",
+  venue: "arXiv",
+  copy: "A systematic look at prompting strategies for scientific event extraction — what general-purpose models can (and cannot) pull from experimental procedures.",
+} as const;
+
 export const TECH_LOGOS: {
   name: string;
   file: string;

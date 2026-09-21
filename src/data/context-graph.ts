@@ -1,4 +1,4 @@
-import { projects, experience, RESUME_URL } from './portfolio';
+import { projects, experience, RESUME_URL, THESIS } from './portfolio';
 import type { PieceName } from '../components/tetris/types';
 
 export type ContextNode = { id: string; label: string; depth: number; detail: string; piece: PieceName; source_file: string; href?: string; tools?: string[] };
@@ -43,6 +43,36 @@ experience.slice(0, 2).forEach((job, i) => {
   const e = add({ id: `resume:${i}`, label: 'Read the experience', detail: `${job.period} · ${job.role} at ${job.place}.`, href: RESUME_URL, depth: 4, piece: job.piece });
   link('signals', p, 'at work', 2); link(p, c, 'the focus'); link(c, r, 'why it matters'); link(r, e, 'read more', 2);
 });
+const paper = add({
+  id: 'paper:zsee',
+  label: 'Read the paper',
+  detail: `${THESIS.title}. ${THESIS.venue} ${THESIS.id}.`,
+  href: THESIS.href,
+  depth: 4,
+  piece: 'T',
+});
+link('intelligence', add({
+  id: 'work:paper',
+  label: 'Scientific extraction',
+  detail: 'How far can a general-purpose model go on zeolite synthesis procedures before it needs the domain?',
+  depth: 1,
+  piece: 'T',
+}), 'in research', 2);
+link('work:paper', add({
+  id: 'choice:paper',
+  label: 'Measure the prompting, not the hype',
+  detail: 'Zero-shot, few-shot, event-specific, and reflection — six models, four subtasks, the same 1,530 sentences.',
+  depth: 2,
+  piece: 'T',
+}), 'the approach');
+link('choice:paper', add({
+  id: 'impact:paper',
+  label: 'A benchmark you can cite',
+  detail: 'High-level classification holds. Fine-grained argument extraction still needs the domain. The numbers are in the paper.',
+  depth: 3,
+  piece: 'T',
+}), 'what it enables');
+link('impact:paper', paper, 'read more', 3);
 const systris = [
   ['project:systris', 'Systris · you are here', 'A portfolio you can play, then explore at your own pace.'],
   ['choice:systris', 'Let curiosity choose the route', 'React and TypeScript connect a real Tetris engine to the project stories. Isometric SVG keeps the opening consistent across browser graphics settings; Three.js powers the game.'],
