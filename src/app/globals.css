@@ -368,6 +368,9 @@ p {
 .btn-ghost {
   border-color: var(--line-bright);
   color: var(--dim);
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
 }
 
 .btn-ghost:hover {
@@ -2286,30 +2289,93 @@ button, a, input, textarea, summary { scroll-margin-top: calc(var(--header-h) + 
 
 @media(prefers-reduced-motion:reduce) { .bridge-current,.bridge-core,.bridge-pulse-fire { animation:none; } }
 
-/* ── Tetris Marquee (paper.design infinite horizontal strip, Tetris-adapted) ───────── */
-.tetris-marquee {
+/* ── Paper fold (paper.design circular peel, Tetris-adapted) ───────── */
+.paper-fold {
+  position:relative;
+  height:110px;
   overflow:hidden;
-  height:76px;
-  display:flex;
-  align-items:center;
-  border-block:1px solid #15263a;
-  background:linear-gradient(to right,#070d18,#090f1e 40%,#090f1e 60%,#070d18);
-  /* soft fade at edges to blend with the page */
-  -webkit-mask:linear-gradient(to right,transparent 0%,black 7%,black 93%,transparent 100%);
-  mask:linear-gradient(to right,transparent 0%,black 7%,black 93%,transparent 100%);
-  isolation:isolate;
+  margin:8px 0 4px;
+  pointer-events:none;
 }
-.tetris-marquee-track {
-  display:flex;
-  align-items:center;
-  gap:12px;
-  /* track is doubled in JSX; animate by exactly -50% = one full set */
-  animation:tetris-scroll 28s linear infinite;
-  will-change:transform;
+.paper-fold svg { display:block; width:100%; height:110px; }
+.paper-fold-arc--slow { animation:paper-arc-drift 22s linear infinite; }
+.paper-fold-piece { animation:paper-piece-breathe 5.6s ease-in-out infinite; }
+.paper-fold-piece:nth-child(even) { animation-delay:-2.4s; }
+@keyframes paper-arc-drift { to { stroke-dashoffset:-558; } }
+@keyframes paper-piece-breathe {
+  0%,100% { transform:translateY(0); }
+  50% { transform:translateY(-5px); }
 }
-.marquee-piece { width:76px; height:50px; flex:none; display:block; }
-@keyframes tetris-scroll { to { transform:translateX(-50%); } }
-@media(prefers-reduced-motion:reduce) { .tetris-marquee-track { animation:none; } }
+@media(prefers-reduced-motion:reduce) {
+  .paper-fold-arc--slow,.paper-fold-piece { animation:none; }
+}
+
+/* ── Thesis sheet — a folded page in the about column ───────── */
+.thesis-sheet {
+  display:block;
+  position:relative;
+  max-width:var(--maxw);
+  margin:28px auto 8px;
+  padding:28px 32px 26px;
+  background:
+    linear-gradient(135deg, transparent 64%, #c9b48a22 64.2%, #c9b48a22 70%, transparent 70.2%),
+    linear-gradient(#16110c, #120e0a);
+  border:1px solid #3a3228;
+  color:inherit;
+  text-decoration:none;
+  box-shadow:0 18px 50px #0007, inset 0 1px 0 #e8d7b412;
+  overflow:hidden;
+  transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.thesis-sheet::before {
+  content:"";
+  position:absolute;
+  top:0; right:0;
+  border-style:solid;
+  border-width:0 44px 44px 0;
+  border-color:transparent #c9b48a transparent transparent;
+  filter:drop-shadow(-2px 2px 0 #0004);
+}
+.thesis-sheet::after {
+  content:"";
+  position:absolute;
+  top:0; right:0;
+  border-style:solid;
+  border-width:0 44px 44px 0;
+  border-color:transparent transparent #1a1510 transparent;
+}
+.thesis-sheet .pixel-label { color:#d4c09a; }
+.thesis-sheet h3 {
+  font-size:clamp(20px,2.4vw,30px);
+  font-weight:500;
+  letter-spacing:-.03em;
+  line-height:1.25;
+  margin:12px 0 10px;
+  max-width:28ch;
+  color:#f3ead8;
+}
+.thesis-sheet p {
+  max-width:52ch;
+  color:#b7a78a;
+  line-height:1.65;
+  margin:0 0 18px;
+}
+.thesis-sheet-cta {
+  font:10px/1 var(--font-mono);
+  letter-spacing:.12em;
+  color:#e8d7b4;
+}
+.thesis-sheet:hover {
+  border-color:#c9b48a;
+  transform:translateY(-2px);
+  box-shadow:0 22px 56px #0008, 0 0 0 1px #c9b48a44;
+}
+.thesis-sheet:hover .thesis-sheet-cta { color:#fff6e0; }
+.contact-arxiv {
+  font:700 11px/1 var(--font-mono);
+  letter-spacing:.04em;
+  color:#e8d7b4;
+}
 
 /* ── Cursor-beam spotlight (paper.design lighting depth, Tetris dark-space adapted) ── */
 /*
