@@ -141,19 +141,21 @@ export function ProjectGameplay({
       ctx.fillText(`DEMO SCORE · ${lines} LINES`, tx, 80, available);
       ctx.fillStyle = lines >= 4 ? "#ffd500" : "#b968ff";
       ctx.fillText(lines >= 4 ? "TETRIS! +800" : "FIND THE FIT", tx, 105, available);
-      systems.slice(0, 4).forEach((system, i) => {
+      systems.slice(0, h < 210 ? 2 : 4).forEach((system, i) => {
         ctx.fillStyle = i <= index / 2 ? "#dbeaff" : "#526075";
         ctx.fillText(
           `${i <= index / 2 ? "■" : "□"} ${system.name}`,
           tx,
-          132 + i * 20,
+          132 + i * 18,
           available
         );
       });
       ctx.fillStyle = "#00e0ff";
-      ctx.fillRect(tx, h - 24, Math.max(0, available) * (index / count), 3);
-      ctx.fillStyle = "#72849d";
-      ctx.fillText("ASSEMBLING THE PROJECT", tx, h - 34, available);
+      ctx.fillRect(tx, h - 12, Math.max(0, available) * (index / count), 3);
+      if (h >= 260) {
+        ctx.fillStyle = "#72849d";
+        ctx.fillText("ASSEMBLING THE PROJECT", tx, h - 25, available);
+      }
     };
 
     const loop = (now: number) => {
