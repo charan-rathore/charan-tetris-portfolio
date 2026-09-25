@@ -1,60 +1,20 @@
-.context-dial { max-width:1200px; margin:80px auto; padding:0 24px; }
-.dial-heading { display:flex; justify-content:space-between; align-items:flex-end; gap:24px; }
-.dial-heading h2 { font-size:clamp(30px,4vw,50px); letter-spacing:-.035em; margin:18px 0 10px; }
-.dial-heading p,.dial-note { color:var(--dim); line-height:1.7; }
-.context-dial button,.context-dial a { font:inherit; }
-.context-dial button { cursor:pointer; }
-.dial-heading button,.dial-legend button,.dial-trail button,.dial-navigation button,.dial-bottom button { min-height:44px; background:transparent; border:0; color:var(--text); padding:8px 12px; }
-.context-dial button:focus-visible,.context-dial a:focus-visible { outline:2px solid var(--dial-color); outline-offset:5px; }
-.dial-trail { display:flex; flex-wrap:wrap; margin:24px 0 0; padding:12px 0; border-block:1px solid var(--line); font-size:12px; }
-.dial-trail span { display:inline-flex; align-items:center; }
-.dial-trail i { color:var(--dim); font-style:normal; }
-.dial-trail button[aria-current] { color:var(--dial-color); }
-.dial-layout { display:grid; grid-template-columns:1.25fr 1fr; gap:48px; align-items:center; }
-.dial-stage { position:relative; aspect-ratio:1; background:radial-gradient(circle,color-mix(in srgb,var(--dial-color) 6%,transparent),transparent 66%); }
-.dial-stage svg { width:100%; height:100%; }
-.dial-orbit { fill:none; stroke:#294057; stroke-width:1; stroke-dasharray:2 10; }
-.dial-piece { animation:dial-arrive .5s ease-out; }
-@keyframes dial-arrive { from { opacity:0; transform:translateY(-18px); } to { opacity:1; transform:translateY(0); } }
-.dial-center { position:absolute; top:55%; left:34%; width:32%; text-align:center; pointer-events:none; }
-.dial-center span { display:block; font:8px var(--font-mono); letter-spacing:1px; color:var(--dim); }
-.dial-center strong { display:block; font-size:14px; line-height:1.25; margin-top:6px; }
-.dial-node { position:absolute; transform:translate(-50%,-50%); width:27%; min-height:72px; padding:10px 8px; border:1px solid color-mix(in srgb,var(--node-color) 45%,#1c293c); border-bottom-width:4px; background:#0c1523; color:var(--text); text-align:center; transition:background .2s,border-color .2s; }
-.dial-node:hover { background:#16273b; border-color:var(--node-color); }
-.dial-node small { display:block; color:var(--node-color); font-size:10px; line-height:1.2; margin-bottom:5px; }
-.dial-node strong { display:block; font-weight:600; font-size:14px; line-height:1.2; }
-.dial-node>span { display:block; color:var(--node-color); margin-top:3px; line-height:1; }
-.dial-legend { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; font-size:11px; color:var(--dim); }
-.dial-legend b { margin-left:10px; color:var(--dial-color); }
-.dial-story { padding:24px 0; }
-.dial-story>.pixel-label { color:var(--dial-color); font-size:9px; line-height:1.8; }
-.dial-story h3 { font-size:clamp(25px,3vw,38px); line-height:1.15; margin:20px 0; }
-.dial-story>p { font-size:16px; color:#aebbd0; line-height:1.75; }
-.dial-story .dial-tools { font:12px/1.8 var(--font-mono); padding-left:14px; border-left:2px solid var(--dial-color); }
-.dial-tools span { display:block; color:var(--dial-color); margin-bottom:5px; }
-.dial-source { display:inline-flex; align-items:center; min-height:44px; color:var(--dial-color); font-size:12px!important; }
-.dial-open { display:block; width:fit-content; padding:16px 20px; background:var(--dial-color); color:#080d16; margin:20px 0; font-weight:600!important; }
-.dial-navigation { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-top:28px; font-size:12px; }
-.dial-navigation button { padding-left:0; }
-.dial-navigation a { display:inline-flex; min-height:44px; align-items:center; color:var(--dim); }
-.dial-story .dial-note { font-size:11px; margin-top:24px; max-width:48ch; }
-.dial-bottom { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px; border-top:1px solid var(--line); margin-top:32px; padding-top:20px; color:var(--dim); font-size:11px; }
-.dial-bottom .pixel-label { font-size:8px; line-height:1.8; }
-.dial-stage.is-reading { aspect-ratio:auto; padding:32px 0; background:none; }
-.is-reading .dial-nodes { display:grid; gap:12px; }
-.is-reading .dial-node { position:static; transform:none; width:100%; text-align:left; padding:15px; }
-@media(max-width:760px) { .context-dial { margin:56px auto; padding:0 20px; } .dial-heading { display:block; } .dial-heading button { padding-left:0; } .dial-layout { grid-template-columns:1fr; gap:12px; } .dial-node strong { font-size:12px; } .dial-node small { font-size:9px; } .dial-node { padding:8px 5px; } .dial-center strong { font-size:11px; } .dial-center span { font-size:7px; } .dial-story { padding:20px 0; } .dial-legend { font-size:10px; } }
-@media(prefers-reduced-motion:reduce) { .dial-piece { animation:none; } .dial-node { transition:none; } }
-.context-dial { margin:40px auto 48px; }
-.dial-layout { grid-template-columns:1fr 1fr; gap:32px; }
-.dial-stage { max-width:520px; margin-inline:auto; }
-.dial-heading h2 { font-weight:500; line-height:1.12; }
-.dial-center { top:54%; left:32%; width:36%; }
-.dial-center time { display:block; font:500 clamp(13px,2vw,22px)/1.4 var(--font-mono); color:#e4ecf8; font-variant-numeric:tabular-nums; margin-top:5px; }
-.dial-center small { display:block; font-size:10px; color:#8b9bb3; }
-.dial-orbit-spin { transform-origin:250px 250px; animation:dial-orbit-turn 120s linear infinite; }
-@keyframes dial-orbit-turn { to { transform:rotate(360deg); } }
-.dial-node { min-height:78px; box-shadow:0 8px 24px #0003; }
-.dial-node:active { background:color-mix(in srgb,var(--node-color) 18%,#0c1523); }
-@media(max-width:760px) { .dial-layout {grid-template-columns:1fr;gap:0;} .context-dial {margin-block:32px;} .dial-stage {width:100%;max-width:440px;} .dial-center time {font-size:14px;} .dial-center small {font-size:9px;} }
-@media(prefers-reduced-motion:reduce) { .dial-orbit-spin {animation:none;} }
+.work-network {max-width:1280px;margin:16px auto 40px;padding:24px var(--gutter);scroll-margin-top:85px}
+.network-heading {display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:22px}
+.network-heading h2 {font-size:clamp(28px,4vw,52px);line-height:1.05;margin:12px 0}
+.network-heading p {max-width:65ch;color:#b6c5d5;line-height:1.55}
+.network-heading button,.network-detail>a {border:1px solid #66d9ee;background:#123747;color:#e4faff;padding:13px 18px;font:600 12px monospace;cursor:pointer;white-space:nowrap}
+.network-content {display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:18px}
+.network-canvas {position:relative;min-height:470px;border:1px solid #38546b;background:radial-gradient(circle at center,#152b3e,#080f1b 72%);overflow:hidden}
+.network-canvas svg {position:absolute;inset:0;width:100%;height:100%}
+.network-canvas line {stroke:#3a6983;stroke-width:.24;vector-effect:non-scaling-stroke;opacity:.55}
+.network-canvas line.is-active {stroke:#f3cb6d;stroke-width:1.4;opacity:.9}
+.network-node {position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;gap:5px;max-width:120px;min-height:32px;border:1px solid #46637a;background:#0c1c2be8;color:#dbe8f4;padding:4px 7px;text-align:left;font:10px/1.15 monospace;cursor:pointer;z-index:2}
+.network-node:hover,.network-node.selected {border-color:#f1cd75;background:#263b44;color:#fff}
+.network-node.hub {font-weight:700;font-size:12px;padding:12px;background:#143448;box-shadow:0 0 35px #42bfe250}
+.network-dot {width:7px;height:7px;background:#64d9ee;flex:none}.hub .network-dot {background:#f1cd75}
+.network-detail {border:1px solid #38546b;background:#101b2b;padding:24px;display:flex;flex-direction:column;gap:12px}
+.network-detail h3 {font-size:25px;margin:0}.network-detail p {line-height:1.55;color:#c4d2dd;margin:0}
+.network-neighbors {display:flex;flex-wrap:wrap;gap:7px;margin-top:auto}.network-neighbors>span {width:100%;font:10px monospace;color:#9eb5c6}.network-neighbors button {background:#1b3142;color:#cde1ed;border:1px solid #3b6279;padding:5px 8px;font:10px monospace;cursor:pointer}
+.network-detail>a {display:block;text-align:center;text-decoration:none;white-space:normal;margin-top:10px}
+.network-content:not(.expanded) .network-canvas {min-height:350px}.network-content:not(.expanded) .network-node:not(.hub) {font-size:9px}
+@media(max-width:780px){.work-network{padding:20px}.network-heading{display:block}.network-heading button{margin-top:8px}.network-content{grid-template-columns:1fr}.network-canvas,.network-content:not(.expanded) .network-canvas{min-height:450px}.network-node{font-size:8px;max-width:72px;padding:3px}.network-node.hub{font-size:9px;padding:7px}.network-detail{min-height:200px}}

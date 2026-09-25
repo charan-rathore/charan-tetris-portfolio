@@ -167,8 +167,8 @@ export const projects: Project[] = [
   },
   {
     piece: "O",
-    label: "IOT + ML · LIVE",
-    title: "ThermoSense",
+    label: "FORECASTING · REPOSITORY",
+    title: "Time-Series Temperature Modelling",
     copy: "Can a forecast know your rooftop? Ground truth, API bias correction, ensemble models, and a public leaderboard. The product is the closed loop, not the model name.",
     image: "/projects/tetris-art/thermosense.png",
     imageAlt: "A weather mast on a small Tetris island",

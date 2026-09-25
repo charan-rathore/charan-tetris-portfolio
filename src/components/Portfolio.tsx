@@ -5,13 +5,10 @@ import { useEffect, useState } from "react";
 import { ThinkingField } from "./hero/ThinkingField";
 import { ConversationStarter } from "./ConversationStarter";
 import { McpHero } from "./hero/McpHero";
-import { GitHubPulse } from "./GitHubPulse";
 import { sfx } from "./tetris/audio";
 import { ProjectGameplay } from "./ProjectGameplay";
 import { ProjectLevel } from "./ProjectLevel";
 import { ContactForm } from "./ContactForm";
-import { GamePanel } from "./tetris/GamePanel";
-import { INTEL, useUnlockedIntel } from "./tetris/intel";
 import { PIECES, PieceName } from "./tetris/types";
 
 import { projects, experience, RESUME_URL, THESIS } from "../data/portfolio";
@@ -126,7 +123,7 @@ function scrollToId(id: string) {
 export function Portfolio() {
   const [ambient, setAmbient] = useState(true);
   const [time, setTime] = useState("");
-  const [activeSection, setActiveSection] = useState("play");
+  const [activeSection, setActiveSection] = useState("work");
 
   // Cursor-beam spotlight — updates CSS vars on the <main> element so the
   // radial glow follows the mouse anywhere on the page.
@@ -154,21 +151,14 @@ export function Portfolio() {
     const update = () => {
       const line = innerHeight * .35;
       const ids = ["work", "about", "contact"];
-      let active = "play";
+      let active = "work";
       for (const id of ids) { const node = document.getElementById(id); if (node && node.getBoundingClientRect().top <= line) active = id; }
-      const play = document.getElementById("play");
-      if (play?.closest("details")?.open) { const bounds = play.getBoundingClientRect(); if (bounds.top <= line && bounds.bottom > line) active = "play"; }
       setActiveSection(active); frame = 0;
     };
     const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
     schedule(); window.addEventListener("scroll",schedule,{passive:true});window.addEventListener("resize",schedule);
     return () => {cancelAnimationFrame(frame);window.removeEventListener("scroll",schedule);window.removeEventListener("resize",schedule);};
   }, []);
-  const unlocked = useUnlockedIntel();
-  const lockedChannels = INTEL.filter(
-    (item) => item.href && !item.href.startsWith("mailto:") && !unlocked.has(item.id),
-  ).length;
-
   useEffect(() => {
     const update = () =>
       setTime(
@@ -206,9 +196,6 @@ export function Portfolio() {
           CR
         </button>
         <nav aria-label="Primary">
-          <button type="button" aria-current={activeSection === "play" ? "location" : undefined} onClick={() => { setActiveSection("play"); scrollToId("play"); }}>
-            PLAY
-          </button>
           <button type="button" aria-current={activeSection === "work" ? "location" : undefined} onClick={() => { setActiveSection("work"); scrollToId("work"); }}>
             WORK
           </button>
@@ -247,7 +234,7 @@ export function Portfolio() {
             <span className="sr-only">Charan Rathore · </span>
             I build systems that make the pieces click.
           </h1>
-          <p className="hero-intro">I’m Charan. I build tools that connect evidence, turn data into decisions, and make complex work easier to understand. Explore the pieces behind them.</p>
+          <p className="hero-intro hero-identity-line">Analyst at MiQ, ex-Flipkart - I build RAG, memory and eval systems.</p>
           <div className="hero-actions">
             <button
               type="button"
@@ -285,14 +272,9 @@ export function Portfolio() {
         <div className="stage-heading">
           <span className="pixel-label accent-cyan">STAGE 02 · THE PROJECT STACK</span>
           <h2>Watch the work fall into place.</h2>
-          <p>Seven projects. Seven pieces. Scroll to build the stack. every project opens automatically.</p>
+          <p>Start with the systems I am building now. Follow the code, try the live work, then explore the rest.</p>
         </div>
 
-        <div className="campaign-strip"><span className="pixel-label accent-cyan">AUTO PLAY · 7 LEVELS</span><span>Scroll to advance ↓</span><a href="#bonus-game" onClick={() => scrollToId("play")}>PLAY FOR BONUS INTEL ↗</a></div>
-        <details className="bonus-game" id="bonus-game">
-          <summary><span className="pixel-label">+ BONUS ROUND</span><span>Take the controls. Unlock the personal side quests.</span><b>PLAY ↗</b></summary>
-          <GamePanel />
-        </details>
         <div className="project-grid">
           {projects.map((project, index) => (
             <ProjectLevel key={project.title} id={projectSlug(project.title)} title={project.title} index={index} piece={project.piece} featured={project.featured}>
@@ -402,7 +384,7 @@ export function Portfolio() {
             </p>
           </div>
 
-          <GitHubPulse />
+          <a className="github-simple" href="https://github.com/charan-rathore" target="_blank" rel="noreferrer"><span className="pixel-label accent-cyan">OPEN SOURCE / CURRENT WORK</span><strong>Explore the repositories, contributions and pull requests on GitHub.</strong><span>OPEN GITHUB PROFILE ↗</span></a>
         </div>
 
         <a
@@ -508,78 +490,13 @@ export function Portfolio() {
             <span className="contact-arxiv" aria-hidden="true">arXiv</span>
             <span className="sr-only">Latest paper on arXiv</span>
           </a>
-          {unlocked.has("substack") ? (
-            <a
-              className="contact-icon-link"
-              href="https://substack.com/@charanrathore"
-              target="_blank"
-              rel="noreferrer"
-              onClick={() => playUi()}
-              title="Substack"
-            >
-              <Image
-                src="/logos/substack.svg"
-                alt="Substack"
-                width={28}
-                height={28}
-              />
-            </a>
-          ) : (
-            <button
-              type="button"
-              className="contact-locked contact-icon-locked"
-              onClick={() => scrollToId("play")}
-              title="Substack locked · score 350"
-            >
-              <Image
-                src="/logos/substack.svg"
-                alt=""
-                width={22}
-                height={22}
-                className="is-locked-icon"
-              />
-              <span className="pixel-label">350</span>
-            </button>
-          )}
-          {unlocked.has("x") ? (
-            <a
-              className="contact-icon-link"
-              href="https://x.com/huesofbanter"
-              target="_blank"
-              rel="noreferrer"
-              onClick={() => playUi()}
-              title="X"
-            >
-              <Image src="/logos/x.svg" alt="X" width={28} height={28} />
-            </a>
-          ) : (
-            <button
-              type="button"
-              className="contact-locked contact-icon-locked"
-              onClick={() => scrollToId("play")}
-              title="X locked · score 650"
-            >
-              <Image
-                src="/logos/x.svg"
-                alt=""
-                width={22}
-                height={22}
-                className="is-locked-icon"
-              />
-              <span className="pixel-label">650</span>
-            </button>
-          )}
+          <a className="contact-icon-link" href="https://substack.com/@charanrathore" target="_blank" rel="noreferrer" title="Substack" aria-label="Substack"><Image src="/logos/substack.svg" alt="" width={28} height={28} /></a>
+          <a className="contact-icon-link" href="https://x.com/huesofbanter" target="_blank" rel="noreferrer" title="X" aria-label="X"><Image src="/logos/x.svg" alt="" width={28} height={28} /></a>
         </div>
-        {lockedChannels > 0 && (
-          <p className="contact-hint pixel-label">
-            {lockedChannels} CHANNEL{lockedChannels > 1 ? "S" : ""} STILL
-            ENCRYPTED · PLAY TO DECRYPT
-          </p>
-        )}
         <footer className="site-footer">
           <span>© 2026 CHARAN RATHORE</span>
           <HuesSignature />
-          <span>NEXT.JS + THREE.JS</span>
+          <span>SYSTRIS / V2 PREVIEW</span>
         </footer>
       </section>
     </main>
