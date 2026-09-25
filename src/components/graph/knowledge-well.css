@@ -18,3 +18,11 @@
 .network-detail>a {display:block;text-align:center;text-decoration:none;white-space:normal;margin-top:10px}
 .network-content:not(.expanded) .network-canvas {min-height:350px}.network-content:not(.expanded) .network-node:not(.hub) {font-size:9px}
 @media(max-width:780px){.work-network{padding:20px}.network-heading{display:block}.network-heading button{margin-top:8px}.network-content{grid-template-columns:1fr}.network-canvas,.network-content:not(.expanded) .network-canvas{min-height:450px}.network-node{font-size:8px;max-width:72px;padding:3px}.network-node.hub{font-size:9px;padding:7px}.network-detail{min-height:200px}}
+/* On a phone, show every connection as a readable map index instead of clipping labels. */
+@media(max-width:600px){
+ .network-canvas,.network-content:not(.expanded) .network-canvas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:8px;min-height:0;padding:16px;overflow:visible}
+ .network-canvas svg{display:none}
+ .network-node,.network-content:not(.expanded) .network-node,.network-node.hub{position:static;transform:none;max-width:none;width:100%;min-height:46px;font-size:11px;line-height:1.2;padding:8px;text-align:left}
+ .network-node.hub{grid-column:1/-1;justify-content:center}
+ .network-detail{padding:20px}
+}
