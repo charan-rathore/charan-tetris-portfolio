@@ -79,14 +79,14 @@ function ProjectMedia({ project, index }: { project: (typeof projects)[number]; 
           sizes="(max-width: 820px) 100vw, 50vw"
           className="project-photo"
         />
-        <ProjectGameplay
+        {index > 1 && <ProjectGameplay
           level={index}
           systems={project.tech}
           skip={skip}
           replay={replay}
-        />
+        />}
         {/* Replay stays inside the media (appears on hover once animation completes) */}
-        {skip && (
+        {index > 1 && skip && (
           <button
             type="button"
             className="project-replay"
@@ -98,7 +98,7 @@ function ProjectMedia({ project, index }: { project: (typeof projects)[number]; 
         )}
       </div>
       {/* SHOW ARTWORK lives below the media — never hides the animation */}
-      {!skip && (
+      {index > 1 && !skip && (
         <button
           type="button"
           className="project-skip-bar"
