@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { ThinkingField } from "./hero/ThinkingField";
 import { ConversationStarter } from "./ConversationStarter";
 import { McpHero } from "./hero/McpHero";
+import { GitHubPulse } from "./GitHubPulse";
 import { sfx } from "./tetris/audio";
 import { ProjectGameplay } from "./ProjectGameplay";
 import { ProjectLevel } from "./ProjectLevel";
@@ -79,14 +80,14 @@ function ProjectMedia({ project, index }: { project: (typeof projects)[number]; 
           sizes="(max-width: 820px) 100vw, 50vw"
           className="project-photo"
         />
-        {index > 1 && <ProjectGameplay
+        {<ProjectGameplay
           level={index}
           systems={project.tech}
           skip={skip}
           replay={replay}
         />}
         {/* Replay stays inside the media (appears on hover once animation completes) */}
-        {index > 1 && skip && (
+        {skip && (
           <button
             type="button"
             className="project-replay"
@@ -98,7 +99,7 @@ function ProjectMedia({ project, index }: { project: (typeof projects)[number]; 
         )}
       </div>
       {/* SHOW ARTWORK lives below the media — never hides the animation */}
-      {index > 1 && !skip && (
+      {!skip && (
         <button
           type="button"
           className="project-skip-bar"
@@ -384,7 +385,7 @@ export function Portfolio() {
             </p>
           </div>
 
-          <a className="github-simple" href="https://github.com/charan-rathore" target="_blank" rel="noreferrer"><span className="pixel-label accent-cyan">OPEN SOURCE / CURRENT WORK</span><strong>Explore the repositories, contributions and pull requests on GitHub.</strong><span>OPEN GITHUB PROFILE ↗</span></a>
+          <GitHubPulse />
         </div>
 
         <a
