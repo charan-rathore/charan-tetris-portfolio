@@ -1,4 +1,6 @@
 "use client";
+import { IsoBlock } from "./IsoBlock";
+import { PIECES } from "../tetris/types";
 
 const points = [
   [68,148,"RAG"],[126,64,"EVAL"],[186,180,"MEMORY"],[258,62,"OSS"],
@@ -14,6 +16,7 @@ export function BridgeScene({ color }: { color: string; mode: number }) {
       {points.map(([x,y,label],i)=><g key={label}><circle cx={x} cy={y} r={i%3===0?7:5} fill={i%3===0?"#ffd166":color}/><text x={x} y={y-15} fill="#c9d8e7" fontSize="10" textAnchor="middle" fontFamily="monospace">{label}</text></g>)}
       <path d="M238 129 300 97 362 129V179L300 212 238 179Z" fill="#091b29" stroke={color} strokeWidth="2"/>
       <path d="M238 129 300 163 362 129M300 163V212" stroke={color} strokeOpacity=".6" fill="none"/>
+      <g className="bridge-core-piece">{PIECES.T.rotations[0].map(([x,y],i)=><IsoBlock key={i} x={300+(x-y)*17} y={120+(x+y)*8} size={16} height={16} color={color}/>)}</g>
     </svg>
   </div>;
 }

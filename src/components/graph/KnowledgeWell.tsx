@@ -1,41 +1,59 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useId, useState, type CSSProperties } from 'react';
+import { childrenOf, contextGraph, nodeById } from '../../data/context-graph';
+import { PIECES } from '../tetris/types';
+import { IsoBlock } from '../hero/IsoBlock';
 import './knowledge-well.css';
 
-type Node = { id: string; title: string; category: string; detail: string; href: string; x: number; y: number };
-const nodes: Node[] = [
-  {id:'github',title:'GitHub / Charan',category:'THE HUB',detail:'Start with the code. The edges show how evidence, memory and open-source contributions inform one another.',href:'https://github.com/charan-rathore',x:50,y:50},
-  {id:'rag',title:'Retrieval + evidence',category:'PRACTICE',detail:'Making answers traceable to their sources, rather than asking users to trust a black box.',href:'https://github.com/charan-rathore/IntelliRAG',x:22,y:24},
-  {id:'intellirag',title:'IntelliRAG',category:'FLAGSHIP / REPO',detail:'An end-to-end RAG system: ingestion, retrieval, citations, workers and evaluation. Follow the evidence behind an answer.',href:'https://github.com/charan-rathore/IntelliRAG',x:11,y:10},
-  {id:'eval',title:'Evaluation',category:'PRACTICE',detail:'Test cases and inspectable failures make an AI system better, not merely more convincing.',href:'https://github.com/charan-rathore/IntelliRAG',x:40,y:10},
-  {id:'memory',title:'Memory + context',category:'PRACTICE',detail:'Useful context should stay connected to its origin, even as it moves into new formats.',href:'https://github.com/charan-rathore/memoRABLE',x:16,y:64},
-  {id:'memorable',title:'memoRABLE',category:'PRODUCT / REPO',detail:'Turns documents into six source-linked memory blocks, then into useful output without losing the source.',href:'https://github.com/charan-rathore/memoRABLE',x:8,y:84},
-  {id:'magpie',title:'magpie / merged',category:'OPEN SOURCE / PR',detail:'A merged provider fix preserves prompts when two Codex accounts save with the same timestamp.',href:'https://github.com/yetone/magpie/pull/74',x:79,y:12},
-  {id:'copilotkit',title:'CopilotKit / open',category:'OPEN SOURCE / PR',detail:'An open PR fixes the upsert of same-ID activity messages in the agent frontend stack.',href:'https://github.com/CopilotKit/CopilotKit/pull/7453',x:94,y:31},
-  {id:'vllm',title:'vLLM',category:'INFERENCE / FORK',detail:'Exploring the high-throughput serving engine and its contribution surface.',href:'https://github.com/charan-rathore/vllm',x:87,y:57},
-  {id:'llama',title:'llama.cpp',category:'INFERENCE / FORK',detail:'Exploring efficient local C/C++ inference, close to the system underneath an answer.',href:'https://github.com/charan-rathore/llama.cpp',x:91,y:83},
-  {id:'interface',title:'Human interface',category:'PRACTICE',detail:'Present the output, evidence and decisions clearly so that someone can act on them.',href:'https://github.com/charan-rathore/charan-tetris-portfolio',x:59,y:83},
-  {id:'systris',title:'Systris',category:'PORTFOLIO / REPO',detail:'This Tetris-inspired interface connects the projects to the decisions behind them.',href:'https://github.com/charan-rathore/charan-tetris-portfolio',x:42,y:94},
-  {id:'miq',title:'MiQ / analytics',category:'EXPERIENCE',detail:'Analyst work across MENA: turning signals into decisions.',href:'https://github.com/charan-rathore',x:36,y:73},
-  {id:'forecast',title:'Temperature modelling',category:'PROJECT / REPO',detail:'Time-series forecasting through statistical modelling, seasonal decomposition and tests.',href:'https://github.com/charan-rathore/Time-Series-Temperature-Modelling',x:72,y:94},
-];
-const connections: [string,string][] = [
-  ['github','rag'],['github','memory'],['github','magpie'],['github','copilotkit'],['github','vllm'],['github','llama'],['github','interface'],['github','miq'],
-  ['rag','intellirag'],['rag','eval'],['intellirag','eval'],['rag','memory'],['memory','memorable'],['memory','interface'],['eval','magpie'],['magpie','copilotkit'],['copilotkit','interface'],['vllm','llama'],['vllm','rag'],['llama','rag'],['interface','systris'],['miq','forecast'],['miq','interface'],['forecast','rag'],['systris','github']
-];
-const byId = Object.fromEntries(nodes.map(n=>[n.id,n]));
 export function KnowledgeWell() {
-  const [active,setActive]=useState('github');
-  const [expanded,setExpanded]=useState(false);
-  const node=byId[active];
-  return <section id="context" className="work-network" aria-labelledby="network-title">
-    <div className="network-heading"><div><span className="pixel-label accent-cyan">THE WORK / CONNECTED</span><h2 id="network-title">One hub. Many connected questions.</h2><p>Click the graph to explore the source code, projects and open-source work. Lines show editorial connections, not measured impact.</p></div><button type="button" onClick={()=>setExpanded(!expanded)} aria-expanded={expanded}>{expanded?'CLOSE GRAPH':'OPEN THE FULL GRAPH ↗'}</button></div>
-    <div className={'network-content'+(expanded?' expanded':'')}>
-      <div className="network-canvas" role="group" aria-label="Interactive graph of projects and open-source work">
-        <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">{connections.map(([a,b],i)=><line key={i} x1={byId[a].x} y1={byId[a].y} x2={byId[b].x} y2={byId[b].y} className={a===active||b===active?'is-active':''}/>)}</svg>
-        {nodes.map(n=><button key={n.id} type="button" className={'network-node '+(n.id==='github'?'hub ':'')+(n.id===active?'selected':'')} style={{left:`${n.x}%`,top:`${n.y}%`}} onClick={()=>{setActive(n.id);setExpanded(true)}} aria-pressed={n.id===active}><span className="network-dot"/><span>{n.title}</span></button>)}
+  const titleId = useId();
+  const [trail, setTrail] = useState<string[]>([]);
+  const [page, setPage] = useState(0);
+  const [reading, setReading] = useState(false);
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => { const tick=()=>setNow(new Date());tick();const timer=setInterval(tick,1000);return()=>clearInterval(timer); }, []);
+  const clock = now ? new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit',second:'2-digit'}).format(now) : '--:--:--';
+  const date = now ? new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Kolkata',weekday:'short',day:'numeric',month:'short'}).format(now) : 'Today';
+  const current = nodeById.get(trail.at(-1) || '');
+  const candidates = current ? childrenOf(current.id) : contextGraph.nodes.filter(n => n.depth === 0).map(node => ({ node, relation: 'start here', importance: 2 }));
+  const visible = candidates.slice(page * 4, page * 4 + 4);
+  const color = current ? PIECES[current.piece].color : '#00e0ff';
+  const choose = (id: string) => { setTrail([...trail, id]); setPage(0); };
+  const back = (length: number) => { setTrail(trail.slice(0, length)); setPage(0); };
+  const download = () => { const url = URL.createObjectURL(new Blob([JSON.stringify(contextGraph, null, 2)], { type: 'application/json' })); const a = document.createElement('a'); a.href = url; a.download = 'charan-context-graph.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); };
+  const positions = visible.map((_, i) => { const angle = -Math.PI / 2 + i * Math.PI * 2 / visible.length; return { x: 250 + Math.cos(angle) * 180, y: 250 + Math.sin(angle) * 178 }; });
+  return <section id="context" className="context-dial" aria-labelledby={titleId} style={{ '--dial-color': color } as CSSProperties}>
+    <div className="dial-heading"><div><span className="pixel-label accent-cyan">WHAT BROUGHT YOU HERE TODAY?</span><h2 id={titleId}>Pick a question.<br />Find the starting layer.</h2><p>Choose a piece. Follow the decisions down to the work.</p></div><button type="button" onClick={() => setReading(!reading)} aria-pressed={reading}>{reading ? 'Show the dial' : 'Read as a list'}</button></div>
+    <nav className="dial-trail" aria-label="Your story path"><button onClick={() => back(0)}>The outside</button>{trail.map((id, i) => <span key={id}><i aria-hidden="true">›</i><button aria-current={i === trail.length - 1 ? 'step' : undefined} onClick={() => back(i + 1)}>{nodeById.get(id)!.label}</button></span>)}</nav>
+    <div className="dial-layout">
+      <div>
+        <div className={`dial-stage ${reading ? 'is-reading' : ''}`}>
+          {!reading && <svg viewBox="0 0 500 500" aria-hidden="true">
+            <circle cx="250" cy="250" r="179" className="dial-orbit" />
+            <g className="dial-orbit-spin ambient-motion"><circle cx="250" cy="250" r="224" fill="none" stroke={color} strokeOpacity=".45" strokeDasharray="60 1347" strokeWidth="2"/><circle cx="250" cy="26" r="4" fill={color}/></g>
+            {now && <line x1="250" y1="250" x2="250" y2="39" stroke={color} strokeOpacity=".2" strokeWidth="1" transform={`rotate(${now.getUTCSeconds()*6} 250 250)`}/>}
+            {Array.from({ length: 48 }, (_, i) => { const a = i * Math.PI / 24; return <rect key={i} x={248 + Math.cos(a) * 214} y={248 + Math.sin(a) * 214} width={4} height={4} fill={i % 4 === 0 ? color : '#283c50'} transform={`rotate(${i * 7.5} ${250 + Math.cos(a) * 214} ${250 + Math.sin(a) * 214})`} />; })}
+            {visible.map(({ node, importance }, i) => <path key={node.id} data-story-edge={node.id} d={`M250 250L${positions[i].x} ${positions[i].y}`} fill="none" stroke={PIECES[node.piece].color} strokeOpacity=".55" strokeWidth={importance * 1.5} />)}
+            <path d="M185 227 250 196 315 227V277L250 308 185 277Z" fill="#0b1422" stroke={color} strokeOpacity=".4" />
+            <path d="M185 227 250 259 315 227M250 259V308" fill="none" stroke={color} strokeOpacity=".3" />
+            <g key={current?.id || 'outside'} className="dial-piece">{PIECES[current?.piece || 'T'].rotations[0].map(([x, y], i) => <IsoBlock key={i} x={250 + (x - y) * 18} y={208 + (x + y) * 9} size={17} height={19} color={color} />)}</g>
+          </svg>}
+          {!reading && <div className="dial-center"><span>HERE, RIGHT NOW · IST</span><time dateTime={now?.toISOString()}>{clock}</time><small>{date}</small></div>}
+          <div className="dial-nodes" aria-label="Next connections">{visible.map(({ node, relation }, i) => <button key={node.id} data-context-node={node.id} className="dial-node" style={{ '--node-color': PIECES[node.piece].color, left: `${positions[i].x / 5}%`, top: `${positions[i].y / 5}%` } as CSSProperties} onClick={() => choose(node.id)}><small>{relation}</small><strong>{node.label}</strong><span aria-hidden="true">{node.depth === 4 ? '↗' : '+'}</span></button>)}</div>
+        </div>
+        <div className="dial-legend"><span><b>━</b> Main thread <b>─</b> Supporting connection</span>{candidates.length > 4 && <button onClick={() => setPage((page + 1) % Math.ceil(candidates.length / 4))}>More paths · {page + 1}/{Math.ceil(candidates.length / 4)} →</button>}</div>
       </div>
-      <aside className="network-detail" aria-live="polite"><span className="pixel-label accent-yellow">{node.category}</span><h3>{node.title}</h3><p>{node.detail}</p><div className="network-neighbors"><span>CONNECTED TO</span>{connections.filter(([a,b])=>a===active||b===active).map(([a,b])=>{const other=byId[a===active?b:a];return <button key={other.id} onClick={()=>setActive(other.id)}>{other.title} ↗</button>})}</div><a href={node.href} target="_blank" rel="noreferrer">{node.id==='github'?'OPEN GITHUB PROFILE':'VIEW SOURCE / WORK'} ↗</a></aside>
+      <div className="dial-story" aria-live="polite">
+        <span className="pixel-label">{current ? ['THE INTEREST', 'THE QUESTION', 'THE CHOICE', 'THE RESULT', 'THE EVIDENCE'][current.depth] : 'THE STORY STARTS WITH YOU'}</span>
+        <h3>{current?.label || 'What pulls you in?'}</h3>
+        <p>{current?.detail || 'An answer you can trust. A pattern worth following. Something that feels easier to use. Choose what you came looking for.'}</p>
+        {current?.tools && <p className="dial-tools"><span>In this project</span>{current.tools.join(' · ')}</p>}
+        {current?.href && <a className="dial-open" href={current.href} target="_blank" rel="noreferrer">{current.label} ↗</a>}
+        {current && <a className="dial-source" href={current.source_file} target="_blank" rel="noreferrer">Where this story comes from ↗</a>}
+        <div className="dial-navigation">{trail.length > 0 && <button onClick={() => back(trail.length - 1)}>← One connection back</button>}<a href="#work">Browse all projects ↓</a></div>
+        <p className="dial-note">Line width highlights the main story, not a performance score. Every connection is curated from the work.</p>
+      </div>
     </div>
+    <div className="dial-bottom"><span className="pixel-label">THERE’S MORE WHEN YOU’RE READY.</span><button onClick={download}>Export Graphify JSON ↗</button></div>
   </section>;
 }
