@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { ThinkingField } from "./hero/ThinkingField";
 import { ConversationStarter } from "./ConversationStarter";
 import { McpHero } from "./hero/McpHero";
-import { GitHubPulse } from "./GitHubPulse";
+import { ActivityTimeline } from "./ActivityTimeline";
 import { sfx } from "./tetris/audio";
 import { ProjectGameplay } from "./ProjectGameplay";
 import { ProjectVolume } from "./ProjectVolume";
@@ -262,6 +262,11 @@ export function Portfolio() {
 
       </section>
 
+      <section className="landing-activity" id="activity" aria-labelledby="landing-activity-title">
+        <div className="stage-heading"><span className="pixel-label accent-cyan">PUBLIC GITHUB ACTIVITY · LIVE</span><h2 id="landing-activity-title">The work keeps moving.</h2><p>Every merged PR arrives in order, powered by current public GitHub data.</p></div>
+        <ActivityTimeline />
+      </section>
+
       <PaperFold />
 
       <KnowledgeWell />
@@ -382,7 +387,6 @@ export function Portfolio() {
             </p>
           </div>
 
-          <GitHubPulse />
         </div>
 
         <a

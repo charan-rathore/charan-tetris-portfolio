@@ -39,7 +39,7 @@ export function ActivityTimeline() {
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const firstTime = ms(events[0].date), endTime = ms(events[events.length-1].date);
     const draw = (progress: number) => {
-      const w = c.clientWidth, h = c.clientHeight, dpr = Math.min(devicePixelRatio, 2);
+      const w = c.clientWidth, h = c.clientHeight, dpr = Math.min(devicePixelRatio, 4);
       if (!w || !h) return;
       if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) {
         c.width = Math.round(w * dpr); c.height = Math.round(h * dpr);
@@ -54,7 +54,7 @@ export function ActivityTimeline() {
       // A short local impact at each arrival, not a flashing full-chart frame.
       const jolt = !reduced && progress < .87 && cursor>=1 ? Math.max(0,1-sinceLanding*5) : 0;
       ctx.translate(Math.sin(jolt*16)*jolt*1.4,Math.cos(jolt*14)*jolt*1.1);
-      const unit = Math.max(7, w / 140), pad = Math.max(22, w * .04), base = h * .575;
+      const unit = Math.max(7, w / 140), pad = Math.max(18, w * .04), base = h * .575;
       const left = pad, right = w - pad;
       // The close grid is a visual texture. Event position follows event order, not elapsed time.
       ctx.strokeStyle = "rgba(123,99,119,.16)"; ctx.lineWidth = 1;
@@ -105,7 +105,7 @@ export function ActivityTimeline() {
         const sameDay = dayCounts.get(e.date) ?? 1;
         const height = h * Math.min(.25,.09 + Math.log2(1 + sameDay)*.045 + (i%4)*.013);
         const count = Math.max(5, Math.floor(height / unit));
-        const block = Math.max(3, Math.min(unit * .78, finalPitch * .47, 10));
+        const block = Math.max(2, Math.min(unit * .78, finalPitch * .47, 10));
         const birth=cursor-i;
         const arrival=progress>=.87 ? 1 : arrive(i);
         ctx.globalAlpha = (1-finale)*arrival;
@@ -146,14 +146,14 @@ export function ActivityTimeline() {
       if (finale > 0) {
         ctx.globalAlpha = finale;
         for (const bucket of finalePoints.values()) {
-          const x = bucket.x, block = Math.max(4,Math.min(unit*.72,w*.012));
+          const x = Math.round(bucket.x), block = Math.max(2,Math.min(unit*.72,w*.012));
           for (const [kind,amount] of [["green",bucket.green],["red",bucket.red]] as const) {
             if (!amount) continue;
             const color=kind === "green" ? "#3ecf8e" : "#f0716a";
-            ctx.fillStyle=color;ctx.shadowColor=color;ctx.shadowBlur=12;
-            const height=Math.min(h*.24,h*(.07+Math.log2(amount+1)*.045));
+            ctx.fillStyle=color;ctx.shadowBlur=0;
+            const height=Math.min(h*.18,h*(.07+Math.log2(amount+1)*.045));
             const count=Math.max(4,Math.round(height/unit));
-            for(let j=0;j<count;j++)ctx.fillRect(x-block/2,kind==="green"?base-(j+1)*unit:base+(j+.4)*unit,block,unit*.7);
+            for(let j=0;j<count;j++)ctx.fillRect(Math.round(x-block/2),Math.round(kind==="green"?base-(j+1)*unit:base+(j+.4)*unit),Math.max(2,Math.round(block)),Math.max(2,Math.round(unit*.7)));
           }
         }
         ctx.shadowBlur=0;
@@ -165,30 +165,32 @@ export function ActivityTimeline() {
           ctx.fillRect(x,h*.84,1,6);
           ctx.fillText(new Date(t).toLocaleString("en-US",{month:"short",timeZone:"UTC"}),x,h*.875);
         }
-        ctx.font=`${Math.max(10,w*.014)}px Arial, sans-serif`;ctx.fillText(String(new Date(endTime).getUTCFullYear()),w*.5,h*.95);
+
         ctx.textAlign="left";ctx.globalAlpha=1;
       }
       ctx.font = `${Math.max(10, w * .011)}px Arial, sans-serif`; ctx.textAlign = "left";
       ctx.fillStyle = "#3ecf8e"; ctx.fillRect(left, h * .925, 9, 9);
       ctx.fillStyle = "#c9c1c7"; ctx.fillText("MERGED PR", left + 16, h * .925 + 9);
-      ctx.fillStyle = "#f0716a"; ctx.fillRect(left + Math.min(130, w * .2), h * .925, 9, 9);
-      ctx.fillStyle = "#c9c1c7"; ctx.fillText("FIX / TEST PR", left + Math.min(130, w * .2) + 16, h * .925 + 9);
+      ctx.fillStyle = "#f0716a"; ctx.fillRect(left + Math.min(130, w * .32), h * .925, 9, 9);
+      ctx.fillStyle = "#c9c1c7"; ctx.fillText("FIX / TEST PR", left + Math.min(130, w * .32) + 16, h * .925 + 9);
       if (progress >= .88) {
         const opacity = ease(clamp((progress-.88)/.08,0,1));ctx.globalAlpha = opacity;
         const counts = new Map<string,number>();
         events.forEach(event => counts.set(event.repo,(counts.get(event.repo)??0)+1));
         const top = [...counts].sort((a,b)=>b[1]-a[1]).slice(0,3);
+        // Finale is a composed chart, not a frozen animation frame. Keep type above
+        // the plot and away from the legend, especially on narrow screens.
         ctx.fillStyle="#e4e0e5";ctx.textAlign="left";
-        ctx.font=`600 ${Math.max(11,w*.016)}px Arial, sans-serif`;
-        ctx.fillText("The work behind the timeline", left, h*.28);
-        ctx.font=`${Math.max(9,w*.011)}px Arial, sans-serif`;ctx.fillStyle="#a8a0aa";
-        top.forEach(([repo,count],i)=>ctx.fillText(`${repo.split("/").at(-1)} · ${count} merged PRs`,left,h*(.325+i*.035)));
-        ctx.textAlign = "center";ctx.fillStyle = "#e4e0e5";
-        ctx.font = `600 ${Math.max(13, w*.018)}px Arial, sans-serif`;
-        ctx.fillText(`${events.length} public merged PRs`, w*.5, h*.13);
-        ctx.font = `${Math.max(10, w*.011)}px Arial, sans-serif`;
+        ctx.font=`600 ${Math.max(13,w*.024)}px Arial, sans-serif`;
+        ctx.fillText("The work behind the timeline",left,h*.105);
+        ctx.font=`${Math.max(10,w*.014)}px Arial, sans-serif`;ctx.fillStyle="#aaa1a9";
+        if (w >= 620) top.forEach(([repo,count],i)=>ctx.fillText(`${repo.split("/").at(-1)} · ${count} merged PRs`,left,h*(.15+i*.038)));
+        ctx.textAlign = w < 620 ? "left" : "right";ctx.fillStyle = "#e4e0e5";
+        ctx.font = `600 ${Math.max(14, w*.023)}px Arial, sans-serif`;
+        ctx.fillText(`${events.length} public merged PRs`,w < 620 ? left : right,h*(w < 620 ? .18 : .11));
+        ctx.font = `${Math.max(10,w*.012)}px Arial, sans-serif`;
         ctx.fillStyle = "#aaa1a9";
-        ctx.fillText(`${month(firstTime)} - ${month(endTime)} · source-linked history`, w*.5, h*.167);
+        ctx.fillText(`${month(firstTime)} - ${month(endTime)} · source-linked history`,w < 620 ? left : right,h*(w < 620 ? .235 : .155));
         ctx.globalAlpha = 1;ctx.textAlign = "left";
       }
     };

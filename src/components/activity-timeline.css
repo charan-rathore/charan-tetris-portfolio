@@ -6,3 +6,7 @@
 @media(max-width:600px){.activity-timeline{margin:24px -10px}.activity-timeline canvas{aspect-ratio:1.35}.activity-timeline-foot{font-size:8px;padding:8px}.activity-timeline small{padding:8px;font-size:9px}}
 
 .activity-timeline-loading{padding:15px 18px;color:#a69ba5}
+
+.landing-activity{max-width:1400px;margin:24px auto 52px;padding:0 24px;scroll-margin-top:90px}
+.landing-activity .stage-heading{padding:0 16px}
+@media(max-width:600px){.landing-activity{padding:0 12px;margin:20px auto 36px}.landing-activity .stage-heading{padding:0 4px}.landing-activity .activity-timeline{margin:20px 0}}
