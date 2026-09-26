@@ -2815,3 +2815,23 @@ body { background:radial-gradient(ellipse at 6% 8%,#18344c44,transparent 38%),ra
 @keyframes loading-depth{0%{transform:translate3d(0,0,-50px)}65%{transform:translate3d(5px,-4px,0)}100%{transform:translate3d(12px,-9px,0)}}
 @keyframes loading-arrive{0%{opacity:0;transform:translate(-50%,-50%) scale(.25);filter:brightness(1)}42%{opacity:1;transform:translate(-50%,-50%) scale(1.4);filter:brightness(2)}100%{opacity:1;transform:translate(-50%,-50%) scale(1);filter:brightness(1)}}
 @keyframes loading-copy-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+
+/* Real subject footage is the primary image; translucent repeats reveal a moving time volume. */
+.project-volume{background:#030507}
+.project-volume-footage{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.86;filter:saturate(1.34) contrast(1.12);z-index:0}
+.project-volume::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,#030507aa,transparent 24%,transparent 78%,#030507aa),linear-gradient(0deg,#020407b0,transparent 35%)}
+.project-volume canvas{position:absolute;inset:0;z-index:2;opacity:.45;pointer-events:none}
+.project-volume::after{z-index:4;pointer-events:none}
+.project-time-slices{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden}
+.project-time-slices i{position:absolute;top:8%;bottom:8%;left:calc(15% + var(--slice) * 13%);width:12%;border-left:1px solid #b4ebff77;box-shadow:inset 12px 0 25px #1fc5ee16,0 0 12px #78dafa55;background:linear-gradient(90deg,#9cecff15,#fff5 48%,transparent);opacity:calc(.15 + var(--slice)*.065);transform:translateX(calc((var(--time, .3) - .5)*35%));mix-blend-mode:screen}
+.project-time-slices i:nth-child(3){border-left:2px solid #e7ffffaa;opacity:.8;background:linear-gradient(90deg,#b5efff22,#ffffff55 36%,transparent)}
+@media(prefers-reduced-motion:reduce){.project-volume-footage{opacity:1}.project-time-slices{display:none}}
+
+.project-video-history{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;mix-blend-mode:screen}
+.project-volume>canvas:not(.project-video-history){z-index:3;opacity:.25}.project-time-slices{z-index:4;opacity:.55}
+.project-volume::after{z-index:5}
+@media(prefers-reduced-motion:reduce){.project-video-history{display:none}}
+
+.project-footage-credit{position:absolute;right:12px;bottom:12px;z-index:6;background:#030b119e;color:#c9ebf8;font:8px var(--font-geist-mono),monospace;letter-spacing:.06em;padding:4px 6px;text-decoration:none}
+.project-footage-credit:hover,.project-footage-credit:focus-visible{background:#124758;color:white;outline:1px solid #90e6ff}
+@media(max-width:600px){.project-footage-credit{right:8px;top:9px;bottom:auto;font-size:7px}}

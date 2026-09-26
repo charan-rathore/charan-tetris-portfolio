@@ -2,9 +2,35 @@
 
 import { useEffect, useRef } from "react";
 
+const clips = ["intellirag","memorable","thermosense","kanban","finance","wildlife","cad"];
+const sources = [
+ "https://coverr.co/videos/coding-developer-qll3taz5b8",
+ "https://coverr.co/videos/flipping-the-pages-b1fyrss5bk",
+ "https://coverr.co/videos/radar-station-in-a-field-qbquq9heab",
+ "https://coverr.co/videos/teamwork-in-the-office-sf189e49k5",
+ "https://coverr.co/videos/a-trader-is-working-on-a-stock-market-trading-chart-ntdgoaey2j",
+ "https://coverr.co/videos/deer-on-a-field-s4s9rywhbf",
+ "https://coverr.co/videos/screwing-furniture-together-uboxieq9tg",
+];
+
 /** A deterministic, lightweight point-cloud sculpture for each project. */
 export function ProjectVolume({ index, label, paused }: { index: number; label: string; paused: boolean }) {
   const host = useRef<HTMLDivElement>(null);
+  useEffect(()=>{
+    const root=host.current,video=root?.querySelector("video"),canvas=root?.querySelector(".project-video-history") as HTMLCanvasElement | null;
+    if(!root||!video||!canvas||matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+    const ctx=canvas.getContext("2d");if(!ctx)return;
+    const history:HTMLCanvasElement[]=[];let frame=0,last=0,counter=0,visible=false;
+    const draw=(now:number)=>{frame=requestAnimationFrame(draw);if(!visible||document.hidden||now-last<66||video.readyState<2)return;last=now;
+      const w=Math.min(root.clientWidth,720),h=Math.min(root.clientHeight,400);if(!w||!h)return;
+      if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}ctx.clearRect(0,0,w,h);
+      if(counter++%3===0){const still=document.createElement("canvas");still.width=240;still.height=140;const c=still.getContext("2d");if(c){c.drawImage(video,0,0,240,140);history.unshift(still);if(history.length>10)history.pop();}}
+      history.forEach((still,i)=>{const col=i%5,span=w*.12,x=w*(.13+col*.15),dx=(i-4)*4;ctx.save();ctx.globalAlpha=Math.max(.02,.27-i*.022);ctx.beginPath();ctx.rect(x,0,span,h);ctx.clip();ctx.drawImage(still,dx,-i*1.2,w,h+i*2.4);ctx.restore();});
+      const time=(now%4200)/4200,x=w*(.09+time*.82);ctx.fillStyle="rgba(156,229,255,.055)";ctx.fillRect(x,0,w*.13,h);ctx.strokeStyle="rgba(217,248,255,.48)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();
+    };
+    const observer=new IntersectionObserver(([e])=>{visible=e.isIntersecting;if(visible&&!frame)frame=requestAnimationFrame(draw);else if(!visible){cancelAnimationFrame(frame);frame=0;history.length=0;ctx.clearRect(0,0,canvas.width,canvas.height)}},{rootMargin:"100px"});observer.observe(root);
+    return()=>{observer.disconnect();cancelAnimationFrame(frame)};
+  },[]);
   useEffect(() => {
     const root = host.current;
     if (!root || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -16,8 +42,8 @@ export function ProjectVolume({ index, label, paused }: { index: number; label: 
     const observer = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
       if (visible && !initialized) { initialized = true; initialize(); }
-      if (visible) start?.();
-      else stop?.();
+      if (visible) { start?.(); root.querySelector("video")?.play().catch(()=>{}); }
+      else { stop?.(); root.querySelector("video")?.pause(); }
     }, { rootMargin: "160px" });
     observer.observe(root);
     const initialize = () => import("three").then(({ AdditiveBlending, BufferAttribute, BufferGeometry, Color, Group, Line, LineBasicMaterial, Mesh, MeshBasicMaterial, PlaneGeometry, DoubleSide, PerspectiveCamera, Points, PointsMaterial, Scene, WebGLRenderer }) => {
@@ -37,7 +63,7 @@ export function ProjectVolume({ index, label, paused }: { index: number; label: 
       scene.add(sculpture);
       const colors = [0x52e6ff,0xb978ff,0xffd166,0x68e5ab,0xf69ab0,0x8dbaf8,0xffad7e];
       const accent = new Color(colors[index % colors.length]);
-      const count = innerWidth <= 600 ? 650 : 1200;
+      const count = innerWidth <= 600 ? 140 : 260;
       const positions = new Float32Array(count * 3);
       const pointColors = new Float32Array(count * 3);
       const rand = (n: number) => { const x = Math.sin(n * 127.1 + index * 41.7) * 43758.5453; return x - Math.floor(x); };
@@ -91,7 +117,7 @@ export function ProjectVolume({ index, label, paused }: { index: number; label: 
       sculpture.add(new Points(geometry, material));
       const strands: { geometry: InstanceType<typeof BufferGeometry>; material: InstanceType<typeof LineBasicMaterial> }[] = [];
       // Ghost frames track earlier slices along the local time/depth axis.
-      for(let ghost=0;ghost<(innerWidth<=600?8:18);ghost++){
+      for(let ghost=0;ghost<(innerWidth<=600?5:9);ghost++){
         const path:number[]=[];
         for(let j=0;j<=54;j++){
           const [x,y,z]=shape((j/54+ghost*.025)%1);
@@ -134,7 +160,8 @@ export function ProjectVolume({ index, label, paused }: { index: number; label: 
         if (document.hidden || paused || now - last < 33) return;
         elapsed += Math.min(now - last || 33, 100);
         last = now;
-        const cycle=(elapsed % 6600)/6600;
+        const cycle=(elapsed % 4200)/4200;
+        root.style.setProperty("--time", `${cycle}`);
         timePlane.position.set(-3.45+cycle*6.9,0,.5);
         planeMat.opacity=.08+.12*Math.sin(cycle*Math.PI);
         sculpture.rotation.y = Math.sin(elapsed*.00018)*.11;
@@ -149,5 +176,10 @@ export function ProjectVolume({ index, label, paused }: { index: number; label: 
     let cleanup: (() => void) | undefined;
     return () => { removed = true; observer.disconnect(); cleanup?.(); };
   }, [index, paused]);
-  return <div ref={host} className="project-volume" role="img" aria-label={`Animated volumetric point-cloud artwork for ${label}`} />;
+  return <div ref={host} className="project-volume" role="img" aria-label={`Space-time-inspired video study for ${label}`}>
+    <video className="project-volume-footage" src={`/projects/footage/${clips[index]}.webm`} poster={`/projects/tetris-art/${clips[index]}.png`} muted loop playsInline preload="none" aria-hidden="true" />
+    <canvas className="project-video-history" aria-hidden="true" />
+    <div className="project-time-slices" aria-hidden="true">{Array.from({length:5},(_,n)=><i key={n} style={{"--slice":n} as React.CSSProperties}/>)}</div>
+    <a className="project-footage-credit" href={sources[index]} target="_blank" rel="noreferrer">ILLUSTRATIVE FOOTAGE: COVERR ↗</a>
+  </div>;
 }
