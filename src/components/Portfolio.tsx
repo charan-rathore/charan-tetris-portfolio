@@ -262,7 +262,7 @@ export function Portfolio() {
       </section>
 
       <section className="landing-activity" id="activity" aria-labelledby="landing-activity-title">
-        <div className="stage-heading"><span className="pixel-label accent-cyan">PUBLIC GITHUB ACTIVITY · LIVE</span><h2 id="landing-activity-title">The work keeps moving.</h2><p>Every merged PR arrives in order, powered by current public GitHub data.</p></div>
+        <div className="stage-heading"><span className="pixel-label accent-cyan">PUBLIC GITHUB ACTIVITY · LIVE</span><h2 id="landing-activity-title">The work keeps moving.</h2><p>A September-only replay of public merged PRs, ending with the month at a glance.</p></div>
         <ActivityTimeline />
       </section>
 
