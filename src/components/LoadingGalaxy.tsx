@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 
 const LENGTH = 11000;
+const montage: HTMLImageElement[] = [];
+for (const file of ["chart","collage","eye"]) {if(typeof Image!=="undefined"){const image=new Image();image.src=`/systris-original-${file}.webp`;montage.push(image)}}
 const nebula = typeof Image !== "undefined" ? new Image() : null;
 const traveler = typeof Image !== "undefined" ? new Image() : null;
 if (traveler) traveler.src = "/systris-falling-figure.webp";
@@ -11,31 +13,24 @@ const random = (n: number) => { const x = Math.sin(n * 127.1 + 78.233) * 43758.5
 const ease = (n: number) => n * n * (3 - 2 * n);
 const clamp = (n: number) => Math.max(0, Math.min(1, n));
 
-function sound(ctx: AudioContext) {
-  const output = ctx.createGain(); output.gain.value = .29; output.connect(ctx.destination);
-  const noise = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
-  const data = noise.getChannelData(0);
-  for (let i = 0; i < data.length; i++) data[i] = random(i + 1) * 2 - 1;
-  const at = ctx.currentTime;
-  function rush(start: number, length: number, from: number, to: number, peak: number) {
-    const src = ctx.createBufferSource(); src.buffer = noise; src.loop = true;
-    const filter = ctx.createBiquadFilter(); filter.type = "lowpass";
-    filter.frequency.setValueAtTime(from, at + start);
-    filter.frequency.exponentialRampToValueAtTime(to, at + start + length);
-    const gain = ctx.createGain(); gain.gain.setValueAtTime(.001, at + start);
-    gain.gain.exponentialRampToValueAtTime(peak, at + start + length * .52);
-    gain.gain.exponentialRampToValueAtTime(.001, at + start + length);
-    src.connect(filter).connect(gain).connect(output); src.start(at + start); src.stop(at + start + length + .03);
-  }
-  rush(.15, 3.5, 150, 4200, .22); rush(3.3, 5.4, 260, 6800, .28); rush(8.4, 2.2, 2400, 120, .17);
-  for (const [freq, start, length, volume] of [[44,.1,10.7,.16],[82,2.5,5.8,.055],[190,8.1,2.6,.075]] as const) {
-    const osc = ctx.createOscillator(), gain = ctx.createGain();
-    osc.type = "sine"; osc.frequency.setValueAtTime(freq, at + start);
-    osc.frequency.exponentialRampToValueAtTime(freq * .62, at + start + length);
-    gain.gain.setValueAtTime(.001, at + start);
-    gain.gain.exponentialRampToValueAtTime(volume, at + start + .45);
-    gain.gain.exponentialRampToValueAtTime(.001, at + start + length);
-    osc.connect(gain).connect(output); osc.start(at + start); osc.stop(at + start + length + .02);
+// Synthesized score: clipped transients on each visual cut, low sub-bass swell
+// through the fall, filtered hiss and a stepped rise into the closing eye.
+function playOriginalScore(ctx:AudioContext,offset:number){
+  const now=ctx.currentTime,master=ctx.createGain();master.gain.value=.26;master.connect(ctx.destination);
+  const noise=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate),values=noise.getChannelData(0);
+  for(let i=0;i<values.length;i++)values[i]=random(i+447)*2-1;
+  const rush=(at:number,len:number,volume:number,freq:number)=>{if(at+len<=offset)return;
+    const source=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();source.buffer=noise;source.loop=true;filter.type="bandpass";
+    filter.frequency.value=freq;filter.Q.value=.7;const start=now+Math.max(0,at-offset);
+    gain.gain.setValueAtTime(.001,start);gain.gain.linearRampToValueAtTime(volume,start+Math.max(.01,len*.22));gain.gain.exponentialRampToValueAtTime(.001,start+Math.max(.04,len));
+    source.connect(filter).connect(gain).connect(master);source.start(start);source.stop(start+len+.02);
+  };
+  for(const t of [0,.23,.48,.72,.96,1.18,1.46,1.73,2.06,2.35,7,7.43,7.88,8.19,8.52,8.83,9.2,9.61,10,10.45])rush(t,.12,.24,400+random(t*100)*2300);
+  rush(2.5,4.8,.20,1200);rush(6.9,3.8,.17,2700);
+  for(const [at,len,pitch,amp] of [[2.7,4.5,52,.20],[7,3.9,83,.16],[10.35,.5,180,.13]] as const){if(at+len<=offset)continue;
+    const start=now+Math.max(0,at-offset),osc=ctx.createOscillator(),gain=ctx.createGain();osc.type="sine";osc.frequency.setValueAtTime(pitch,start);
+    osc.frequency.exponentialRampToValueAtTime(pitch*.68,start+len);gain.gain.setValueAtTime(.001,start);gain.gain.linearRampToValueAtTime(amp,start+Math.min(.45,len*.3));gain.gain.exponentialRampToValueAtTime(.001,start+len);
+    osc.connect(gain).connect(master);osc.start(start);osc.stop(start+len+.02);
   }
 }
 
@@ -60,22 +55,36 @@ function paint(canvas: HTMLCanvasElement, elapsed: number) {
     c.save();c.globalAlpha=(1-iris)*(.3 + .7*opening)*.88;c.translate(cx,cy);c.rotate(travel*.29);
     const size=warp*2.45;c.drawImage(nebula,-size/2,-size/2,size,size);c.restore();
   }
-  // Original rapid cuts: a geometric hand/reach, aperture and seam of light.
-  // They set up the fall without lifting frames or a likeness from the reference.
-  if (elapsed < 2200) {
-    const cut = Math.floor(elapsed/650), t=(elapsed%650)/650;
-    c.save();c.globalAlpha=(1-ease(clamp((elapsed-1900)/300)))*(.72+Math.sin(t*Math.PI)*.28);
-    if (cut===0) {
-      c.translate(w*(.16+t*.35),h*(.82-t*.22));c.rotate(-.39+t*.19);
-      c.strokeStyle="#68d9f9";c.lineWidth=Math.max(2,w*.014);
-      for(let f=0;f<5;f++){c.beginPath();c.moveTo(0,0);c.quadraticCurveTo((f-2)*w*.055,-h*.09,(f-2)*w*.085,-h*(.21+random(f)*.11));c.stroke();}
-    } else if (cut===1) {
-      const r=Math.min(w,h)*(.12+t*.23);c.strokeStyle="#c1edff";c.lineWidth=1.5;
-      for(let j=0;j<8;j++){c.beginPath();c.arc(cx,cy,r+j*5,Math.PI*(.12+t*.5),Math.PI*(1.4+t*.5));c.stroke();}
-    } else {
-      const grad=c.createLinearGradient(0,0,w,h);grad.addColorStop(0,"#051a39");grad.addColorStop(.53,"#b0edff");grad.addColorStop(1,"#021126");
-      c.translate(cx,cy);c.rotate(-.65+t*.35);c.fillStyle=grad;c.fillRect(-w*.036,-h*.75,w*.072,h*1.5);
+  // First 2.7s: rapid editorial jump cuts, then the fall, then an eye coda.
+  // These stills are original assets. The supplied reel determines only the timing.
+  const cuts=[0,230,480,720,960,1180,1460,1730,2060,2350,2700];
+  const shot=cuts.findIndex((end,i)=>i>0&&elapsed<end)-1;
+  if(elapsed<2700&&montage.length===3){
+    const image=montage[shot<2?0:shot<5?2:1];
+    if(image.complete&&image.naturalWidth){
+      const sliceStart=cuts[Math.max(shot,0)],sliceEnd=cuts[Math.max(shot+1,1)];
+      const t=clamp((elapsed-sliceStart)/(sliceEnd-sliceStart));
+      const stripH=Math.min(h*.38,w*.67),y=cy-stripH/2;
+      c.save();c.globalAlpha=1;c.fillStyle="#030710";c.fillRect(0,y,w,stripH);
+      c.beginPath();c.rect(0,y,w,stripH);c.clip();
+      const zoom=1.02+t*.17, iw=Math.max(w*zoom,stripH*image.naturalWidth/image.naturalHeight),ih=iw*image.naturalHeight/image.naturalWidth;
+      const pan=(shot%3-1)*w*.065;c.drawImage(image,cx-iw/2+pan,y+stripH/2-ih/2,iw,ih);
+      if(shot===1||shot===5){c.fillStyle="rgba(255,245,231,.24)";c.fillRect(0,y,w,stripH)}
+      if(shot===7){c.fillStyle="rgba(16,26,44,.3)";for(let j=0;j<5;j++)c.fillRect(j*w/5,y,w/15,stripH)}
+      c.restore();
     }
+  }
+  if(elapsed>=7000&&montage[2]?.complete&&montage[2].naturalWidth){
+    const pulses=[7000,7430,7880,8190,8520,8830,9200,9610,10000,10450,10800];
+    const index=Math.max(0,pulses.findIndex((end,i)=>i>0&&elapsed<end)-1);
+    const img=montage[2],stripH=Math.min(h*.38,w*.67),y=cy-stripH/2;
+    const colors=["#ffd6bd","#74ffae","#ffd76a","#ff81e1","#e8efff","#9be5ff"];
+    c.save();c.beginPath();c.rect(0,y,w,stripH);c.clip();
+    c.fillStyle="#030710";c.fillRect(0,y,w,stripH);
+    const scale=1.04+index*.075,iw=Math.max(w*scale,stripH*img.naturalWidth/img.naturalHeight),ih=iw*img.naturalHeight/img.naturalWidth;
+    c.drawImage(img,cx-iw/2+(index%2?22:-22),y+stripH/2-ih/2,iw,ih);
+    c.globalCompositeOperation="screen";c.fillStyle=colors[index%colors.length];c.globalAlpha=.19+index%3*.08;c.fillRect(0,y,w,stripH);
+    if(index>5){c.globalAlpha=.17;c.fillStyle="#fff";for(let j=0;j<8;j++)c.fillRect((j*67+index*19)%w,y,2,stripH)}
     c.restore();
   }
   // Every point is redrawn from a fixed seed and a depth value, so the fall is
@@ -133,12 +142,13 @@ export function LoadingGalaxy() {
   const [soundEnabled,setSoundEnabled]=useState(false);
   const canvas=useRef<HTMLCanvasElement>(null);
   const audio=useRef<AudioContext|null>(null);
+  const elapsedRef=useRef(0);
   useEffect(()=>{if(matchMedia("(prefers-reduced-motion: reduce)").matches) { const id=requestAnimationFrame(()=>setPhase("done")); return ()=>cancelAnimationFrame(id); }},[]);
   useEffect(()=>{
     if(phase!=="playing")return;
     const element=canvas.current;if(!element)return;
     let raf=0;const start=performance.now();
-    const draw=(now:number)=>{if((window as Window & {__introFreeze?:boolean}).__introFreeze)return;const elapsed=now-start;paint(element,elapsed);if(elapsed<LENGTH)raf=requestAnimationFrame(draw);else setPhase("leaving")};
+    const draw=(now:number)=>{if((window as Window & {__introFreeze?:boolean}).__introFreeze)return;const elapsed=now-start;elapsedRef.current=elapsed;paint(element,elapsed);if(elapsed<LENGTH)raf=requestAnimationFrame(draw);else setPhase("leaving")};
     raf=requestAnimationFrame(draw);
     const resize=()=>paint(element,performance.now()-start);window.addEventListener("resize",resize);
     (window as Window & {__introDraw?:(elapsed:number)=>void}).__introDraw=(elapsed)=>paint(element,elapsed);
@@ -147,10 +157,10 @@ export function LoadingGalaxy() {
   useEffect(()=>{if(phase!=="leaving")return;const t=setTimeout(()=>setPhase("done"),650);return()=>clearTimeout(t)},[phase]);
   useEffect(()=>()=>{void audio.current?.close()},[]);
   if(phase==="done")return null;
-  const enableSound=()=>{try {const context=new AudioContext();audio.current=context;sound(context);void context.resume().catch(()=>{});setSoundEnabled(true);}catch{}};
+  const enableSound=()=>{try{const ctx=new AudioContext();audio.current=ctx;playOriginalScore(ctx,elapsedRef.current/1000);void ctx.resume().then(()=>setSoundEnabled(true)).catch(()=>{});}catch{}};
   return <div className={`loading-galaxy space-intro ${phase==="leaving"?"is-leaving":""}`} role="dialog" aria-modal="true" aria-label="Enter the Systris portfolio">
     <canvas ref={canvas} aria-hidden="true" />
     <div className="space-caption">SYSTRIS <span>·</span> FOLLOW THE THREAD</div>
-    <div className="space-actions"><button type="button" onClick={enableSound} disabled={soundEnabled}>SOUND ON ↗</button><button type="button" onClick={()=>{void audio.current?.close();audio.current=null;setPhase("leaving")}}>SKIP INTRO ↗</button></div>
+    <div className="space-actions"><button type="button" onClick={enableSound} disabled={soundEnabled}>SOUND ON ↗</button><button type="button" onClick={()=>{void audio.current?.close();setPhase("leaving")}}>SKIP INTRO ↗</button></div>
   </div>;
 }
