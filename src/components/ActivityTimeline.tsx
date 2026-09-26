@@ -44,9 +44,13 @@ export function ActivityTimeline() {
       }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.fillStyle = "#0d0a0f"; ctx.fillRect(0, 0, w, h);
-      const impact = Math.min(Math.abs(progress * (events.length - 1) - Math.round(progress * (events.length - 1))), 1);
-      const jolt = !reduced && progress < .87 ? Math.max(0, 1 - impact * 7) : 0;
-      ctx.translate(Math.sin(progress * 650) * jolt * 2.3, Math.cos(progress * 770) * jolt * 1.8);
+      const scrub = clamp(progress/.87,0,1);
+      const cursor = scrub*(events.length-1) + (progress===0 ? .001 : 0);
+      const current = Math.min(events.length-1,Math.floor(cursor));
+      const sinceLanding = cursor-current;
+      // A short local impact at each arrival, not a flashing full-chart frame.
+      const jolt = !reduced && progress < .87 ? Math.max(0,1-sinceLanding*5) : 0;
+      ctx.translate(Math.sin(jolt*16)*jolt*1.4,Math.cos(jolt*14)*jolt*1.1);
       const unit = Math.max(7, w / 140), pad = Math.max(22, w * .04), base = h * .575;
       const left = pad, right = w - pad;
       // The close grid is a visual texture. Event position follows event order, not elapsed time.
@@ -56,23 +60,23 @@ export function ActivityTimeline() {
       const vignette = ctx.createRadialGradient(w / 2, base, w * .12, w / 2, base, w * .69);
       vignette.addColorStop(0, "#100d1300"); vignette.addColorStop(1, "#03020599");
       ctx.fillStyle = vignette; ctx.fillRect(0, 0, w, h);
-      if (jolt) {ctx.fillStyle=`rgba(72,218,155,${jolt*.085})`;ctx.fillRect(left,h*.19,right-left,h*.66)}
+
       ctx.fillStyle = "#e4e1e5"; ctx.textAlign = "left";
       ctx.font = `${Math.max(16, w * .023)}px Arial, sans-serif`;
-      if (progress < .88) ctx.fillText("GitHub activity, one merge at a time", left, h * .105);
-      const cursor = progress === 1 ? events.length - 1 : progress * (events.length - 1);
-      const current = Math.floor(cursor);
-      const currentDate = progress === 1 ? Date.now() : ms(events[current].date) + (ms(events[Math.min(current+1,events.length-1)].date)-ms(events[current].date))*(cursor-current);
-      const lastMerge = ms(events[current].date);
+      if (progress < .87) ctx.fillText("GitHub activity, one merge at a time", left, h * .105);
+      const currentDate = progress >= .87 ? Date.now() : ms(events[current].date) + (ms(events[Math.min(current+1,events.length-1)].date)-ms(events[current].date))*(cursor-current);
+      let recent = 0;
+      for (let k=current;k>=0;k--) {if(ms(events[k].date)<=currentDate){recent=k;break}}
+      const lastMerge = ms(events[recent].date);
       ctx.font = `700 ${Math.max(19, w * .032)}px Arial, sans-serif`;
-      if (progress < .88) ctx.fillText(month(currentDate), left, h * .28);
+      if (progress < .87) ctx.fillText(month(currentDate), left, h * .28);
       ctx.font = `${Math.max(10, w * .012)}px Arial, sans-serif`;
-      ctx.fillStyle = "#aaa1a9"; if (progress < .88) ctx.fillText("PUBLIC MERGED PULL REQUESTS", left, h * .315);
+      ctx.fillStyle = "#aaa1a9"; if (progress < .87) ctx.fillText("PUBLIC MERGED PULL REQUESTS", left, h * .315);
       const counterX = right, counterY = h * .247;
       ctx.textAlign = "right"; ctx.font = `${Math.max(10, w * .012)}px Arial, sans-serif`;
-      ctx.fillStyle = "#aca6ab"; if (progress < .88) ctx.fillText("Days since last merged PR", counterX, counterY - h * .058);
+      ctx.fillStyle = "#aca6ab"; if (progress < .87) ctx.fillText("Days since last merged PR", counterX, counterY - h * .058);
       ctx.fillStyle = "#f1edef"; ctx.font = `300 ${Math.max(45, w * .083)}px Arial, sans-serif`;
-      if (progress < .88) ctx.fillText(String(Math.max(0, Math.floor((currentDate - lastMerge) / day))), counterX, counterY + h * .087);
+      if (progress < .87) ctx.fillText(String(Math.max(0, Math.floor((currentDate - lastMerge) / day))), counterX, counterY + h * .087);
       ctx.textAlign = "left";
       ctx.fillStyle = "#9d899a"; ctx.fillRect(left, base - 1, right - left, 2);
       for (let x = left; x < right; x += unit * 2) { ctx.fillStyle = "#c9b5c9"; ctx.fillRect(x, base - 2, 2, 4) }
@@ -84,7 +88,7 @@ export function ActivityTimeline() {
       const finalePoints = new Map<string, { x: number; green: number; red: number }>();
       points.current = [];
       events.forEach((e, i) => {
-        if (i > cursor + .01 && progress < 1) return;
+        if (i > cursor + .01 && progress < .87) return;
         const xScrub = endX + (i - cursor) * pitch;
         const xFinal = left + ((ms(e.date) - firstTime) / (endTime - firstTime || 1)) * (right-left-15);
         const dayBucket = finalePoints.get(e.date) ?? {x:xFinal,green:0,red:0};
@@ -97,34 +101,41 @@ export function ActivityTimeline() {
         const height = h * Math.min(.25,.09 + Math.log2(1 + sameDay)*.045 + (i%4)*.013);
         const count = Math.max(5, Math.floor(height / unit));
         const block = Math.max(3, Math.min(unit * .78, finalPitch * .47, 10));
-        ctx.globalAlpha = 1-finale;
+        const birth=cursor-i;
+        const arrival=progress>=.87 || i===0 ? 1 : clamp(birth*3.5,0,1);
+        ctx.globalAlpha = (1-finale)*arrival;
         ctx.fillStyle = color; ctx.shadowColor = color; ctx.shadowBlur = i === current && progress < .87 ? 20 : 9;
         for (let n = 0; n < count; n++) {
           const y = fix ? base + unit * (.75 + n) : base - unit * (1.3 + n);
-          ctx.fillRect(Math.round(x / unit) * unit - block / 2, y, block, Math.max(3, unit * .69));
+          if (n/count < arrival) ctx.fillRect(Math.round(x / unit) * unit - block / 2, y, block, Math.max(3, unit * .69));
         }
         ctx.shadowBlur = 0; ctx.globalAlpha = 1; points.current.push({ x, y: base, index: i });
         // A small label follows noteworthy bars as in the supplied reel.
-        if (i === current && progress < .87 || (i%8===0 && i<current-1 && progress<.87)) {
+        if (x > left+w*.24 && (i === current && progress < .87 || (i%8===0 && i<current-1 && progress<.87))) {
           const name=e.repo.split("/").at(-1)?.replaceAll("-"," ").slice(0,19) ?? "PR";
           ctx.font = `${Math.max(9,w*.010)}px Arial, sans-serif`;
           ctx.fillStyle = "#dad5dc";ctx.textAlign = x > w*.78 ? "right" : "left";
-          ctx.fillText(name, x + (x > w*.78 ? -8 : 8), fix ? base+height+18 : base-height-10);
+          const labelY=fix ? base+height+18 : Math.max(h*.36,base-height-10);
+          if(arrival>.7)ctx.fillText(name,x+(x>w*.78?-8:8),labelY);
           ctx.textAlign = "left";
         }
-        const birth = cursor - i;
-        if (birth >= 0 && birth < 1.2 && progress < .87 && !reduced) {
-          const age = birth / 1.2, radius = 10 + ease(age) * h * .14;
-          ctx.globalAlpha = (1 - age) * .8; ctx.fillStyle = color;
-          ctx.shadowColor = color; ctx.shadowBlur = (1 - age) * 20;
-          for (let k = 0; k < 185; k++) {
-            const a = k * 2.399963, drift = Math.sin(k * 21.7) * unit * 2;
-            const r = radius + drift;
-            const px = Math.round((x + Math.cos(a) * r) / unit) * unit;
-            const py = Math.round((base + Math.sin(a) * r) / unit) * unit;
-            ctx.fillRect(px, py, 2.2, 2.2);
+        if (birth >= 0 && birth < 1.65 && progress < .87 && !reduced) {
+          const age=birth/1.65, radius=unit*1.2+ease(age)*h*.23;
+          const alpha=Math.sin(Math.PI*Math.min(1,age*1.18))*(1-age*.35);
+          ctx.globalAlpha=alpha*.76;ctx.fillStyle=color;
+          ctx.shadowColor=color;ctx.shadowBlur=(1-age)*22;
+          // The wave starts at the bar's baseline and propagates out through the grid.
+          for(let k=0;k<210;k++){
+            const a=k*2.399963,scatter=unit*(.25+((k*17)%11)/15);
+            const r=radius+Math.sin(k*17.31+age*24)*scatter;
+            const px=Math.round((x+Math.cos(a)*r)/unit)*unit;
+            const py=Math.round((base+Math.sin(a)*r)/unit)*unit;
+            ctx.fillRect(px,py,Math.max(2,unit*.33),Math.max(2,unit*.33));
           }
-          ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+          ctx.globalAlpha=alpha*.17;
+          ctx.strokeStyle=color;ctx.lineWidth=1.5;
+          ctx.beginPath();ctx.ellipse(x,base,radius,radius*.75,0,0,Math.PI*2);ctx.stroke();
+          ctx.globalAlpha=1;ctx.shadowBlur=0;
         }
       });
       if (finale > 0) {
