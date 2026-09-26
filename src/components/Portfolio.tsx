@@ -1,6 +1,6 @@
 "use client";
-
 import Image from "next/image";
+
 import { useEffect, useState } from "react";
 import { ThinkingField } from "./hero/ThinkingField";
 import { ConversationStarter } from "./ConversationStarter";
@@ -8,6 +8,8 @@ import { McpHero } from "./hero/McpHero";
 import { GitHubPulse } from "./GitHubPulse";
 import { sfx } from "./tetris/audio";
 import { ProjectGameplay } from "./ProjectGameplay";
+import { ProjectVolume } from "./ProjectVolume";
+import { LoadingGalaxy } from "./LoadingGalaxy";
 import { ProjectLevel } from "./ProjectLevel";
 import { ContactForm } from "./ContactForm";
 import { PIECES, PieceName } from "./tetris/types";
@@ -73,13 +75,7 @@ function ProjectMedia({ project, index }: { project: (typeof projects)[number]; 
   return (
     <>
       <div className="project-media">
-        <Image
-          src={project.image}
-          alt={project.imageAlt}
-          fill
-          sizes="(max-width: 820px) 100vw, 50vw"
-          className="project-photo"
-        />
+        <ProjectVolume index={index} label={project.title} paused={false} />
         {<ProjectGameplay
           level={index}
           systems={project.tech}
@@ -104,9 +100,9 @@ function ProjectMedia({ project, index }: { project: (typeof projects)[number]; 
           type="button"
           className="project-skip-bar"
           onClick={() => setSkip(true)}
-          aria-label={`Show ${project.title} artwork now`}
+          aria-label={`Show ${project.title} volumetric artwork now`}
         >
-          SHOW ARTWORK ↓
+          SHOW 4D SPACE ↓
         </button>
       )}
     </>
@@ -177,6 +173,7 @@ export function Portfolio() {
 
   return (
     <main data-ambient={ambient ? 'on' : 'paused'}>
+      <LoadingGalaxy />
       <a className="skip-link" href="#work">Skip to projects</a>
       <div className="scanlines" aria-hidden="true" />
       <LineClears />

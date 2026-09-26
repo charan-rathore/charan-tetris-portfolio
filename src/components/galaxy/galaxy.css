@@ -19,3 +19,16 @@
 @keyframes atlas-orbit-turn{to{transform:rotate(360deg)}}
 .galaxy-paused .galaxy-point,.galaxy-paused .atlas-orbits{animation-play-state:paused}
 @media(prefers-reduced-motion:reduce){.galaxy-point,.atlas-orbits{animation:none!important}}
+.galaxy-space{position:absolute;inset:0;z-index:1;pointer-events:auto;touch-action:none;opacity:.9}
+.galaxy-space canvas{display:block;width:100%;height:100%;cursor:grab}
+.galaxy-space canvas:active{cursor:grabbing}
+.galaxy-space[data-fallback=true]{display:none}
+.galaxy-lines{z-index:0;opacity:.24;pointer-events:none}
+.galaxy-point{z-index:2}
+.galaxy-tuning{max-width:1450px;margin:0 auto;padding:0 clamp(20px,5vw,70px) 16px;display:flex;align-items:center;flex-wrap:wrap;gap:12px;color:#a6c6d5;font:10px var(--font-geist-mono),monospace}
+.galaxy-tuning>span{margin-right:auto;color:#72d6eb}
+.galaxy-tuning label{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.galaxy-tuning input[type=range]{width:70px;accent-color:#61dbf5}
+.galaxy-tuning input[type=checkbox]{accent-color:#61dbf5}
+@media(max-width:600px){.galaxy-tuning{gap:9px}.galaxy-tuning>span{width:100%;font-size:8px}}
+@media(prefers-reduced-motion:reduce){.galaxy-space{display:none}}
