@@ -6,3 +6,10 @@
 @media(prefers-reduced-motion:reduce){.galaxy-speck,.galaxy-point i{animation:none!important}}
 @media(max-width:900px){.galaxy-stage,.galaxy-index{grid-template-columns:1fr}.galaxy-map{min-height:570px}.galaxy-inspector{min-height:330px}.galaxy-index-list{grid-template-columns:1fr 1fr}}
 @media(max-width:520px){.galaxy-header{font-size:9px;gap:8px}.galaxy-header span{display:none}.galaxy-intro{padding-top:38px}.galaxy-controls .galaxy-motion{margin-left:0}.galaxy-map{min-height:550px}.galaxy-point{font-size:9px;max-width:80px;gap:3px;padding:6px 3px}.galaxy-point i{width:6px;height:6px}.galaxy-point span{overflow:hidden;text-overflow:ellipsis}.galaxy-index-list{grid-template-columns:1fr}.galaxy-footer{flex-direction:column}.galaxy-activity .gh-pulse{padding:15px 12px}}
+/* Three orbit tracks sit behind the editorial edges; the stars stay still and clickable. */
+.atlas-orbits ellipse{stroke:#6dc9e4;stroke-width:1px;stroke-opacity:.55;stroke-dasharray:.5 1.1;vector-effect:non-scaling-stroke}
+.atlas-orbits ellipse:nth-child(2){stroke-opacity:.36;stroke-dasharray:.3 1.3}
+.atlas-orbits ellipse:nth-child(3){stroke-opacity:.22;stroke-dasharray:.2 1.8}
+.atlas-travelers{fill:#96f0ff;filter:drop-shadow(0 0 2px #b4f5ff)}
+.galaxy-paused .atlas-travelers,.galaxy-paused .galaxy-lines animateMotion{display:none}
+@media(prefers-reduced-motion:reduce){.galaxy-lines animateMotion{display:none}}
