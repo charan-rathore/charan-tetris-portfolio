@@ -45,11 +45,12 @@ export function ActivityTimeline() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.fillStyle = "#0d0a0f"; ctx.fillRect(0, 0, w, h);
       const scrub = clamp(progress/.87,0,1);
-      const cursor = scrub*(events.length-1) + (progress===0 ? .001 : 0);
+      const cursor = 1 + scrub*(events.length-1);
+      const arrive = (i:number)=>clamp((cursor-i)*1.75,0,1);
       const current = Math.min(events.length-1,Math.floor(cursor));
       const sinceLanding = cursor-current;
       // A short local impact at each arrival, not a flashing full-chart frame.
-      const jolt = !reduced && progress < .87 ? Math.max(0,1-sinceLanding*5) : 0;
+      const jolt = !reduced && progress < .87 && cursor>=1 ? Math.max(0,1-sinceLanding*5) : 0;
       ctx.translate(Math.sin(jolt*16)*jolt*1.4,Math.cos(jolt*14)*jolt*1.1);
       const unit = Math.max(7, w / 140), pad = Math.max(22, w * .04), base = h * .575;
       const left = pad, right = w - pad;
@@ -64,7 +65,9 @@ export function ActivityTimeline() {
       ctx.fillStyle = "#e4e1e5"; ctx.textAlign = "left";
       ctx.font = `${Math.max(16, w * .023)}px Arial, sans-serif`;
       if (progress < .87) ctx.fillText("GitHub activity, one merge at a time", left, h * .105);
-      const currentDate = progress >= .87 ? Date.now() : ms(events[current].date) + (ms(events[Math.min(current+1,events.length-1)].date)-ms(events[current].date))*(cursor-current);
+      const dateIndex=Math.max(0,Math.floor(cursor-1));
+      const dateFrac=clamp(cursor-1-dateIndex,0,1);
+      const currentDate=progress>=.87?Date.now():ms(events[dateIndex].date)+(ms(events[Math.min(dateIndex+1,events.length-1)].date)-ms(events[dateIndex].date))*dateFrac;
       let recent = 0;
       for (let k=current;k>=0;k--) {if(ms(events[k].date)<=currentDate){recent=k;break}}
       const lastMerge = ms(events[recent].date);
@@ -88,8 +91,8 @@ export function ActivityTimeline() {
       const finalePoints = new Map<string, { x: number; green: number; red: number }>();
       points.current = [];
       events.forEach((e, i) => {
-        if (i > cursor + .01 && progress < .87) return;
-        const xScrub = endX + (i - cursor) * pitch;
+        if (i >= cursor && progress < .87) return;
+        const xScrub = endX + (i - cursor + 1) * pitch;
         const xFinal = left + ((ms(e.date) - firstTime) / (endTime - firstTime || 1)) * (right-left-15);
         const dayBucket = finalePoints.get(e.date) ?? {x:xFinal,green:0,red:0};
         if (e.kind === "merged_fix") dayBucket.red++; else dayBucket.green++;
@@ -102,7 +105,7 @@ export function ActivityTimeline() {
         const count = Math.max(5, Math.floor(height / unit));
         const block = Math.max(3, Math.min(unit * .78, finalPitch * .47, 10));
         const birth=cursor-i;
-        const arrival=progress>=.87 || i===0 ? 1 : clamp(birth*3.5,0,1);
+        const arrival=progress>=.87 ? 1 : arrive(i);
         ctx.globalAlpha = (1-finale)*arrival;
         ctx.fillStyle = color; ctx.shadowColor = color; ctx.shadowBlur = i === current && progress < .87 ? 20 : 9;
         for (let n = 0; n < count; n++) {
@@ -119,8 +122,8 @@ export function ActivityTimeline() {
           if(arrival>.7)ctx.fillText(name,x+(x>w*.78?-8:8),labelY);
           ctx.textAlign = "left";
         }
-        if (birth >= 0 && birth < 1.65 && progress < .87 && !reduced) {
-          const age=birth/1.65, radius=unit*1.2+ease(age)*h*.23;
+        if (birth >= 0 && birth < 1.4 && progress < .87 && !reduced) {
+          const age=birth/1.4, radius=unit*1.2+ease(age)*h*.23;
           const alpha=Math.sin(Math.PI*Math.min(1,age*1.18))*(1-age*.35);
           ctx.globalAlpha=alpha*.76;ctx.fillStyle=color;
           ctx.shadowColor=color;ctx.shadowBlur=(1-age)*22;
@@ -189,6 +192,7 @@ export function ActivityTimeline() {
     };
     (window as Window & {__activityDraw?: (progress:number)=>void}).__activityDraw = draw;
     const tick = (now: number) => {
+      if ((window as Window & {__activityManual?: boolean}).__activityManual) return;
       if (!visible) return;
       if (!start) start = now - pausedAt;
       const progress = reduced ? 1 : Math.min(1, (now - start) / duration);
