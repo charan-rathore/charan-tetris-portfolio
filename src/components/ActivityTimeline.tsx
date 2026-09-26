@@ -17,6 +17,7 @@ export function ActivityTimeline() {
   const [events, setEvents] = useState<Event[]>(timeline.events);
   const [checkedAt, setCheckedAt] = useState(timeline.asOf);
   const [stale, setStale] = useState(true);
+  const [ready, setReady] = useState(false);
   const canvas = useRef<HTMLCanvasElement>(null);
   const points = useRef<Point[]>([]);
   const [replay, setReplay] = useState(0);
@@ -25,12 +26,13 @@ export function ActivityTimeline() {
   useEffect(() => {
     let active = true;
     const refresh = () => fetch("/api/activity-timeline").then(r => r.ok ? r.json() : Promise.reject()).then((result: {events:Event[];checkedAt:string;stale:boolean}) => {
-      if (active && result.events?.length) {setEvents(result.events);setCheckedAt(result.checkedAt);setStale(result.stale)}
-    }).catch(() => {if (active) setStale(true)});
+      if (active && result.events?.length) {setEvents(prev => JSON.stringify(prev) === JSON.stringify(result.events) ? prev : result.events);setCheckedAt(result.checkedAt);setStale(result.stale);setReady(true)}
+    }).catch(() => {if (active) {setStale(true);setReady(true)}});
     refresh(); const timer = setInterval(refresh, 60_000);
     return () => {active = false;clearInterval(timer)};
   }, []);
   useEffect(() => {
+    if (!ready) return;
     const c = canvas.current, ctx = c?.getContext("2d");
     if (!c || !ctx) return;
     let frame = 0, start = 0, pausedAt = 0, visible = false, done = false;
@@ -211,13 +213,14 @@ export function ActivityTimeline() {
     }, { rootMargin: "40px" });
     observer.observe(c); if (reduced) draw(1);
     return () => { observer.disconnect(); cancelAnimationFrame(frame); delete (window as Window & {__activityDraw?: (progress:number)=>void}).__activityDraw };
-  }, [replay, events]);
+  }, [replay, events, ready]);
   const inspect = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const bounds = e.currentTarget.getBoundingClientRect(), x = e.clientX - bounds.left;
     const nearest = points.current.reduce<Point | null>((p, q) => !p || Math.abs(q.x - x) < Math.abs(p.x - x) ? q : p, null);
     if (nearest) setSelected(nearest.index);
   };
   return <section className="activity-timeline">
+    {!ready && <p className="activity-timeline-loading">Checking current public GitHub activity...</p>}
     <canvas ref={canvas} onClick={inspect} aria-label={`Animated event-order view of ${events.length} public merged pull requests from May through September 2026`} role="img" />
     <div className="activity-timeline-foot"><span>EVENT ORDER VIEW · REPLAY THE PUBLIC MERGE HISTORY</span><button type="button" onClick={() => { setSelected(null); setReplay(n => n + 1) }} disabled={playing}>↻ REPLAY</button></div>
     {selected !== null && <p><a href={events[selected].url} target="_blank" rel="noreferrer">{events[selected].date} · {events[selected].repo} · {events[selected].title} ↗</a></p>}
