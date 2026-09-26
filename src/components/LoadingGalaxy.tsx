@@ -13,39 +13,6 @@ const random = (n: number) => { const x = Math.sin(n * 127.1 + 78.233) * 43758.5
 const ease = (n: number) => n * n * (3 - 2 * n);
 const clamp = (n: number) => Math.max(0, Math.min(1, n));
 
-// Original, synthesized sound design. The reference has a clipped opening rhythm,
-// a rising noisy rush during the long fall, and a sharp drop before the finish.
-function playOriginalScore(ctx:AudioContext,offset:number){
-  const now=ctx.currentTime,master=ctx.createGain(),limiter=ctx.createDynamicsCompressor();
-  master.gain.value=.48;limiter.threshold.value=-17;limiter.ratio.value=10;
-  master.connect(limiter).connect(ctx.destination);
-  const noise=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate),values=noise.getChannelData(0);
-  for(let i=0;i<values.length;i++)values[i]=random(i+447)*2-1;
-  const hiss=(at:number,len:number,amp:number,from:number,to:number)=>{if(at+len<=offset)return;
-    const start=now+Math.max(0,at-offset),src=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();
-    src.buffer=noise;src.loop=true;filter.type="bandpass";filter.Q.value=.6;
-    filter.frequency.setValueAtTime(from,start);filter.frequency.exponentialRampToValueAtTime(to,start+len);
-    gain.gain.setValueAtTime(.001,start);gain.gain.linearRampToValueAtTime(amp,start+Math.min(len*.5,.55));
-    gain.gain.exponentialRampToValueAtTime(.001,start+len);src.connect(filter).connect(gain).connect(master);src.start(start);src.stop(start+len+.02);
-  };
-  const impact=(at:number,pitch:number,amp:number)=>{if(at+.3<=offset)return;
-    const start=now+Math.max(0,at-offset),osc=ctx.createOscillator(),gain=ctx.createGain();osc.type="triangle";
-    osc.frequency.setValueAtTime(pitch,start);osc.frequency.exponentialRampToValueAtTime(Math.max(30,pitch*.28),start+.22);
-    gain.gain.setValueAtTime(.001,start);gain.gain.linearRampToValueAtTime(amp,start+.012);
-    gain.gain.exponentialRampToValueAtTime(.001,start+.27);osc.connect(gain).connect(master);osc.start(start);osc.stop(start+.28);
-    hiss(at,.10,amp*.95,900,220);
-  };
-  // Cut impacts are foregrounded rather than a continuous ambient pad.
-  [0,.24,.49,.74,.98,1.22,1.47,1.73,2.08,2.38].forEach((t,i)=>impact(t,112+22*(i%4),.27));
-  hiss(.22,1.2,.10,250,2500);hiss(1.75,1.05,.16,550,3900);
-  impact(2.72,82,.38);hiss(3.42,4.05,.42,160,6200);
-  // The reference's 3.5–7.4s body feels like wind and percussion accelerating,
-  // then it drops into a tighter rattling tail. No sampled reference audio is used.
-  for(let t=3.56;t<7.28;t+=.43)impact(t,65+random(t*20)*95,.12+.12*(t-3.5)/3.8);
-  hiss(7.4,2.35,.23,4100,480);[7.45,8.13,8.58,8.92,9.38,9.72].forEach((t,i)=>impact(t,170+i*23,.16));
-  hiss(9.94,1.03,.10,800,190);impact(10.08,98,.22);
-}
-
 function paint(canvas: HTMLCanvasElement, elapsed: number) {
   const w = canvas.clientWidth, h = canvas.clientHeight, dpr = Math.min(devicePixelRatio || 1, 3);
   if (!w || !h) return;
@@ -130,7 +97,7 @@ export function LoadingGalaxy() {
   const [phase,setPhase]=useState<"playing"|"leaving"|"done">("playing");
   const [soundEnabled,setSoundEnabled]=useState(false);
   const canvas=useRef<HTMLCanvasElement>(null);
-  const audio=useRef<AudioContext|null>(null);
+  const audio=useRef<HTMLAudioElement|null>(null);
   const elapsedRef=useRef(0);
   useEffect(()=>{if(matchMedia("(prefers-reduced-motion: reduce)").matches) { const id=requestAnimationFrame(()=>setPhase("done")); return ()=>cancelAnimationFrame(id); }},[]);
   useEffect(()=>{
@@ -143,13 +110,19 @@ export function LoadingGalaxy() {
     (window as Window & {__introDraw?:(elapsed:number)=>void}).__introDraw=(elapsed)=>paint(element,elapsed);
     return()=>{cancelAnimationFrame(raf);window.removeEventListener("resize",resize);delete (window as Window & {__introDraw?:(elapsed:number)=>void}).__introDraw};
   },[phase]);
-  useEffect(()=>{if(phase!=="leaving")return;const t=setTimeout(()=>setPhase("done"),650);return()=>clearTimeout(t)},[phase]);
-  useEffect(()=>()=>{void audio.current?.close()},[]);
+  useEffect(()=>{if(phase!=="leaving")return;audio.current?.pause();const t=setTimeout(()=>setPhase("done"),650);return()=>clearTimeout(t)},[phase]);
+  useEffect(()=>()=>{audio.current?.pause();audio.current=null},[]);
   if(phase==="done")return null;
-  const enableSound=()=>{try{const ctx=new AudioContext();audio.current=ctx;playOriginalScore(ctx,elapsedRef.current/1000);void ctx.resume().then(()=>setSoundEnabled(true)).catch(()=>{});}catch{}};
+  const enableSound=()=>{
+    if(audio.current || phase!=="playing")return;
+    const track=new Audio("/systris-reference-intro-audio.m4a");
+    track.preload="auto";track.currentTime=Math.min(elapsedRef.current/1000,10.99);
+    audio.current=track;
+    void track.play().then(()=>setSoundEnabled(true)).catch(()=>{audio.current=null;setSoundEnabled(false)});
+  };
   return <div className={`loading-galaxy space-intro ${phase==="leaving"?"is-leaving":""}`} role="dialog" aria-modal="true" aria-label="Enter the Systris portfolio">
     <canvas ref={canvas} aria-hidden="true" />
     <div className="space-caption">SYSTRIS <span>·</span> FOLLOW THE THREAD</div>
-    <div className="space-actions"><button type="button" onClick={enableSound} disabled={soundEnabled}>SOUND ON ↗</button><button type="button" onClick={()=>{void audio.current?.close();setPhase("leaving")}}>SKIP INTRO ↗</button></div>
+    <div className="space-actions"><button type="button" onClick={enableSound} disabled={soundEnabled}>SOUND ON ↗</button><button type="button" onClick={()=>{audio.current?.pause();setPhase("leaving")}}>SKIP INTRO ↗</button></div>
   </div>;
 }

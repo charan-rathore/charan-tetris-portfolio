@@ -6,7 +6,6 @@ import "./activity-timeline.css";
 type Event = (typeof timeline.events)[number];
 const september = (events: Event[]) => events.filter(event => event.date.startsWith("2026-09-"));
 const duration = 54000;
-const day = 86400000;
 const ms = (d: string) => Date.parse(`${d}T00:00:00Z`);
 
 const month = (date: number) => new Date(date).toLocaleString("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
@@ -38,7 +37,7 @@ export function ActivityTimeline() {
     if (!c || !ctx) return;
     let frame = 0, start = 0, pausedAt = 0, visible = false, done = false;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const firstTime = ms(events[0].date), endTime = ms(events[events.length-1].date);
+    const endTime = ms(events[events.length-1].date);
     const draw = (progress: number) => {
       const w = c.clientWidth, h = c.clientHeight, dpr = Math.min(devicePixelRatio, 4);
       if (!w || !h) return;
@@ -50,15 +49,14 @@ export function ActivityTimeline() {
       const scrub = clamp(progress/.87,0,1);
       const cursor = 1 + scrub*(events.length-1);
       const arrive = (i:number)=>clamp((cursor-i)*1.2,0,1);
-      const current = Math.min(events.length-1,Math.floor(cursor));
       // Keep every drawing at a fixed pixel origin; shaking the whole canvas blurs the combine.
-      const unit = Math.max(7, w / 140), pad = Math.max(18, w * .04), base = h * .575;
+      const unit = Math.max(7, w / 140), pad = Math.max(18, w * .04), base = h * .585;
       const left = pad, right = w - pad;
       // The close grid is a visual texture. Event position follows event order, not elapsed time.
       ctx.strokeStyle = "rgba(123,99,119,.16)"; ctx.lineWidth = 1;
-      const plotTop=progress >= .87 ? h*.29 : h*.19;
-      ctx.beginPath(); for (let x = left; x < right; x += unit) { ctx.moveTo(x + .5, plotTop); ctx.lineTo(x + .5, h * .85) }
-      for (let y = plotTop; y < h * .85; y += unit) { ctx.moveTo(left, y + .5); ctx.lineTo(right, y + .5) } ctx.stroke();
+      const plotTop=h*.32, plotBottom=h*.83;
+      ctx.beginPath(); for (let x = left; x < right; x += unit) { ctx.moveTo(x + .5, plotTop); ctx.lineTo(x + .5, plotBottom) }
+      for (let y = plotTop; y < plotBottom; y += unit) { ctx.moveTo(left, y + .5); ctx.lineTo(right, y + .5) } ctx.stroke();
       const vignette = ctx.createRadialGradient(w / 2, base, w * .12, w / 2, base, w * .69);
       vignette.addColorStop(0, "#100d1300"); vignette.addColorStop(1, "#03020599");
       ctx.fillStyle = vignette; ctx.fillRect(0, 0, w, h);
@@ -69,32 +67,28 @@ export function ActivityTimeline() {
       const dateIndex=Math.max(0,Math.floor(cursor-1));
       const dateFrac=clamp(cursor-1-dateIndex,0,1);
       const currentDate=progress>=.87?endTime:ms(events[dateIndex].date)+(ms(events[Math.min(dateIndex+1,events.length-1)].date)-ms(events[dateIndex].date))*dateFrac;
-      let recent = 0;
-      for (let k=current;k>=0;k--) {if(ms(events[k].date)<=currentDate){recent=k;break}}
-      const lastMerge = ms(events[recent].date);
-      ctx.font = `700 ${Math.max(19, w * .032)}px Arial, sans-serif`;
-      if (progress < .87) ctx.fillText(month(currentDate), left, h * (w < 620 ? .29 : .28));
-      ctx.font = `${Math.max(10, w * .012)}px Arial, sans-serif`;
-      ctx.fillStyle = "#aaa1a9"; if (progress < .87) ctx.fillText("PUBLIC MERGED PULL REQUESTS", left, h * (w < 620 ? .37 : .315));
-      const counterX = right, counterY = h * .247;
-      ctx.textAlign = "right"; ctx.font = `${Math.max(10, w * .012)}px Arial, sans-serif`;
-      ctx.fillStyle = "#aca6ab"; if (progress < .87) ctx.fillText("Days since last merged PR", counterX, counterY - h * .058);
-      ctx.fillStyle = "#f1edef"; ctx.font = `300 ${Math.max(45, w * .083)}px Arial, sans-serif`;
-      if (progress < .87) ctx.fillText(String(Math.max(0, Math.floor((currentDate - lastMerge) / day))), counterX, counterY + h * .087);
-      ctx.textAlign = "left";
+      if (progress < .87) {
+        ctx.font = `700 ${Math.max(19, w * .032)}px Arial, sans-serif`;
+        ctx.fillText(month(currentDate), left, h*.205);
+        ctx.font = `${Math.max(10, w * .012)}px Arial, sans-serif`;
+        ctx.fillStyle = "#aaa1a9";
+        ctx.fillText("PUBLIC MERGED PULL REQUESTS", left, h*.265);
+      }
+      ctx.save();ctx.beginPath();ctx.rect(left,plotTop,right-left,plotBottom-plotTop);ctx.clip();
       ctx.fillStyle = "#9d899a"; ctx.fillRect(left, base - 1, right - left, 2);
       for (let x = left; x < right; x += unit * 2) { ctx.fillStyle = "#c9b5c9"; ctx.fillRect(x, base - 2, 2, 4) }
       const finale = ease(clamp((progress - .87) / .13, 0, 1));
       const pitch = Math.min(w * .058, 55), endX = w * .70;
       const dayCounts = new Map<string, number>();
       for (const event of events) dayCounts.set(event.date, (dayCounts.get(event.date) ?? 0) + 1);
-      const finalPitch = (right - left - 15) / Math.max(1,events.length - 1);
+      const finalPitch = (right - left - 12) / Math.max(1,events.length - 1);
+      const activeDates=[...new Set(events.map(e=>e.date))].sort();
       const finalePoints = new Map<string, { x: number; green: number; red: number }>();
       points.current = [];
       events.forEach((e, i) => {
         if (i >= cursor && progress < .87) return;
         const xScrub = endX + (i - cursor + 1) * pitch;
-        const xFinal = left + ((ms(e.date) - firstTime) / (endTime - firstTime || 1)) * (right-left-15);
+        const xFinal = left+12+(activeDates.indexOf(e.date)+.5)*(right-left-24)/activeDates.length;
         const dayBucket = finalePoints.get(e.date) ?? {x:xFinal,green:0,red:0};
         if (e.kind === "merged_fix") dayBucket.red++; else dayBucket.green++;
         finalePoints.set(e.date,dayBucket);
@@ -102,7 +96,7 @@ export function ActivityTimeline() {
         if (x < left - 15 || x > right + 15) return;
         const fix = e.kind === "merged_fix", color = fix ? "#f0716a" : "#3ecf8e";
         const sameDay = dayCounts.get(e.date) ?? 1;
-        const height = h * Math.min(.25,.09 + Math.log2(1 + sameDay)*.045 + (i%4)*.013);
+        const height = h * Math.min(.175,.075 + Math.log2(1 + sameDay)*.034 + (i%4)*.007);
         const count = Math.max(5, Math.floor(height / unit));
         const block = Math.max(2, Math.min(unit * .78, finalPitch * .47, 10));
         const birth=cursor-i;
@@ -114,15 +108,6 @@ export function ActivityTimeline() {
           if (n/count < arrival) ctx.fillRect(Math.round(x / unit) * unit - block / 2, y, block, Math.max(3, unit * .69));
         }
         ctx.shadowBlur = 0; ctx.globalAlpha = 1; points.current.push({ x, y: base, index: i });
-        // A small label follows noteworthy bars as in the supplied reel.
-        if (x > left+w*.24 && (i === current && progress < .87 || (i%8===0 && i<current-1 && progress<.87))) {
-          const name=e.repo.split("/").at(-1)?.replaceAll("-"," ").slice(0,19) ?? "PR";
-          ctx.font = `${Math.max(9,w*.010)}px Arial, sans-serif`;
-          ctx.fillStyle = "#dad5dc";ctx.textAlign = x > w*.78 ? "right" : "left";
-          const labelY=fix ? base+height+18 : Math.max(h*.36,base-height-10);
-          if(arrival>.7)ctx.fillText(name,x+(x>w*.78?-8:8),labelY);
-          ctx.textAlign = "left";
-        }
         if (birth >= 0 && birth < 1.4 && progress < .87 && !reduced) {
           const age=birth/1.4, radius=unit*1.2+ease(age)*h*.23;
           const alpha=Math.sin(Math.PI*Math.min(1,age*1.18))*(1-age*.35);
@@ -156,17 +141,9 @@ export function ActivityTimeline() {
           }
         }
         ctx.shadowBlur=0;
-        const startMonth=new Date(firstTime);startMonth.setUTCDate(1);
-        ctx.fillStyle="#aaa1a9";ctx.font=`${Math.max(9,w*.011)}px Arial, sans-serif`;ctx.textAlign="center";
-        for(let t=startMonth.getTime();t<=endTime;t=new Date(new Date(t).setUTCMonth(new Date(t).getUTCMonth()+1)).getTime()) {
-          const x=left+(t-firstTime)/(endTime-firstTime||1)*(right-left-15);
-          if(x<left+20||x>right-20)continue;
-          ctx.fillRect(x,h*.84,1,6);
-          ctx.fillText(new Date(t).toLocaleString("en-US",{month:"short",timeZone:"UTC"}),x,h*.875);
-        }
-
         ctx.textAlign="left";ctx.globalAlpha=1;
       }
+      ctx.restore();
       ctx.font = `${Math.max(10, w * .011)}px Arial, sans-serif`; ctx.textAlign = "left";
       ctx.fillStyle = "#3ecf8e"; ctx.fillRect(left, h * .925, 9, 9);
       ctx.fillStyle = "#c9c1c7"; ctx.fillText("MERGED PR", left + 16, h * .925 + 9);
@@ -174,24 +151,18 @@ export function ActivityTimeline() {
       ctx.fillStyle = "#c9c1c7"; ctx.fillText("FIX / TEST PR", left + Math.min(130, w * .32) + 16, h * .925 + 9);
       if (progress >= .88) {
         const opacity = ease(clamp((progress-.88)/.08,0,1));ctx.globalAlpha = opacity;
-        const counts = new Map<string,number>();
-        events.forEach(event => counts.set(event.repo,(counts.get(event.repo)??0)+1));
-        const top = [...counts].sort((a,b)=>b[1]-a[1]).slice(0,3);
-        // Finale is a composed chart, not a frozen animation frame. Keep type above
-        // the plot and away from the legend, especially on narrow screens.
-        ctx.fillStyle="#e4e0e5";ctx.textAlign="left";
-        ctx.font=`600 ${Math.max(13,w*.024)}px Arial, sans-serif`;
+        const repoCount=new Set(events.map(e=>e.repo)).size;
+        ctx.textAlign="left";ctx.fillStyle="#e4e0e5";
+        ctx.font=`600 ${Math.max(16,w*.034)}px Arial, sans-serif`;
         ctx.fillText("September, at a glance",left,h*.105);
-        ctx.font=`${Math.max(10,w*.014)}px Arial, sans-serif`;ctx.fillStyle="#aaa1a9";
-        if (w >= 620) top.forEach(([repo,count],i)=>ctx.fillText(`${repo.split("/").at(-1)} · ${count} merged PRs`,left,h*(.15+i*.038)));
-        ctx.textAlign = w < 620 ? "left" : "right";ctx.fillStyle = "#e4e0e5";
-        ctx.font = `600 ${Math.max(14, w*.023)}px Arial, sans-serif`;
-        ctx.fillText(`${events.length} public merged PRs`,w < 620 ? left : right,h*(w < 620 ? .18 : .11));
-        ctx.font = `${Math.max(10,w*.012)}px Arial, sans-serif`;
-        ctx.fillStyle = "#aaa1a9";
-        ctx.fillText("September 2026 · source-linked history",w < 620 ? left : right,h*(w < 620 ? .235 : .155));
-        ctx.globalAlpha = 1;ctx.textAlign = "left";
+        ctx.font=`700 ${Math.max(27,w*.075)}px Arial, sans-serif`;
+        ctx.fillText(String(events.length),left,h*.215);
+        ctx.font=`${Math.max(10,w*.012)}px Arial, sans-serif`;ctx.fillStyle="#aaa1a9";
+        ctx.fillText("PUBLIC MERGED PRS",left+Math.max(45,w*.13),h*.185);
+        ctx.fillText(`${activeDates.length} ACTIVE DAYS  ·  ${repoCount} REPOS`,left+Math.max(45,w*.13),h*.235);
+        ctx.globalAlpha=1;
       }
+
     };
     (window as Window & {__activityDraw?: (progress:number)=>void}).__activityDraw = draw;
     const tick = (now: number) => {
