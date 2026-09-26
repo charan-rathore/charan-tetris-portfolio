@@ -2,39 +2,160 @@
 import { useEffect, useRef, useState } from "react";
 import timeline from "../data/activity-timeline.json";
 import "./activity-timeline.css";
-const events=timeline.events;
-const duration=23000;
-const first=new Date(events[0].date+"T00:00:00Z").getTime(),last=new Date(events[events.length-1].date+"T00:00:00Z").getTime();
-const daysSince=(d:string)=>Math.floor((Date.parse(timeline.asOf+"T00:00:00Z")-Date.parse(d+"T00:00:00Z"))/86400000);
-export function ActivityTimeline(){
- const canvas=useRef<HTMLCanvasElement>(null),[playing,setPlaying]=useState(false),[selected,setSelected]=useState<number|null>(null),[replay,setReplay]=useState(0);
- useEffect(()=>{
-  const c=canvas.current,ctx=c?.getContext("2d");if(!c||!ctx)return;let frame=0,start=0,visible=false,done=false;
-  const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const ease=(x:number)=>1-Math.pow(1-x,3);
-  const draw=(progress:number)=>{const w=c.clientWidth,h=c.clientHeight,dpr=Math.min(devicePixelRatio,1.5);if(!w||!h)return;
-   if(c.width!==Math.round(w*dpr)||c.height!==Math.round(h*dpr)){c.width=Math.round(w*dpr);c.height=Math.round(h*dpr)}ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle="#0d0a0f";ctx.fillRect(0,0,w,h);
-   const grid=Math.max(10,w/94);ctx.fillStyle="#4e475a55";for(let x=0;x<w;x+=grid)for(let y=0;y<h;y+=grid)ctx.fillRect(Math.round(x),Math.round(y),1.5,1.5);
-   const pad=40,base=h*.53,brush=ctx;ctx.strokeStyle="#77667a88";ctx.setLineDash([2,5]);ctx.strokeRect(pad,base-3,w-pad*2,7);ctx.setLineDash([]);
-   const cutoff=progress===1?Date.parse(timeline.asOf+"T00:00:00Z"):first+(last-first)*progress,selectedDate=new Date(cutoff);const label=selectedDate.toLocaleString("en-US",{month:"short",year:"numeric",timeZone:"UTC"});
-   const drawn=events.filter(e=>Date.parse(e.date+"T00:00:00Z")<=cutoff);const latest=drawn.filter(e=>e.kind==='merged'||e.kind==='merged_fix').at(-1);
-   ctx.fillStyle="#e5e0e8";ctx.font=`bold ${Math.max(12,w*.018)}px monospace`;ctx.fillText(label,pad,35);ctx.textAlign="right";ctx.fillText(`${latest?Math.floor((cutoff-Date.parse(latest.date+"T00:00:00Z"))/86400000):"-"} DAYS SINCE LAST MERGE`,w-pad,35);ctx.textAlign="left";
-   const shown=progress===1?events:drawn;const windowStart=progress===1?first:Math.max(first,cutoff-100*86400000);const windowEnd=progress===1?last:Math.max(first+100*86400000,cutoff+20*86400000);
-   const grouped=new Map<string,{merged:number;fix:number;events:number[]}>();shown.forEach((e,i)=>{const group=grouped.get(e.date)??{merged:0,fix:0,events:[]};group.events.push(i);if(e.kind==="merged_fix")group.fix++;else group.merged++;grouped.set(e.date,group)});
-   [...grouped].forEach(([dateStr,group])=>{const date=Date.parse(dateStr+"T00:00:00Z");if(date<windowStart)return;const x=pad+(date-windowStart)/(windowEnd-windowStart)*(w-pad*2);if(x<pad||x>w-pad)return;
-    const fix=group.fix>0; if(group.merged)colorBar(x,Math.min(90,25+group.merged*9),"#3ecf8e",false);if(group.fix)colorBar(x,-Math.min(80,25+group.fix*8),"#f0716a",false);
-    const age=(cutoff-date)/86400000;if(progress<1&&age>=0&&age<4){const r=ease(Math.min(1,age/4))*Math.min(70,h*.2),alpha=1-age/4;ctx.globalAlpha=alpha;ctx.fillStyle=fix?"#f0716a":"#3ecf8e";for(let k=0;k<80;k++){const a=k*2.39996,rr=r*((k%7)/7+.35);const xx=Math.round((x+Math.cos(a)*rr)/grid)*grid,yy=Math.round((base+Math.sin(a)*rr)/grid)*grid;ctx.fillRect(xx,yy,2.5,2.5)}ctx.globalAlpha=1}
-    function colorBar(px:number,bh:number,color:string,active:boolean){brush.fillStyle=color;brush.globalAlpha=active?1:.87;const blocks=6;for(let b=0;b<blocks;b++){const yy=bh>0?base-(b+1)*bh/blocks:base+b*(-bh)/blocks;brush.fillRect(px-3,yy,7,Math.abs(bh)/blocks-2)}brush.globalAlpha=1}
-   });
-   ctx.font=`${Math.max(10,w*.013)}px monospace`;ctx.fillStyle="#3ecf8e";ctx.fillRect(pad,h-29,7,7);ctx.fillStyle="#93a0a0";ctx.fillText("MERGED PR",pad+12,h-20);ctx.fillStyle="#f0716a";ctx.fillRect(pad+122,h-29,7,7);ctx.fillStyle="#93a0a0";ctx.fillText("FIX/TEST PR",pad+134,h-20);
-   if(progress===1){ctx.textAlign="right";ctx.fillStyle="#cde8e0";ctx.font=`bold ${Math.max(11,w*.016)}px monospace`;ctx.fillText(`${events.length} PUBLIC MERGED PRS`,w-pad,h-20);ctx.textAlign="left"}
+
+type Event = (typeof timeline.events)[number];
+const duration = 23000;
+const day = 86400000;
+const ms = (d: string) => Date.parse(`${d}T00:00:00Z`);
+
+const month = (date: number) => new Date(date).toLocaleString("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
+const clamp = (x: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, x));
+const ease = (x: number) => 1 - (1 - x) ** 3;
+
+type Point = { x: number; y: number; index: number };
+export function ActivityTimeline() {
+  const [events, setEvents] = useState<Event[]>(timeline.events);
+  const [checkedAt, setCheckedAt] = useState(timeline.asOf);
+  const [stale, setStale] = useState(true);
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const points = useRef<Point[]>([]);
+  const [replay, setReplay] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const [selected, setSelected] = useState<number | null>(null);
+  useEffect(() => {
+    let active = true;
+    const refresh = () => fetch("/api/activity-timeline").then(r => r.ok ? r.json() : Promise.reject()).then((result: {events:Event[];checkedAt:string;stale:boolean}) => {
+      if (active && result.events?.length) {setEvents(result.events);setCheckedAt(result.checkedAt);setStale(result.stale)}
+    }).catch(() => {if (active) setStale(true)});
+    refresh(); const timer = setInterval(refresh, 60_000);
+    return () => {active = false;clearInterval(timer)};
+  }, []);
+  useEffect(() => {
+    const c = canvas.current, ctx = c?.getContext("2d");
+    if (!c || !ctx) return;
+    let frame = 0, start = 0, pausedAt = 0, visible = false, done = false;
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const firstTime = ms(events[0].date), endTime = ms(events[events.length-1].date);
+    const draw = (progress: number) => {
+      const w = c.clientWidth, h = c.clientHeight, dpr = Math.min(devicePixelRatio, 2);
+      if (!w || !h) return;
+      if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) {
+        c.width = Math.round(w * dpr); c.height = Math.round(h * dpr);
+      }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.fillStyle = "#0d0a0f"; ctx.fillRect(0, 0, w, h);
+      const impact = Math.min(Math.abs(progress * (events.length - 1) - Math.round(progress * (events.length - 1))), 1);
+      const jolt = !reduced && progress < .87 ? Math.max(0, 1 - impact * 7) : 0;
+      ctx.translate(Math.sin(progress * 650) * jolt * 2.3, Math.cos(progress * 770) * jolt * 1.8);
+      const unit = Math.max(7, w / 140), pad = Math.max(22, w * .04), base = h * .575;
+      const left = pad, right = w - pad;
+      // The close grid is a visual texture. Event position follows event order, not elapsed time.
+      ctx.strokeStyle = "rgba(123,99,119,.16)"; ctx.lineWidth = 1;
+      ctx.beginPath(); for (let x = left; x < right; x += unit) { ctx.moveTo(x + .5, h * .19); ctx.lineTo(x + .5, h * .85) }
+      for (let y = h * .19; y < h * .85; y += unit) { ctx.moveTo(left, y + .5); ctx.lineTo(right, y + .5) } ctx.stroke();
+      const vignette = ctx.createRadialGradient(w / 2, base, w * .12, w / 2, base, w * .69);
+      vignette.addColorStop(0, "#100d1300"); vignette.addColorStop(1, "#03020599");
+      ctx.fillStyle = vignette; ctx.fillRect(0, 0, w, h);
+      if (jolt) {ctx.fillStyle=`rgba(72,218,155,${jolt*.085})`;ctx.fillRect(left,h*.19,right-left,h*.66)}
+      ctx.fillStyle = "#e4e1e5"; ctx.textAlign = "left";
+      ctx.font = `${Math.max(16, w * .023)}px Arial, sans-serif`;
+      if (progress < .88) ctx.fillText("GitHub activity, one merge at a time", left, h * .105);
+      const cursor = progress === 1 ? events.length - 1 : progress * (events.length - 1);
+      const current = Math.floor(cursor);
+      const currentDate = progress === 1 ? Date.now() : firstTime + (endTime - firstTime) * progress;
+      const lastMerge = ms(events[current].date);
+      ctx.font = `700 ${Math.max(19, w * .032)}px Arial, sans-serif`;
+      if (progress < .88) ctx.fillText(month(currentDate), left, h * .28);
+      ctx.font = `${Math.max(10, w * .012)}px Arial, sans-serif`;
+      ctx.fillStyle = "#aaa1a9"; if (progress < .88) ctx.fillText("PUBLIC MERGED PULL REQUESTS", left, h * .315);
+      const counterX = right, counterY = h * .247;
+      ctx.textAlign = "right"; ctx.font = `${Math.max(10, w * .012)}px Arial, sans-serif`;
+      ctx.fillStyle = "#aca6ab"; if (progress < .88) ctx.fillText("Days since last merged PR", counterX, counterY - h * .058);
+      ctx.fillStyle = "#f1edef"; ctx.font = `300 ${Math.max(45, w * .083)}px Arial, sans-serif`;
+      if (progress < .88) ctx.fillText(String(Math.max(0, Math.floor((currentDate - lastMerge) / day))), counterX, counterY + h * .087);
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#9d899a"; ctx.fillRect(left, base - 1, right - left, 2);
+      for (let x = left; x < right; x += unit * 2) { ctx.fillStyle = "#c9b5c9"; ctx.fillRect(x, base - 2, 2, 4) }
+      const finale = ease(clamp((progress - .87) / .13, 0, 1));
+      const pitch = Math.min(w * .058, 55), endX = w * .70;
+      const finalPitch = (right - left - 15) / (events.length - 1);
+      points.current = [];
+      events.forEach((e, i) => {
+        if (i > cursor + .01 && progress < 1) return;
+        const xScrub = endX + (i - cursor) * pitch;
+        const xFinal = left + i * finalPitch;
+        const x = xScrub * (1 - finale) + xFinal * finale;
+        if (x < left - 15 || x > right + 15) return;
+        const fix = e.kind === "merged_fix", color = fix ? "#f0716a" : "#3ecf8e";
+        const height = (fix ? h * .20 : h * .20) * (finale ? 1 - finale * .3 : 1);
+        const count = Math.max(5, Math.floor(height / unit));
+        const block = Math.max(3, Math.min(unit * .78, finalPitch * .47, 10));
+        ctx.fillStyle = color; ctx.shadowColor = color; ctx.shadowBlur = i === current && progress < .87 ? 19 : 5;
+        for (let n = 0; n < count; n++) {
+          const y = fix ? base + unit * (.75 + n) : base - unit * (1.3 + n);
+          ctx.fillRect(Math.round(x / unit) * unit - block / 2, y, block, Math.max(3, unit * .69));
+        }
+        ctx.shadowBlur = 0; points.current.push({ x, y: base, index: i });
+        const birth = cursor - i;
+        if (birth >= 0 && birth < 1.2 && progress < .87 && !reduced) {
+          const age = birth / 1.2, radius = 10 + ease(age) * h * .14;
+          ctx.globalAlpha = (1 - age) * .8; ctx.fillStyle = color;
+          ctx.shadowColor = color; ctx.shadowBlur = (1 - age) * 20;
+          for (let k = 0; k < 185; k++) {
+            const a = k * 2.399963, drift = Math.sin(k * 21.7) * unit * 2;
+            const r = radius + drift;
+            const px = Math.round((x + Math.cos(a) * r) / unit) * unit;
+            const py = Math.round((base + Math.sin(a) * r) / unit) * unit;
+            ctx.fillRect(px, py, 2.2, 2.2);
+          }
+          ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+        }
+      });
+      ctx.font = `${Math.max(10, w * .011)}px Arial, sans-serif`; ctx.textAlign = "left";
+      ctx.fillStyle = "#3ecf8e"; ctx.fillRect(left, h * .925, 9, 9);
+      ctx.fillStyle = "#c9c1c7"; ctx.fillText("MERGED PR", left + 16, h * .925 + 9);
+      ctx.fillStyle = "#f0716a"; ctx.fillRect(left + Math.min(130, w * .2), h * .925, 9, 9);
+      ctx.fillStyle = "#c9c1c7"; ctx.fillText("FIX / TEST PR", left + Math.min(130, w * .2) + 16, h * .925 + 9);
+      if (progress >= .88) {
+        const opacity = ease(clamp((progress-.88)/.08,0,1));ctx.globalAlpha = opacity;
+        ctx.textAlign = "center";ctx.fillStyle = "#e4e0e5";
+        ctx.font = `600 ${Math.max(13, w*.018)}px Arial, sans-serif`;
+        ctx.fillText(`${events.length} public merged PRs`, w*.5, h*.13);
+        ctx.font = `${Math.max(10, w*.011)}px Arial, sans-serif`;
+        ctx.fillStyle = "#aaa1a9";
+        ctx.fillText(`${month(firstTime)} - ${month(endTime)} · source-linked history`, w*.5, h*.167);
+        ctx.globalAlpha = 1;ctx.textAlign = "left";
+      }
+    };
+    const tick = (now: number) => {
+      if (!visible) return;
+      if (!start) start = now - pausedAt;
+      const progress = reduced ? 1 : Math.min(1, (now - start) / duration);
+      draw(progress);
+      if (progress < 1) frame = requestAnimationFrame(tick);
+      else { done = true; setPlaying(false) }
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        visible = true;
+        if (!done) { start = 0; frame = requestAnimationFrame(tick); setPlaying(true) }
+      } else {
+        visible = false; if (start) pausedAt = performance.now() - start;
+        cancelAnimationFrame(frame);
+      }
+    }, { rootMargin: "40px" });
+    observer.observe(c); if (reduced) draw(1);
+    return () => { observer.disconnect(); cancelAnimationFrame(frame) };
+  }, [replay, events]);
+  const inspect = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const bounds = e.currentTarget.getBoundingClientRect(), x = e.clientX - bounds.left;
+    const nearest = points.current.reduce<Point | null>((p, q) => !p || Math.abs(q.x - x) < Math.abs(p.x - x) ? q : p, null);
+    if (nearest) setSelected(nearest.index);
   };
-  const tick=(now:number)=>{if(!visible)return;if(!start)start=now;const progress=reduced?1:Math.min(1,(now-start)/duration);draw(progress);if(progress<1)frame=requestAnimationFrame(tick);else{done=true;setPlaying(false)}};
-  const observer=new IntersectionObserver(([e])=>{visible=e.isIntersecting;if(visible&&!done){start=0;frame=requestAnimationFrame(tick);setPlaying(true)}else if(!visible)cancelAnimationFrame(frame)},{rootMargin:"40px"});observer.observe(c);
-  if(reduced)draw(1);
-  return()=>{observer.disconnect();cancelAnimationFrame(frame)};
- },[replay,selected]);
- const inspect=(e:React.MouseEvent<HTMLCanvasElement>)=>{const x=(e.clientX-e.currentTarget.getBoundingClientRect().left)/e.currentTarget.clientWidth;const index=Math.round(x*(events.length-1));setSelected(Math.max(0,Math.min(events.length-1,index)))};
- const lastMerge=events.filter(e=>e.kind==='merged'||e.kind==='merged_fix').at(-1);
- return <section className="activity-timeline"><div className="activity-timeline-head"><span>GITHUB / MERGED PR TIMELINE</span><button onClick={()=>{setReplay(n=>n+1);setPlaying(true)}} disabled={playing}>↻ REPLAY</button></div><canvas ref={canvas} onClick={inspect} aria-label={`Timeline of ${events.length} public merged pull requests by Charan through ${timeline.asOf}`} role="img" /><p>{selected!==null?<a href={events[selected].url} target="_blank" rel="noreferrer">{events[selected].date} · {events[selected].repo} · {events[selected].title} ↗</a>:`${events.length} public merged PRs. Last merged ${lastMerge?.date} (${lastMerge?daysSince(lastMerge.date):"?"} day ago). Red marks merged PRs classified as fixes or tests by their title, not failed builds.`}</p><small>Source: <a href="https://github.com/pulls?q=is%3Apr+author%3Acharan-rathore+is%3Amerged" target="_blank" rel="noreferrer">GitHub public merged PR search</a>, checked {timeline.asOf}. This is a dated snapshot; pushes and CI results are not included, and the colors do not assert CI status.</small></section>
+  return <section className="activity-timeline">
+    <canvas ref={canvas} onClick={inspect} aria-label={`Animated event-order view of ${events.length} public merged pull requests from May through September 2026`} role="img" />
+    <div className="activity-timeline-foot"><span>EVENT ORDER VIEW · REPLAY THE PUBLIC MERGE HISTORY</span><button type="button" onClick={() => { setSelected(null); setReplay(n => n + 1) }} disabled={playing}>↻ REPLAY</button></div>
+    {selected !== null && <p><a href={events[selected].url} target="_blank" rel="noreferrer">{events[selected].date} · {events[selected].repo} · {events[selected].title} ↗</a></p>}
+    <small>Source: <a href="https://github.com/pulls?q=is%3Apr+author%3Acharan-rathore+is%3Amerged" target="_blank" rel="noreferrer">GitHub public merged PRs</a>, checked {new Date(checkedAt).toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"})}{stale ? " (last known result; live check unavailable)" : ""}. Blocks follow event order, not a date-spaced scale. Red means a merged PR classified as a fix or test by its title. Pushes and CI results are not included.</small>
+  </section>;
 }
