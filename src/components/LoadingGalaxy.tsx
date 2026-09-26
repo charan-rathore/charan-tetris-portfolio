@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 const LENGTH = 11000;
 const montage: HTMLImageElement[] = [];
-for (const file of ["chart","collage","eye"]) {if(typeof Image!=="undefined"){const image=new Image();image.src=`/systris-original-${file}.webp`;montage.push(image)}}
+for (const file of ["chart","collage","eye"]) {if(typeof Image!=="undefined"){const image=new Image();image.src=`/${file==="chart"?"1":file==="collage"?"2":"3"}-systris-original-${file}.webp`;montage.push(image)}}
 const nebula = typeof Image !== "undefined" ? new Image() : null;
 const traveler = typeof Image !== "undefined" ? new Image() : null;
 if (traveler) traveler.src = "/systris-falling-figure.webp";
