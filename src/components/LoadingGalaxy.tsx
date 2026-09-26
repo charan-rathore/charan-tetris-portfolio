@@ -13,25 +13,37 @@ const random = (n: number) => { const x = Math.sin(n * 127.1 + 78.233) * 43758.5
 const ease = (n: number) => n * n * (3 - 2 * n);
 const clamp = (n: number) => Math.max(0, Math.min(1, n));
 
-// Synthesized score: clipped transients on each visual cut, low sub-bass swell
-// through the fall, filtered hiss and a stepped rise into the closing eye.
+// Original, synthesized sound design. The reference has a clipped opening rhythm,
+// a rising noisy rush during the long fall, and a sharp drop before the finish.
 function playOriginalScore(ctx:AudioContext,offset:number){
-  const now=ctx.currentTime,master=ctx.createGain();master.gain.value=.26;master.connect(ctx.destination);
+  const now=ctx.currentTime,master=ctx.createGain(),limiter=ctx.createDynamicsCompressor();
+  master.gain.value=.48;limiter.threshold.value=-17;limiter.ratio.value=10;
+  master.connect(limiter).connect(ctx.destination);
   const noise=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate),values=noise.getChannelData(0);
   for(let i=0;i<values.length;i++)values[i]=random(i+447)*2-1;
-  const rush=(at:number,len:number,volume:number,freq:number)=>{if(at+len<=offset)return;
-    const source=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();source.buffer=noise;source.loop=true;filter.type="bandpass";
-    filter.frequency.value=freq;filter.Q.value=.7;const start=now+Math.max(0,at-offset);
-    gain.gain.setValueAtTime(.001,start);gain.gain.linearRampToValueAtTime(volume,start+Math.max(.01,len*.22));gain.gain.exponentialRampToValueAtTime(.001,start+Math.max(.04,len));
-    source.connect(filter).connect(gain).connect(master);source.start(start);source.stop(start+len+.02);
+  const hiss=(at:number,len:number,amp:number,from:number,to:number)=>{if(at+len<=offset)return;
+    const start=now+Math.max(0,at-offset),src=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();
+    src.buffer=noise;src.loop=true;filter.type="bandpass";filter.Q.value=.6;
+    filter.frequency.setValueAtTime(from,start);filter.frequency.exponentialRampToValueAtTime(to,start+len);
+    gain.gain.setValueAtTime(.001,start);gain.gain.linearRampToValueAtTime(amp,start+Math.min(len*.5,.55));
+    gain.gain.exponentialRampToValueAtTime(.001,start+len);src.connect(filter).connect(gain).connect(master);src.start(start);src.stop(start+len+.02);
   };
-  for(const t of [0,.23,.48,.72,.96,1.18,1.46,1.73,2.06,2.35,7,7.43,7.88,8.19,8.52,8.83,9.2,9.61,10,10.45])rush(t,.12,.24,400+random(t*100)*2300);
-  rush(2.5,4.8,.20,1200);rush(6.9,3.8,.17,2700);
-  for(const [at,len,pitch,amp] of [[2.7,4.5,52,.20],[7,3.9,83,.16],[10.35,.5,180,.13]] as const){if(at+len<=offset)continue;
-    const start=now+Math.max(0,at-offset),osc=ctx.createOscillator(),gain=ctx.createGain();osc.type="sine";osc.frequency.setValueAtTime(pitch,start);
-    osc.frequency.exponentialRampToValueAtTime(pitch*.68,start+len);gain.gain.setValueAtTime(.001,start);gain.gain.linearRampToValueAtTime(amp,start+Math.min(.45,len*.3));gain.gain.exponentialRampToValueAtTime(.001,start+len);
-    osc.connect(gain).connect(master);osc.start(start);osc.stop(start+len+.02);
-  }
+  const impact=(at:number,pitch:number,amp:number)=>{if(at+.3<=offset)return;
+    const start=now+Math.max(0,at-offset),osc=ctx.createOscillator(),gain=ctx.createGain();osc.type="triangle";
+    osc.frequency.setValueAtTime(pitch,start);osc.frequency.exponentialRampToValueAtTime(Math.max(30,pitch*.28),start+.22);
+    gain.gain.setValueAtTime(.001,start);gain.gain.linearRampToValueAtTime(amp,start+.012);
+    gain.gain.exponentialRampToValueAtTime(.001,start+.27);osc.connect(gain).connect(master);osc.start(start);osc.stop(start+.28);
+    hiss(at,.10,amp*.95,900,220);
+  };
+  // Cut impacts are foregrounded rather than a continuous ambient pad.
+  [0,.24,.49,.74,.98,1.22,1.47,1.73,2.08,2.38].forEach((t,i)=>impact(t,112+22*(i%4),.27));
+  hiss(.22,1.2,.10,250,2500);hiss(1.75,1.05,.16,550,3900);
+  impact(2.72,82,.38);hiss(3.42,4.05,.42,160,6200);
+  // The reference's 3.5–7.4s body feels like wind and percussion accelerating,
+  // then it drops into a tighter rattling tail. No sampled reference audio is used.
+  for(let t=3.56;t<7.28;t+=.43)impact(t,65+random(t*20)*95,.12+.12*(t-3.5)/3.8);
+  hiss(7.4,2.35,.23,4100,480);[7.45,8.13,8.58,8.92,9.38,9.72].forEach((t,i)=>impact(t,170+i*23,.16));
+  hiss(9.94,1.03,.10,800,190);impact(10.08,98,.22);
 }
 
 function paint(canvas: HTMLCanvasElement, elapsed: number) {
@@ -46,7 +58,7 @@ function paint(canvas: HTMLCanvasElement, elapsed: number) {
   const opening = clamp(elapsed/2250);
   const journey = clamp((elapsed-2050)/5650);
   const travel = ease(journey);
-  const iris = ease(clamp((elapsed-7650)/3000));
+  const iris = 0;
   const warp = Math.min(w,h) * (.33 + travel * 1.45);
   const bg = c.createRadialGradient(cx,cy,0,cx,cy,Math.max(w,h)*.8);
   bg.addColorStop(0,"#030710"); bg.addColorStop(.29,"#030710"); bg.addColorStop(.68,"#030710"); bg.addColorStop(1,"#020409");
@@ -55,38 +67,10 @@ function paint(canvas: HTMLCanvasElement, elapsed: number) {
     c.save();c.globalAlpha=(1-iris)*(.3 + .7*opening)*.88;c.translate(cx,cy);c.rotate(travel*.29);
     const size=warp*2.45;c.drawImage(nebula,-size/2,-size/2,size,size);c.restore();
   }
-  // First 2.7s: rapid editorial jump cuts, then the fall, then an eye coda.
-  // These stills are original assets. The supplied reel determines only the timing.
-  const cuts=[0,230,480,720,960,1180,1460,1730,2060,2350,2700];
-  const shot=cuts.findIndex((end,i)=>i>0&&elapsed<end)-1;
-  if(elapsed<2700&&montage.length===3){
-    const image=montage[shot<2?0:shot<5?2:1];
-    if(image.complete&&image.naturalWidth){
-      const sliceStart=cuts[Math.max(shot,0)],sliceEnd=cuts[Math.max(shot+1,1)];
-      const t=clamp((elapsed-sliceStart)/(sliceEnd-sliceStart));
-      const stripH=Math.min(h*.38,w*.67),y=cy-stripH/2;
-      c.save();c.globalAlpha=1;c.fillStyle="#030710";c.fillRect(0,y,w,stripH);
-      c.beginPath();c.rect(0,y,w,stripH);c.clip();
-      const zoom=1.02+t*.17, iw=Math.max(w*zoom,stripH*image.naturalWidth/image.naturalHeight),ih=iw*image.naturalHeight/image.naturalWidth;
-      const pan=(shot%3-1)*w*.065;c.drawImage(image,cx-iw/2+pan,y+stripH/2-ih/2,iw,ih);
-      if(shot===1||shot===5){c.fillStyle="rgba(255,245,231,.24)";c.fillRect(0,y,w,stripH)}
-      if(shot===7){c.fillStyle="rgba(16,26,44,.3)";for(let j=0;j<5;j++)c.fillRect(j*w/5,y,w/15,stripH)}
-      c.restore();
-    }
-  }
-  if(elapsed>=7000&&montage[2]?.complete&&montage[2].naturalWidth){
-    const pulses=[7000,7430,7880,8190,8520,8830,9200,9610,10000,10450,10800];
-    const index=Math.max(0,pulses.findIndex((end,i)=>i>0&&elapsed<end)-1);
-    const img=montage[2],stripH=Math.min(h*.38,w*.67),y=cy-stripH/2;
-    const colors=["#ffd6bd","#74ffae","#ffd76a","#ff81e1","#e8efff","#9be5ff"];
-    c.save();c.beginPath();c.rect(0,y,w,stripH);c.clip();
-    c.fillStyle="#030710";c.fillRect(0,y,w,stripH);
-    const scale=1.04+index*.075,iw=Math.max(w*scale,stripH*img.naturalWidth/img.naturalHeight),ih=iw*img.naturalHeight/img.naturalWidth;
-    c.drawImage(img,cx-iw/2+(index%2?22:-22),y+stripH/2-ih/2,iw,ih);
-    c.globalCompositeOperation="screen";c.fillStyle=colors[index%colors.length];c.globalAlpha=.19+index%3*.08;c.fillRect(0,y,w,stripH);
-    if(index>5){c.globalAlpha=.17;c.fillStyle="#fff";for(let j=0;j<8;j++)c.fillRect((j*67+index*19)%w,y,2,stripH)}
-    c.restore();
-  }
+  const core=c.createRadialGradient(cx,cy,0,cx,cy,warp*.37);
+  core.addColorStop(0,`rgba(230,252,255,${(1-iris)*.83})`);
+  core.addColorStop(.21,`rgba(72,214,245,${(1-iris)*.5})`);core.addColorStop(1,"transparent");
+  c.fillStyle=core;c.fillRect(cx-warp*.4,cy-warp*.4,warp*.8,warp*.8);
   // Every point is redrawn from a fixed seed and a depth value, so the fall is
   // perspective motion rather than scaling a low-resolution still.
   for (let i=0;i<1300;i++) {
@@ -105,6 +89,25 @@ function paint(canvas: HTMLCanvasElement, elapsed: number) {
     c.lineTo(x+Math.cos(angle)*Math.max(size,depth*travel*22),y+Math.sin(angle)*Math.max(size,depth*travel*22));c.stroke();
   }
   c.globalAlpha=1;
+  // First 2.7s: editorial jump cuts include the eye, then the fall.
+  // These stills are original assets. The supplied reel determines only the timing.
+  const cuts=[0,230,480,720,960,1180,1460,1730,2060,2350,2700];
+  const shot=cuts.findIndex((end,i)=>i>0&&elapsed<end)-1;
+  if(elapsed<2700&&montage.length===3){
+    const image=montage[shot<2?0:shot<5?2:1];
+    if(image.complete&&image.naturalWidth){
+      const sliceStart=cuts[Math.max(shot,0)],sliceEnd=cuts[Math.max(shot+1,1)];
+      const t=clamp((elapsed-sliceStart)/(sliceEnd-sliceStart));
+      const stripH=Math.min(h*.38,w*.67),y=cy-stripH/2;
+      c.save();c.globalAlpha=1;c.fillStyle="#030710";c.fillRect(0,y,w,stripH);
+      c.beginPath();c.rect(0,y,w,stripH);c.clip();
+      const zoom=1.02+t*.17, iw=Math.max(w*zoom,stripH*image.naturalWidth/image.naturalHeight),ih=iw*image.naturalHeight/image.naturalWidth;
+      const pan=(shot%3-1)*w*.065;c.drawImage(image,cx-iw/2+pan,y+stripH/2-ih/2,iw,ih);
+      if(shot===1||shot===5){c.fillStyle="rgba(255,245,231,.24)";c.fillRect(0,y,w,stripH)}
+      if(shot===7){c.fillStyle="rgba(16,26,44,.3)";for(let j=0;j<5;j++)c.fillRect(j*w/5,y,w/15,stripH)}
+      c.restore();
+    }
+  }
   // A rendered original figure carries the fall; size, parallax, roll and
   // acceleration are drawn anew every frame against a live particle field.
   if (journey>0 && journey<1 && traveler?.complete && traveler.naturalWidth) {
@@ -118,23 +121,9 @@ function paint(canvas: HTMLCanvasElement, elapsed: number) {
     c.filter="brightness(1.28) contrast(1.05)";c.drawImage(traveler,-width/2,-height/2,width,height);
     c.restore();
   }
-  const core=c.createRadialGradient(cx,cy,0,cx,cy,warp*.37);
-  core.addColorStop(0,`rgba(230,252,255,${(1-iris)*.83})`);
-  core.addColorStop(.21,`rgba(72,214,245,${(1-iris)*.5})`);core.addColorStop(1,"transparent");
-  c.fillStyle=core;c.fillRect(cx-warp*.4,cy-warp*.4,warp*.8,warp*.8);
-  // Aperture becomes a graphic iris, then closes to a pupil and hands off to the page.
-  if(iris>0) {
-    const r=Math.max(w,h)*(.16+iris*.53), eye=c.createRadialGradient(cx,cy,r*.08,cx,cy,r);
-    eye.addColorStop(0,"#00050a");eye.addColorStop(.16,"#00050a");
-    eye.addColorStop(.28,"#0b7e98");eye.addColorStop(.43,"#62d4d8");
-    eye.addColorStop(.65,"#173c67");eye.addColorStop(.95,"#020612");
-    c.globalAlpha=iris;c.fillStyle=eye;c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.fill();
-    c.strokeStyle="#e0f7ff";
-    for(let k=0;k<90;k++) {const a=k*2.39996, inner=r*(.2+random(k+999)*.14),outer=r*(.47+random(k+888)*.27);
-      c.globalAlpha=iris*.25;c.lineWidth=Math.max(.4,r*.002);c.beginPath();c.moveTo(cx+Math.cos(a)*inner,cy+Math.sin(a)*inner);c.lineTo(cx+Math.cos(a+.07)*outer,cy+Math.sin(a+.07)*outer);c.stroke(); }
-    c.globalAlpha=iris;c.fillStyle="#00040a";c.beginPath();c.arc(cx,cy,r*(.18+ease(clamp((elapsed-9800)/1100))*.92),0,Math.PI*2);c.fill();
-    c.globalAlpha=1;
-  }
+  // End by continuing the fall into darkness; do not return to the eye.
+  const fade=ease(clamp((elapsed-9050)/1950));
+  if(fade>0){c.fillStyle=`rgba(1,3,9,${fade})`;c.fillRect(0,0,w,h)}
 }
 
 export function LoadingGalaxy() {
