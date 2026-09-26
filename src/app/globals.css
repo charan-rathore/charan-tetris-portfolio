@@ -2763,3 +2763,10 @@ body { background:radial-gradient(ellipse at 6% 8%,#18344c44,transparent 38%),ra
 [data-ambient=paused] .galaxy-preview .galaxy-halo{animation-play-state:paused}
 @media(prefers-reduced-motion:reduce){.galaxy-preview animateMotion{display:none}.galaxy-preview .galaxy-halo{animation:none}}
 .galaxy-preview .galaxy-core-halo{filter:drop-shadow(0 0 16px #13c9fb)}
+/* Slow, bounded orbital drift keeps every label readable and every link easy to hit. */
+.galaxy-preview .galaxy-star-link{animation:galaxy-star-drift 9s ease-in-out infinite alternate;animation-delay:var(--delay)}
+@keyframes galaxy-star-drift{from{transform:translate(calc(-50% - 2px),calc(-50% + 2px))}to{transform:translate(calc(-50% + 2px),calc(-50% - 2px))}}
+.galaxy-preview .galaxy-orbits{transform-origin:300px 150px;animation:galaxy-orbit-turn 110s linear infinite}
+@keyframes galaxy-orbit-turn{to{transform:rotate(360deg)}}
+[data-ambient=paused] .galaxy-preview .galaxy-star-link,[data-ambient=paused] .galaxy-preview .galaxy-orbits{animation-play-state:paused}
+@media(prefers-reduced-motion:reduce){.galaxy-preview .galaxy-star-link,.galaxy-preview .galaxy-orbits{animation:none!important}}

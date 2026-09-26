@@ -13,3 +13,9 @@
 .atlas-travelers{fill:#96f0ff;filter:drop-shadow(0 0 2px #b4f5ff)}
 .galaxy-paused .atlas-travelers,.galaxy-paused .galaxy-lines animateMotion{display:none}
 @media(prefers-reduced-motion:reduce){.galaxy-lines animateMotion{display:none}}
+.galaxy-point{animation:atlas-node-drift 10s ease-in-out infinite alternate;animation-delay:var(--delay)}
+@keyframes atlas-node-drift{from{transform:translate(calc(-50% - 2px),calc(-50% + 2px))}to{transform:translate(calc(-50% + 2px),calc(-50% - 2px))}}
+.atlas-orbits{transform-origin:51px 51px;animation:atlas-orbit-turn 140s linear infinite}
+@keyframes atlas-orbit-turn{to{transform:rotate(360deg)}}
+.galaxy-paused .galaxy-point,.galaxy-paused .atlas-orbits{animation-play-state:paused}
+@media(prefers-reduced-motion:reduce){.galaxy-point,.atlas-orbits{animation:none!important}}
