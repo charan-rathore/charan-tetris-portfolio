@@ -2835,3 +2835,15 @@ body { background:radial-gradient(ellipse at 6% 8%,#18344c44,transparent 38%),ra
 .project-footage-credit{position:absolute;right:12px;bottom:12px;z-index:6;background:#030b119e;color:#c9ebf8;font:8px var(--font-geist-mono),monospace;letter-spacing:.06em;padding:4px 6px;text-decoration:none}
 .project-footage-credit:hover,.project-footage-credit:focus-visible{background:#124758;color:white;outline:1px solid #90e6ff}
 @media(max-width:600px){.project-footage-credit{right:8px;top:9px;bottom:auto;font-size:7px}}
+/* Native perspective fall, entered by tap so Web Audio can start legally. */
+.space-intro{background:#030710;isolation:isolate}
+.space-intro canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.space-gate{position:relative;z-index:2;display:flex;align-items:center;flex-direction:column;text-align:center;gap:19px;padding:28px;width:min(100%,540px)}
+.space-gate span,.space-caption{font:11px var(--font-geist-mono),monospace;letter-spacing:.19em;color:#82e5fa}
+.space-gate strong{font-size:clamp(34px,8vw,68px);line-height:1.05;letter-spacing:-.035em}
+.space-gate p{font-size:14px;color:#b8d0dd;margin:0}
+.space-gate button{border:1px solid #84eaff;color:#04111a;background:#90eaff;padding:16px 30px;font:700 12px var(--font-geist-mono),monospace;cursor:pointer;min-height:48px}
+.space-gate button.space-gate-skip{background:none;color:#b8d0dd;border:0;padding:12px}
+.space-caption{position:absolute;z-index:2;top:clamp(24px,7vh,70px);left:0;right:0;text-align:center;text-shadow:0 2px 12px #020714}
+.space-caption span{color:#ffd166}
+@media(max-width:600px){.space-gate{gap:17px}.space-caption{font-size:9px}.space-intro .loading-skip{right:14px;bottom:18px}}
