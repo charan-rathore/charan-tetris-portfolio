@@ -78,24 +78,40 @@ export function ActivityTimeline() {
       for (let x = left; x < right; x += unit * 2) { ctx.fillStyle = "#c9b5c9"; ctx.fillRect(x, base - 2, 2, 4) }
       const finale = ease(clamp((progress - .87) / .13, 0, 1));
       const pitch = Math.min(w * .058, 55), endX = w * .70;
+      const dayCounts = new Map<string, number>();
+      for (const event of events) dayCounts.set(event.date, (dayCounts.get(event.date) ?? 0) + 1);
       const finalPitch = (right - left - 15) / (events.length - 1);
+      const finalePoints = new Map<string, { x: number; green: number; red: number }>();
       points.current = [];
       events.forEach((e, i) => {
         if (i > cursor + .01 && progress < 1) return;
         const xScrub = endX + (i - cursor) * pitch;
-        const xFinal = left + i * finalPitch;
+        const xFinal = left + ((ms(e.date) - firstTime) / (endTime - firstTime || 1)) * (right-left-15);
+        const dayBucket = finalePoints.get(e.date) ?? {x:xFinal,green:0,red:0};
+        if (e.kind === "merged_fix") dayBucket.red++; else dayBucket.green++;
+        finalePoints.set(e.date,dayBucket);
         const x = xScrub * (1 - finale) + xFinal * finale;
         if (x < left - 15 || x > right + 15) return;
         const fix = e.kind === "merged_fix", color = fix ? "#f0716a" : "#3ecf8e";
-        const height = (fix ? h * .20 : h * .20) * (finale ? 1 - finale * .3 : 1);
+        const sameDay = dayCounts.get(e.date) ?? 1;
+        const height = h * Math.min(.25,.09 + Math.log2(1 + sameDay)*.045 + (i%4)*.013);
         const count = Math.max(5, Math.floor(height / unit));
         const block = Math.max(3, Math.min(unit * .78, finalPitch * .47, 10));
-        ctx.fillStyle = color; ctx.shadowColor = color; ctx.shadowBlur = i === current && progress < .87 ? 19 : 5;
+        ctx.globalAlpha = 1-finale;
+        ctx.fillStyle = color; ctx.shadowColor = color; ctx.shadowBlur = i === current && progress < .87 ? 20 : 9;
         for (let n = 0; n < count; n++) {
           const y = fix ? base + unit * (.75 + n) : base - unit * (1.3 + n);
           ctx.fillRect(Math.round(x / unit) * unit - block / 2, y, block, Math.max(3, unit * .69));
         }
-        ctx.shadowBlur = 0; points.current.push({ x, y: base, index: i });
+        ctx.shadowBlur = 0; ctx.globalAlpha = 1; points.current.push({ x, y: base, index: i });
+        // A small label follows noteworthy bars as in the supplied reel.
+        if (i === current && progress < .87 || (i%8===0 && i<current-1 && progress<.87)) {
+          const name=e.repo.split("/").at(-1)?.replaceAll("-"," ").slice(0,19) ?? "PR";
+          ctx.font = `${Math.max(9,w*.010)}px Arial, sans-serif`;
+          ctx.fillStyle = "#dad5dc";ctx.textAlign = x > w*.78 ? "right" : "left";
+          ctx.fillText(name, x + (x > w*.78 ? -8 : 8), fix ? base+height+18 : base-height-10);
+          ctx.textAlign = "left";
+        }
         const birth = cursor - i;
         if (birth >= 0 && birth < 1.2 && progress < .87 && !reduced) {
           const age = birth / 1.2, radius = 10 + ease(age) * h * .14;
@@ -111,6 +127,31 @@ export function ActivityTimeline() {
           ctx.globalAlpha = 1; ctx.shadowBlur = 0;
         }
       });
+      if (finale > 0) {
+        ctx.globalAlpha = finale;
+        for (const bucket of finalePoints.values()) {
+          const x = bucket.x, block = Math.max(4,Math.min(unit*.72,w*.012));
+          for (const [kind,amount] of [["green",bucket.green],["red",bucket.red]] as const) {
+            if (!amount) continue;
+            const color=kind === "green" ? "#3ecf8e" : "#f0716a";
+            ctx.fillStyle=color;ctx.shadowColor=color;ctx.shadowBlur=12;
+            const height=Math.min(h*.24,h*(.07+Math.log2(amount+1)*.045));
+            const count=Math.max(4,Math.round(height/unit));
+            for(let j=0;j<count;j++)ctx.fillRect(x-block/2,kind==="green"?base-(j+1)*unit:base+(j+.4)*unit,block,unit*.7);
+          }
+        }
+        ctx.shadowBlur=0;
+        const startMonth=new Date(firstTime);startMonth.setUTCDate(1);
+        ctx.fillStyle="#aaa1a9";ctx.font=`${Math.max(9,w*.011)}px Arial, sans-serif`;ctx.textAlign="center";
+        for(let t=startMonth.getTime();t<=endTime;t=new Date(new Date(t).setUTCMonth(new Date(t).getUTCMonth()+1)).getTime()) {
+          const x=left+(t-firstTime)/(endTime-firstTime||1)*(right-left-15);
+          if(x<left+20||x>right-20)continue;
+          ctx.fillRect(x,h*.84,1,6);
+          ctx.fillText(new Date(t).toLocaleString("en-US",{month:"short",timeZone:"UTC"}),x,h*.875);
+        }
+        ctx.font=`${Math.max(10,w*.014)}px Arial, sans-serif`;ctx.fillText(String(new Date(endTime).getUTCFullYear()),w*.5,h*.95);
+        ctx.textAlign="left";ctx.globalAlpha=1;
+      }
       ctx.font = `${Math.max(10, w * .011)}px Arial, sans-serif`; ctx.textAlign = "left";
       ctx.fillStyle = "#3ecf8e"; ctx.fillRect(left, h * .925, 9, 9);
       ctx.fillStyle = "#c9c1c7"; ctx.fillText("MERGED PR", left + 16, h * .925 + 9);
