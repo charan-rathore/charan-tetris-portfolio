@@ -8,12 +8,8 @@ import "./galaxy.css";
 const clusters = ["All", "Trust", "Measure", "Build", "Infrastructure", "Work"];
 const byId = new Map(galaxyNodes.map(node => [node.id, node]));
 
-export function GalaxyAtlas() {
-  const [focus, setFocus] = useState(() => {
-    if (typeof window === "undefined") return "systris";
-    const selected = new URLSearchParams(location.search).get("focus");
-    return selected && byId.has(selected) ? selected : "systris";
-  });
+export function GalaxyAtlas({ initialFocus }: { initialFocus: string }) {
+  const [focus, setFocus] = useState(initialFocus);
   const [cluster, setCluster] = useState("All");
   const [motion, setMotion] = useState(true);
   const node = byId.get(focus) ?? galaxyNodes[0];
