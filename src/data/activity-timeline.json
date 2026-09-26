@@ -1,0 +1,302 @@
+{
+  "asOf": "2026-09-26",
+  "source": "GitHub public merged PR search by author; closed_at cross-checked for sample PR #74",
+  "events": [
+    {
+      "date": "2026-05-04",
+      "kind": "merged",
+      "title": "Feat/todo execution - UI changes and feature additions",
+      "repo": "charan-rathore/agentic-finance-advisor",
+      "url": "https://github.com/charan-rathore/agentic-finance-advisor/pull/1",
+      "weight": 1
+    },
+    {
+      "date": "2026-07-24",
+      "kind": "merged",
+      "title": "Phase 0: Shared contracts and API request model migration",
+      "repo": "charan-rathore/agentic-finance-advisor",
+      "url": "https://github.com/charan-rathore/agentic-finance-advisor/pull/2",
+      "weight": 1
+    },
+    {
+      "date": "2026-07-30",
+      "kind": "merged",
+      "title": "Prove and publish the memoRABLE competition entry",
+      "repo": "charan-rathore/memoRABLE",
+      "url": "https://github.com/charan-rathore/memoRABLE/pull/1",
+      "weight": 1
+    },
+    {
+      "date": "2026-07-31",
+      "kind": "merged",
+      "title": "Understand real documents, and give each surface a design",
+      "repo": "charan-rathore/memoRABLE",
+      "url": "https://github.com/charan-rathore/memoRABLE/pull/2",
+      "weight": 1
+    },
+    {
+      "date": "2026-07-31",
+      "kind": "merged",
+      "title": "Hold the interface to the standard it was aiming at",
+      "repo": "charan-rathore/memoRABLE",
+      "url": "https://github.com/charan-rathore/memoRABLE/pull/3",
+      "weight": 1
+    },
+    {
+      "date": "2026-07-31",
+      "kind": "merged",
+      "title": "Finish the Elements upgrades the research named",
+      "repo": "charan-rathore/memoRABLE",
+      "url": "https://github.com/charan-rathore/memoRABLE/pull/4",
+      "weight": 1
+    },
+    {
+      "date": "2026-08-01",
+      "kind": "merged_fix",
+      "title": "Fix semantic understanding pipeline for PDF PRDs",
+      "repo": "charan-rathore/memoRABLE",
+      "url": "https://github.com/charan-rathore/memoRABLE/pull/5",
+      "weight": 1
+    },
+    {
+      "date": "2026-08-01",
+      "kind": "merged",
+      "title": "Simplify workbench UI for clearer navigation and more preview space",
+      "repo": "charan-rathore/memoRABLE",
+      "url": "https://github.com/charan-rathore/memoRABLE/pull/6",
+      "weight": 1
+    },
+    {
+      "date": "2026-08-01",
+      "kind": "merged",
+      "title": "Restore scrolling journey marquee with clearer clickable chrome",
+      "repo": "charan-rathore/memoRABLE",
+      "url": "https://github.com/charan-rathore/memoRABLE/pull/8",
+      "weight": 1
+    },
+    {
+      "date": "2026-08-01",
+      "kind": "merged",
+      "title": "Tighten header layout and improve everyday timeline dates",
+      "repo": "charan-rathore/memoRABLE",
+      "url": "https://github.com/charan-rathore/memoRABLE/pull/9",
+      "weight": 1
+    },
+    {
+      "date": "2026-08-01",
+      "kind": "merged",
+      "title": "Make presets recompose Elements and simplify the top bar",
+      "repo": "charan-rathore/memoRABLE",
+      "url": "https://github.com/charan-rathore/memoRABLE/pull/10",
+      "weight": 1
+    },
+    {
+      "date": "2026-08-01",
+      "kind": "merged",
+      "title": "Ship v6 Observation-first cognitive memory layer",
+      "repo": "charan-rathore/memoRABLE",
+      "url": "https://github.com/charan-rathore/memoRABLE/pull/11",
+      "weight": 1
+    },
+    {
+      "date": "2026-08-01",
+      "kind": "merged",
+      "title": "Lock in four archetype projection rules for submission",
+      "repo": "charan-rathore/memoRABLE",
+      "url": "https://github.com/charan-rathore/memoRABLE/pull/12",
+      "weight": 1
+    },
+    {
+      "date": "2026-08-01",
+      "kind": "merged",
+      "title": "Delay PRD compression until after projection",
+      "repo": "charan-rathore/memoRABLE",
+      "url": "https://github.com/charan-rathore/memoRABLE/pull/13",
+      "weight": 1
+    },
+    {
+      "date": "2026-08-01",
+      "kind": "merged_fix",
+      "title": "Fix conversation strip, open questions, and decision stance",
+      "repo": "charan-rathore/memoRABLE",
+      "url": "https://github.com/charan-rathore/memoRABLE/pull/14",
+      "weight": 1
+    },
+    {
+      "date": "2026-08-01",
+      "kind": "merged",
+      "title": "Hackathon memory refinements before freeze",
+      "repo": "charan-rathore/memoRABLE",
+      "url": "https://github.com/charan-rathore/memoRABLE/pull/15",
+      "weight": 1
+    },
+    {
+      "date": "2026-08-01",
+      "kind": "merged",
+      "title": "Compress duplicate Decisions; drop Business Impact chrome",
+      "repo": "charan-rathore/memoRABLE",
+      "url": "https://github.com/charan-rathore/memoRABLE/pull/16",
+      "weight": 1
+    },
+    {
+      "date": "2026-08-01",
+      "kind": "merged",
+      "title": "Adaptive archetype memory projection",
+      "repo": "charan-rathore/memoRABLE",
+      "url": "https://github.com/charan-rathore/memoRABLE/pull/17",
+      "weight": 1
+    },
+    {
+      "date": "2026-08-01",
+      "kind": "merged",
+      "title": "Research projection v2: section-aware world model",
+      "repo": "charan-rathore/memoRABLE",
+      "url": "https://github.com/charan-rathore/memoRABLE/pull/18",
+      "weight": 1
+    },
+    {
+      "date": "2026-08-02",
+      "kind": "merged",
+      "title": "Host ThermoSense on Vercel",
+      "repo": "charan-rathore/Time-Series-Temperature-Modelling",
+      "url": "https://github.com/charan-rathore/Time-Series-Temperature-Modelling/pull/1",
+      "weight": 1
+    },
+    {
+      "date": "2026-08-05",
+      "kind": "merged",
+      "title": "Add deterministic hero insights",
+      "repo": "charan-rathore/memoRABLE",
+      "url": "https://github.com/charan-rathore/memoRABLE/pull/19",
+      "weight": 1
+    },
+    {
+      "date": "2026-08-07",
+      "kind": "merged",
+      "title": "Make semantic understanding the primary extraction path (PR1)",
+      "repo": "charan-rathore/memoRABLE",
+      "url": "https://github.com/charan-rathore/memoRABLE/pull/20",
+      "weight": 1
+    },
+    {
+      "date": "2026-08-23",
+      "kind": "merged",
+      "title": "Self-host fonts and isolate Vercel runtime loads",
+      "repo": "charan-rathore/charan-tetris-portfolio",
+      "url": "https://github.com/charan-rathore/charan-tetris-portfolio/pull/1",
+      "weight": 1
+    },
+    {
+      "date": "2026-08-23",
+      "kind": "merged",
+      "title": "Restore CHARAN hero and Tetris board",
+      "repo": "charan-rathore/charan-tetris-portfolio",
+      "url": "https://github.com/charan-rathore/charan-tetris-portfolio/pull/2",
+      "weight": 1
+    },
+    {
+      "date": "2026-08-31",
+      "kind": "merged",
+      "title": "Merge dark web console into web/",
+      "repo": "charan-rathore/IntelliRAG",
+      "url": "https://github.com/charan-rathore/IntelliRAG/pull/1",
+      "weight": 1
+    },
+    {
+      "date": "2026-09-07",
+      "kind": "merged",
+      "title": "feat: add experiment 03 and rebuild the learning UI",
+      "repo": "charan-rathore/infer-tab",
+      "url": "https://github.com/charan-rathore/infer-tab/pull/1",
+      "weight": 1
+    },
+    {
+      "date": "2026-09-20",
+      "kind": "merged",
+      "title": "feat: human-interface dial spin + cognitive next-piece sync",
+      "repo": "charan-rathore/charan-tetris-portfolio",
+      "url": "https://github.com/charan-rathore/charan-tetris-portfolio/pull/3",
+      "weight": 1
+    },
+    {
+      "date": "2026-09-20",
+      "kind": "merged",
+      "title": "Predict document questions and simplify chat UX",
+      "repo": "charan-rathore/IntelliRAG",
+      "url": "https://github.com/charan-rathore/IntelliRAG/pull/3",
+      "weight": 1
+    },
+    {
+      "date": "2026-09-20",
+      "kind": "merged",
+      "title": "feat: Human Interface live dial, orbital port pieces, and portfolio po",
+      "repo": "charan-rathore/charan-tetris-portfolio",
+      "url": "https://github.com/charan-rathore/charan-tetris-portfolio/pull/4",
+      "weight": 1
+    },
+    {
+      "date": "2026-09-20",
+      "kind": "merged",
+      "title": "feat: paper.design-adapted Tetris marquee + cursor spotlight",
+      "repo": "charan-rathore/charan-tetris-portfolio",
+      "url": "https://github.com/charan-rathore/charan-tetris-portfolio/pull/5",
+      "weight": 1
+    },
+    {
+      "date": "2026-09-20",
+      "kind": "merged_fix",
+      "title": "fix: unblock Vercel production (SVG getBBox type error)",
+      "repo": "charan-rathore/charan-tetris-portfolio",
+      "url": "https://github.com/charan-rathore/charan-tetris-portfolio/pull/6",
+      "weight": 1
+    },
+    {
+      "date": "2026-09-21",
+      "kind": "merged",
+      "title": "feat: thesis paper, docked Human Interface cables, paper fold",
+      "repo": "charan-rathore/charan-tetris-portfolio",
+      "url": "https://github.com/charan-rathore/charan-tetris-portfolio/pull/7",
+      "weight": 1
+    },
+    {
+      "date": "2026-09-25",
+      "kind": "merged",
+      "title": "provider: keep both Codex accounts' prompts when saves share an mtime",
+      "repo": "yetone/magpie",
+      "url": "https://github.com/yetone/magpie/pull/74",
+      "weight": 1
+    },
+    {
+      "date": "2026-09-25",
+      "kind": "merged",
+      "title": "provider: skip disabled keys when refreshing the model list",
+      "repo": "yetone/magpie",
+      "url": "https://github.com/yetone/magpie/pull/76",
+      "weight": 1
+    },
+    {
+      "date": "2026-09-25",
+      "kind": "merged_fix",
+      "title": "test: keep smart routing reset fixture within one hour",
+      "repo": "yetone/magpie",
+      "url": "https://github.com/yetone/magpie/pull/77",
+      "weight": 1
+    },
+    {
+      "date": "2026-09-25",
+      "kind": "merged",
+      "title": "gateway: a reply translated from a dying stream no longer reads comple",
+      "repo": "yetone/magpie",
+      "url": "https://github.com/yetone/magpie/pull/78",
+      "weight": 1
+    },
+    {
+      "date": "2026-09-25",
+      "kind": "merged",
+      "title": "Audit fixes: evidence gate, ranking scope, grounding, db bootstrap har",
+      "repo": "charan-rathore/IntelliRAG",
+      "url": "https://github.com/charan-rathore/IntelliRAG/pull/4",
+      "weight": 1
+    }
+  ]
+}

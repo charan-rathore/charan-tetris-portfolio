@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useMemo, useState, type CSSProperties } from "react";
 import { galaxyEdges, galaxyNodes } from "../../data/galaxy";
 import { GitHubPulse } from "../GitHubPulse";
+import { ActivityTimeline } from "../ActivityTimeline";
 import { GalaxySpace } from "./GalaxySpace";
 import "./galaxy.css";
 
@@ -42,7 +43,7 @@ export function GalaxyAtlas({ initialFocus }: { initialFocus: string }) {
       <aside className="galaxy-inspector" aria-live="polite"><span className="galaxy-kicker">{node.cluster} / {node.kicker}</span><h2>{node.label}</h2><p className="galaxy-story">{node.story}</p><div className="galaxy-proof"><span>SOURCE NOTE</span><p>{node.evidence}</p></div><a href={node.href} target="_blank" rel="noreferrer">INSPECT THE SOURCE ↗</a><div className="galaxy-neighbors"><span>CONNECTED THREADS</span><div>{galaxyNodes.filter(n => connected.has(n.id) && n.id !== focus).map(n => <button type="button" onClick={() => select(n.id)} key={n.id}>{n.label} ↗</button>)}</div></div></aside>
     </div>
     <section className="galaxy-index"><div><span className="galaxy-kicker">THE SHORT VERSION</span><h2>From a question to the proof.</h2><p>The map is a way into the work. The repositories and résumé are the record; follow those when you want the details.</p></div><div className="galaxy-index-list">{galaxyNodes.map(n => <button type="button" onClick={() => {select(n.id);document.querySelector('.galaxy-stage')?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'})}} key={n.id}><span style={{color:n.color}}>✦</span><strong>{n.label}</strong><small>{n.kicker}</small><span>↗</span></button>)}</div></section>
-    <section className="galaxy-activity" id="activity"><div className="galaxy-activity-head"><span className="galaxy-kicker">PUBLIC GITHUB ACTIVITY</span><h2>The work keeps moving.</h2><p>A recent contribution window, with its last successful check shown when the upstream feed is unavailable. It is not a count of merged PRs.</p></div><GitHubPulse /></section>
+    <section className="galaxy-activity" id="activity"><div className="galaxy-activity-head"><span className="galaxy-kicker">PUBLIC GITHUB ACTIVITY</span><h2>The work keeps moving.</h2><p>A recent contribution window, with its last successful check shown when the upstream feed is unavailable. It is not a count of merged PRs.</p></div><ActivityTimeline /><GitHubPulse /></section>
     <footer className="galaxy-footer"><Link href="/#context">← BACK TO THE PROJECT STORY</Link><span>CURATED FROM THE WORK. NOT A COMPLETE BIOGRAPHY.</span></footer>
   </main>;
 }
