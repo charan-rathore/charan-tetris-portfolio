@@ -58,10 +58,10 @@ function paint(canvas: HTMLCanvasElement, elapsed: number) {
   c.globalAlpha=1;
   // First 2.7s: editorial jump cuts include the eye, then the fall.
   // These stills are original assets. The supplied reel determines only the timing.
-  const cuts=[0,230,480,720,960,1180,1460,1730,2060,2350,2700];
+  const cuts=[0,300,780,1120,1450,2080,2400,2700];
   const shot=cuts.findIndex((end,i)=>i>0&&elapsed<end)-1;
   if(elapsed<2700&&montage.length===3){
-    const image=montage[shot<2?0:shot<5?2:1];
+    const image=montage[shot<2?0:shot<4?2:1];
     if(image.complete&&image.naturalWidth){
       const sliceStart=cuts[Math.max(shot,0)],sliceEnd=cuts[Math.max(shot+1,1)];
       const t=clamp((elapsed-sliceStart)/(sliceEnd-sliceStart));
@@ -88,6 +88,37 @@ function paint(canvas: HTMLCanvasElement, elapsed: number) {
     c.filter="brightness(1.28) contrast(1.05)";c.drawImage(traveler,-width/2,-height/2,width,height);
     c.restore();
   }
+  // Editorial moments follow the soundtrack's stronger entrances at 3.5s,
+  // 5.3s and 7.4s. Product language is Systris's, not reference-video copy.
+  const phrase=(start:number,end:number,text:string,align:"left"|"right")=>{
+    const inTime=clamp((elapsed-start)/180),outTime=clamp((end-elapsed)/240);
+    if(!inTime||!outTime)return;
+    c.save();c.globalAlpha=ease(inTime)*ease(outTime);
+    const fontSize=Math.min(w*.12,h*.089,94);const x=align==="left"?w*.055:w*.945;
+    const y=align==="left"?h*.25:h*.76;
+    c.textAlign=align;c.font=`900 ${fontSize}px Arial, sans-serif`;
+    c.fillStyle="#b9fce8";c.fillText(text,x,y,w*.9);
+    c.fillStyle="#52dfa8";c.fillRect(align==="left"?x:x-w*.18,y+13,w*.18,3);
+    c.restore();
+  };
+  phrase(3500,4720,"FOLLOW", "left");
+  phrase(4820,5660,"THE THREAD", "left");
+  if(elapsed>5750&&elapsed<7410){
+    const enter=ease(clamp((elapsed-5750)/270)),leave=ease(clamp((7410-elapsed)/230));
+    c.save();c.globalAlpha=enter*leave;
+    const px=w*.59,py=h*.12,pw=Math.min(w*.36,370),ph=Math.min(h*.25,180);
+    c.translate(px,py);c.rotate(-.12);c.transform(1,-.1,0,1,0,0);
+    c.fillStyle="rgba(4,22,25,.83)";c.fillRect(0,0,pw,ph);
+    c.strokeStyle="#56e8b1";c.lineWidth=2;c.strokeRect(0,0,pw,ph);
+    c.textAlign="left";c.fillStyle="#6fe9bc";
+    c.font=`700 ${Math.max(9,Math.min(15,w*.022))}px Arial, sans-serif`;
+    c.fillText("SYSTRIS / FIELD NOTES",12,Math.min(26,ph*.25),pw-24);
+    c.fillStyle="#e9fff7";c.font=`800 ${Math.max(13,Math.min(27,w*.052))}px Arial, sans-serif`;
+    c.fillText("IDEAS IN MOTION",12,ph*.61,pw-24);
+    c.fillStyle="#4de4ab";c.fillRect(12,ph*.78,pw*.68,3);
+    c.restore();
+  }
+  phrase(7530,8920,"BUILD WHAT'S NEXT", "right");
   // End by continuing the fall into darkness; do not return to the eye.
   const fade=ease(clamp((elapsed-9050)/1950));
   if(fade>0){c.fillStyle=`rgba(1,3,9,${fade})`;c.fillRect(0,0,w,h)}
@@ -96,17 +127,39 @@ function paint(canvas: HTMLCanvasElement, elapsed: number) {
 export function LoadingGalaxy() {
   const [phase,setPhase]=useState<"playing"|"leaving"|"done">("playing");
   const [soundEnabled,setSoundEnabled]=useState(false);
+  const [needsGesture,setNeedsGesture]=useState(false);
   const canvas=useRef<HTMLCanvasElement>(null);
   const audio=useRef<HTMLAudioElement|null>(null);
   const elapsedRef=useRef(0);
   useEffect(()=>{if(matchMedia("(prefers-reduced-motion: reduce)").matches) { const id=requestAnimationFrame(()=>setPhase("done")); return ()=>cancelAnimationFrame(id); }},[]);
   useEffect(()=>{
     if(phase!=="playing")return;
+    const track=new Audio("/systris-reference-intro-audio.m4a");
+    track.preload="auto";audio.current=track;
+    // Try unmuted playback immediately. Browsers that deny autoplay need a
+    // real gesture; the first pointer/key action anywhere retries playback.
+    const startSound=()=>{
+      if(track.paused){track.currentTime=Math.min(elapsedRef.current/1000,10.98);
+        void track.play().then(()=>{setSoundEnabled(true);setNeedsGesture(false)}).catch(()=>setNeedsGesture(true));}
+    };
+    const onGesture=()=>startSound();
+    window.addEventListener("pointerdown",onGesture);
+    window.addEventListener("keydown",onGesture);
+    startSound();
+    return()=>{window.removeEventListener("pointerdown",onGesture);window.removeEventListener("keydown",onGesture);track.pause();if(audio.current===track)audio.current=null};
+  },[phase]);
+  useEffect(()=>{
+    if(phase!=="playing")return;
     const element=canvas.current;if(!element)return;
     let raf=0;const start=performance.now();
-    const draw=(now:number)=>{if((window as Window & {__introFreeze?:boolean}).__introFreeze)return;const elapsed=now-start;elapsedRef.current=elapsed;paint(element,elapsed);if(elapsed<LENGTH)raf=requestAnimationFrame(draw);else setPhase("leaving")};
+    const draw=(now:number)=>{if((window as Window & {__introFreeze?:boolean}).__introFreeze)return;
+      // Once music plays, its clock owns the cut timing. Before a gesture,
+      // run the silent visual clock and seek to it when audio becomes available.
+      const elapsed=audio.current&&!audio.current.paused ? audio.current.currentTime*1000 : now-start;
+      elapsedRef.current=elapsed;paint(element,elapsed);
+      if(elapsed<LENGTH)raf=requestAnimationFrame(draw);else setPhase("leaving")};
     raf=requestAnimationFrame(draw);
-    const resize=()=>paint(element,performance.now()-start);window.addEventListener("resize",resize);
+    const resize=()=>paint(element,elapsedRef.current);window.addEventListener("resize",resize);
     (window as Window & {__introDraw?:(elapsed:number)=>void}).__introDraw=(elapsed)=>paint(element,elapsed);
     return()=>{cancelAnimationFrame(raf);window.removeEventListener("resize",resize);delete (window as Window & {__introDraw?:(elapsed:number)=>void}).__introDraw};
   },[phase]);
@@ -114,15 +167,13 @@ export function LoadingGalaxy() {
   useEffect(()=>()=>{audio.current?.pause();audio.current=null},[]);
   if(phase==="done")return null;
   const enableSound=()=>{
-    if(audio.current || phase!=="playing")return;
-    const track=new Audio("/systris-reference-intro-audio.m4a");
-    track.preload="auto";track.currentTime=Math.min(elapsedRef.current/1000,10.99);
-    audio.current=track;
-    void track.play().then(()=>setSoundEnabled(true)).catch(()=>{audio.current=null;setSoundEnabled(false)});
+    const track=audio.current;if(!track||phase!=="playing")return;
+    track.currentTime=Math.min(elapsedRef.current/1000,10.98);
+    void track.play().then(()=>{setSoundEnabled(true);setNeedsGesture(false)}).catch(()=>setNeedsGesture(true));
   };
   return <div className={`loading-galaxy space-intro ${phase==="leaving"?"is-leaving":""}`} role="dialog" aria-modal="true" aria-label="Enter the Systris portfolio">
     <canvas ref={canvas} aria-hidden="true" />
     <div className="space-caption">SYSTRIS <span>·</span> FOLLOW THE THREAD</div>
-    <div className="space-actions"><button type="button" onClick={enableSound} disabled={soundEnabled}>SOUND ON ↗</button><button type="button" onClick={()=>{audio.current?.pause();setPhase("leaving")}}>SKIP INTRO ↗</button></div>
+    <div className="space-actions">{!soundEnabled && <button type="button" onClick={enableSound}>{needsGesture ? "TAP FOR SOUND ↗" : "SOUND STARTING ↗"}</button>}<button type="button" onClick={()=>{audio.current?.pause();setPhase("leaving")}}>SKIP INTRO ↗</button></div>
   </div>;
 }

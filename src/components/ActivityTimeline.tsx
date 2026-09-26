@@ -11,6 +11,8 @@ const ms = (d: string) => Date.parse(`${d}T00:00:00Z`);
 const month = (date: number) => new Date(date).toLocaleString("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
 const clamp = (x: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, x));
 const ease = (x: number) => 1 - (1 - x) ** 3;
+// These are short literal signposts from the public PR titles, not invented milestones.
+const eventLabel = (title: string) => title.replace(/^(feat|fix|test|provider|gateway):\s*/i, "").replace(/[^a-z0-9 -]/gi," ").trim().split(/\s+/).slice(0,2).join(" ").toUpperCase();
 
 type Point = { x: number; y: number; index: number };
 export function ActivityTimeline() {
@@ -73,6 +75,18 @@ export function ActivityTimeline() {
         ctx.font = `${Math.max(10, w * .012)}px Arial, sans-serif`;
         ctx.fillStyle = "#aaa1a9";
         ctx.fillText("PUBLIC MERGED PULL REQUESTS", left, h*.265);
+        // The newest block has a matching title cue in its own header lane.
+        // No text is placed inside the active grid or on a moving block.
+        const active=events[Math.min(events.length-1,Math.max(0,Math.floor(cursor-1)))];
+        const label=eventLabel(active.title);
+        const labelX=right, labelWidth=Math.min(w*.46,170);
+        ctx.save();ctx.beginPath();ctx.rect(labelX-labelWidth,h*.115,labelWidth,h*.18);ctx.clip();
+        ctx.textAlign="right";ctx.fillStyle="#57dfad";
+        ctx.font=`700 ${Math.max(11,Math.min(15,w*.033))}px Arial, sans-serif`;
+        ctx.fillText(label,labelX,h*.205,labelWidth);
+        ctx.font=`${Math.max(9,w*.011)}px Arial, sans-serif`;ctx.fillStyle="#b2a5b2";
+        ctx.fillText(active.date.slice(5).replace("-"," / "),labelX,h*.26);
+        ctx.restore();
       }
       ctx.save();ctx.beginPath();ctx.rect(left,plotTop,right-left,plotBottom-plotTop);ctx.clip();
       ctx.fillStyle = "#9d899a"; ctx.fillRect(left, base - 1, right - left, 2);
@@ -144,11 +158,26 @@ export function ActivityTimeline() {
         ctx.textAlign="left";ctx.globalAlpha=1;
       }
       ctx.restore();
+      if(progress >= .88){
+        // Four dates in September: one count at the foot of each day's stack.
+        // This label lane is outside the clipped block/grid region.
+        ctx.globalAlpha=ease(clamp((progress-.88)/.08,0,1));
+        activeDates.forEach((date,i)=>{
+          const x=left+12+(i+.5)*(right-left-24)/activeDates.length;
+          const count=dayCounts.get(date)??0;
+          ctx.textAlign="center";ctx.fillStyle="#e3dbe4";
+          ctx.font=`700 ${Math.max(9,Math.min(12,w*.026))}px Arial, sans-serif`;
+          ctx.fillText(`SEP ${date.slice(-2)}`,x,plotBottom+Math.max(11,h*.023));
+          ctx.fillStyle="#a99faa";ctx.font=`${Math.max(9,Math.min(11,w*.024))}px Arial, sans-serif`;
+          ctx.fillText(`${count} ${count===1?"PR":"PRS"}`,x,plotBottom+Math.max(23,h*.047));
+        });
+        ctx.globalAlpha=1;
+      }
       ctx.font = `${Math.max(10, w * .011)}px Arial, sans-serif`; ctx.textAlign = "left";
-      ctx.fillStyle = "#3ecf8e"; ctx.fillRect(left, h * .925, 9, 9);
-      ctx.fillStyle = "#c9c1c7"; ctx.fillText("MERGED PR", left + 16, h * .925 + 9);
-      ctx.fillStyle = "#f0716a"; ctx.fillRect(left + Math.min(130, w * .32), h * .925, 9, 9);
-      ctx.fillStyle = "#c9c1c7"; ctx.fillText("FIX / TEST PR", left + Math.min(130, w * .32) + 16, h * .925 + 9);
+      ctx.fillStyle = "#3ecf8e"; ctx.fillRect(left, h * .965, 9, 9);
+      ctx.fillStyle = "#c9c1c7"; ctx.fillText("MERGED PR", left + 16, h * .965 + 9);
+      ctx.fillStyle = "#f0716a"; ctx.fillRect(left + Math.min(130, w * .32), h * .965, 9, 9);
+      ctx.fillStyle = "#c9c1c7"; ctx.fillText("FIX / TEST PR", left + Math.min(130, w * .32) + 16, h * .965 + 9);
       if (progress >= .88) {
         const opacity = ease(clamp((progress-.88)/.08,0,1));ctx.globalAlpha = opacity;
         const repoCount=new Set(events.map(e=>e.repo)).size;
