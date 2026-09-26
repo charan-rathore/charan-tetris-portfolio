@@ -4,7 +4,7 @@ import timeline from "../data/activity-timeline.json";
 import "./activity-timeline.css";
 
 type Event = (typeof timeline.events)[number];
-const duration = 23000;
+const duration = 54000;
 const day = 86400000;
 const ms = (d: string) => Date.parse(`${d}T00:00:00Z`);
 
@@ -48,18 +48,16 @@ export function ActivityTimeline() {
       ctx.fillStyle = "#0d0a0f"; ctx.fillRect(0, 0, w, h);
       const scrub = clamp(progress/.87,0,1);
       const cursor = 1 + scrub*(events.length-1);
-      const arrive = (i:number)=>clamp((cursor-i)*1.75,0,1);
+      const arrive = (i:number)=>clamp((cursor-i)*1.2,0,1);
       const current = Math.min(events.length-1,Math.floor(cursor));
-      const sinceLanding = cursor-current;
-      // A short local impact at each arrival, not a flashing full-chart frame.
-      const jolt = !reduced && progress < .87 && cursor>=1 ? Math.max(0,1-sinceLanding*5) : 0;
-      ctx.translate(Math.sin(jolt*16)*jolt*1.4,Math.cos(jolt*14)*jolt*1.1);
+      // Keep every drawing at a fixed pixel origin; shaking the whole canvas blurs the combine.
       const unit = Math.max(7, w / 140), pad = Math.max(18, w * .04), base = h * .575;
       const left = pad, right = w - pad;
       // The close grid is a visual texture. Event position follows event order, not elapsed time.
       ctx.strokeStyle = "rgba(123,99,119,.16)"; ctx.lineWidth = 1;
-      ctx.beginPath(); for (let x = left; x < right; x += unit) { ctx.moveTo(x + .5, h * .19); ctx.lineTo(x + .5, h * .85) }
-      for (let y = h * .19; y < h * .85; y += unit) { ctx.moveTo(left, y + .5); ctx.lineTo(right, y + .5) } ctx.stroke();
+      const plotTop=progress >= .87 ? h*.29 : h*.19;
+      ctx.beginPath(); for (let x = left; x < right; x += unit) { ctx.moveTo(x + .5, plotTop); ctx.lineTo(x + .5, h * .85) }
+      for (let y = plotTop; y < h * .85; y += unit) { ctx.moveTo(left, y + .5); ctx.lineTo(right, y + .5) } ctx.stroke();
       const vignette = ctx.createRadialGradient(w / 2, base, w * .12, w / 2, base, w * .69);
       vignette.addColorStop(0, "#100d1300"); vignette.addColorStop(1, "#03020599");
       ctx.fillStyle = vignette; ctx.fillRect(0, 0, w, h);
@@ -109,7 +107,7 @@ export function ActivityTimeline() {
         const birth=cursor-i;
         const arrival=progress>=.87 ? 1 : arrive(i);
         ctx.globalAlpha = (1-finale)*arrival;
-        ctx.fillStyle = color; ctx.shadowColor = color; ctx.shadowBlur = i === current && progress < .87 ? 20 : 9;
+        ctx.fillStyle = color; ctx.shadowBlur = 0;
         for (let n = 0; n < count; n++) {
           const y = fix ? base + unit * (.75 + n) : base - unit * (1.3 + n);
           if (n/count < arrival) ctx.fillRect(Math.round(x / unit) * unit - block / 2, y, block, Math.max(3, unit * .69));
@@ -128,7 +126,7 @@ export function ActivityTimeline() {
           const age=birth/1.4, radius=unit*1.2+ease(age)*h*.23;
           const alpha=Math.sin(Math.PI*Math.min(1,age*1.18))*(1-age*.35);
           ctx.globalAlpha=alpha*.76;ctx.fillStyle=color;
-          ctx.shadowColor=color;ctx.shadowBlur=(1-age)*22;
+          ctx.shadowBlur=0;
           // The wave starts at the bar's baseline and propagates out through the grid.
           for(let k=0;k<210;k++){
             const a=k*2.399963,scatter=unit*(.25+((k*17)%11)/15);

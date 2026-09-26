@@ -8,7 +8,6 @@ import { McpHero } from "./hero/McpHero";
 import { ActivityTimeline } from "./ActivityTimeline";
 import { sfx } from "./tetris/audio";
 import { ProjectGameplay } from "./ProjectGameplay";
-import { ProjectVolume } from "./ProjectVolume";
 import { LoadingGalaxy } from "./LoadingGalaxy";
 import { ProjectLevel } from "./ProjectLevel";
 import { ContactForm } from "./ContactForm";
@@ -75,7 +74,7 @@ function ProjectMedia({ project, index }: { project: (typeof projects)[number]; 
   return (
     <>
       <div className="project-media">
-        <ProjectVolume index={index} label={project.title} paused={false} />
+        <Image src={project.image} alt={project.imageAlt} fill sizes="(max-width: 820px) 100vw, 50vw" className="project-photo" />
         {<ProjectGameplay
           level={index}
           systems={project.tech}
@@ -100,9 +99,9 @@ function ProjectMedia({ project, index }: { project: (typeof projects)[number]; 
           type="button"
           className="project-skip-bar"
           onClick={() => setSkip(true)}
-          aria-label={`Show ${project.title} volumetric artwork now`}
+          aria-label={`Show ${project.title} artwork now`}
         >
-          SHOW 4D SPACE ↓
+          SHOW ARTWORK ↓
         </button>
       )}
     </>

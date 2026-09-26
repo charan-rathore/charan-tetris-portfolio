@@ -2847,3 +2847,6 @@ body { background:radial-gradient(ellipse at 6% 8%,#18344c44,transparent 38%),ra
 .space-caption{position:absolute;z-index:2;top:clamp(24px,7vh,70px);left:0;right:0;text-align:center;text-shadow:0 2px 12px #020714}
 .space-caption span{color:#ffd166}
 @media(max-width:600px){.space-gate{gap:17px}.space-caption{font-size:9px}.space-intro .loading-skip{right:14px;bottom:18px}}
+.space-actions{position:absolute;right:14px;bottom:20px;z-index:3;display:flex;gap:8px}
+.space-actions button{background:#101e2c;border:1px solid #4a889c;padding:12px;color:#b7eaff;cursor:pointer;font:10px var(--font-geist-mono),monospace}
+.space-actions button:disabled{opacity:.5;cursor:default}
