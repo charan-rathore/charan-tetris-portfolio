@@ -62,7 +62,7 @@ export function ActivityTimeline() {
       if (progress < .88) ctx.fillText("GitHub activity, one merge at a time", left, h * .105);
       const cursor = progress === 1 ? events.length - 1 : progress * (events.length - 1);
       const current = Math.floor(cursor);
-      const currentDate = progress === 1 ? Date.now() : firstTime + (endTime - firstTime) * progress;
+      const currentDate = progress === 1 ? Date.now() : ms(events[current].date) + (ms(events[Math.min(current+1,events.length-1)].date)-ms(events[current].date))*(cursor-current);
       const lastMerge = ms(events[current].date);
       ctx.font = `700 ${Math.max(19, w * .032)}px Arial, sans-serif`;
       if (progress < .88) ctx.fillText(month(currentDate), left, h * .28);
@@ -159,6 +159,14 @@ export function ActivityTimeline() {
       ctx.fillStyle = "#c9c1c7"; ctx.fillText("FIX / TEST PR", left + Math.min(130, w * .2) + 16, h * .925 + 9);
       if (progress >= .88) {
         const opacity = ease(clamp((progress-.88)/.08,0,1));ctx.globalAlpha = opacity;
+        const counts = new Map<string,number>();
+        events.forEach(event => counts.set(event.repo,(counts.get(event.repo)??0)+1));
+        const top = [...counts].sort((a,b)=>b[1]-a[1]).slice(0,3);
+        ctx.fillStyle="#e4e0e5";ctx.textAlign="left";
+        ctx.font=`600 ${Math.max(11,w*.016)}px Arial, sans-serif`;
+        ctx.fillText("The work behind the timeline", left, h*.28);
+        ctx.font=`${Math.max(9,w*.011)}px Arial, sans-serif`;ctx.fillStyle="#a8a0aa";
+        top.forEach(([repo,count],i)=>ctx.fillText(`${repo.split("/").at(-1)} · ${count} merged PRs`,left,h*(.325+i*.035)));
         ctx.textAlign = "center";ctx.fillStyle = "#e4e0e5";
         ctx.font = `600 ${Math.max(13, w*.018)}px Arial, sans-serif`;
         ctx.fillText(`${events.length} public merged PRs`, w*.5, h*.13);
@@ -168,6 +176,7 @@ export function ActivityTimeline() {
         ctx.globalAlpha = 1;ctx.textAlign = "left";
       }
     };
+    (window as Window & {__activityDraw?: (progress:number)=>void}).__activityDraw = draw;
     const tick = (now: number) => {
       if (!visible) return;
       if (!start) start = now - pausedAt;
@@ -186,7 +195,7 @@ export function ActivityTimeline() {
       }
     }, { rootMargin: "40px" });
     observer.observe(c); if (reduced) draw(1);
-    return () => { observer.disconnect(); cancelAnimationFrame(frame) };
+    return () => { observer.disconnect(); cancelAnimationFrame(frame); delete (window as Window & {__activityDraw?: (progress:number)=>void}).__activityDraw };
   }, [replay, events]);
   const inspect = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const bounds = e.currentTarget.getBoundingClientRect(), x = e.clientX - bounds.left;
