@@ -43,7 +43,7 @@ export function GalaxySpace({ speed, glow, orbits, paused, focus }: { speed: num
       const edgeVertices: number[] = [];
       for (const [a,b] of galaxyEdges) { const p = nodePos(galaxyNodes.find(n=>n.id===a)!), q=nodePos(galaxyNodes.find(n=>n.id===b)!); edgeVertices.push(...p.toArray(),...q.toArray()); }
       const edgeGeo = new BufferGeometry(); edgeGeo.setAttribute("position",new BufferAttribute(new Float32Array(edgeVertices),3));
-      const edgeMat = new LineBasicMaterial({color:0x8eaa93,transparent:true,opacity:.25});
+      const edgeMat = new LineBasicMaterial({color:0x8eaa93,transparent:true,opacity:.08});
       system.add(new LineSegments(edgeGeo,edgeMat));resources.push(edgeGeo,edgeMat);
       const dots = 1050, points = new Float32Array(dots * 3), colors = new Float32Array(dots * 3);
       for (let i=0;i<dots;i++) { const a=i*2.39996,r=Math.sqrt(i/dots)*9.5,z=Math.sin(a*.72)*1.8;
@@ -73,7 +73,7 @@ export function GalaxySpace({ speed, glow, orbits, paused, focus }: { speed: num
         cloud.rotation.z=elapsed*.000035;
         orbitGroups.forEach((line,i)=>{line.visible=c.orbits;line.rotation.z=elapsed*.000035*(i%2?-1:1);});
         dotMat.opacity=Math.min(1,.32+c.glow*.16);
-        markers.forEach(({node,material})=>{material.color.set(node.id===c.focus?node.color:0xa6b4a7);material.opacity=node.id===c.focus?1:.38;material.size=node.id===c.focus?.52:.26;});
+        markers.forEach(({node,material})=>{material.color.set(c.focus&&node.id===c.focus?node.color:0xa6b4a7);material.opacity=c.focus&&node.id===c.focus?1:.38;material.size=c.focus&&node.id===c.focus?.52:.26;});
         controls.update();renderer.render(scene,camera);
       };
       frame=requestAnimationFrame(loop);
