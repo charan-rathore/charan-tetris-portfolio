@@ -114,12 +114,12 @@ export function ThoughtScene({ drop, paused, onProgress }: { drop: number; pause
   return (
     <div ref={host} className="thought-scene vector-opening" data-ready="true" data-renderer="isometric-svg" aria-hidden="true">
       <svg viewBox="0 0 430 240">
-        <path d="M245 20 352 79 126 203 19 144V158L126 217 352 93V79M126 203V217" fill="#0a1929" stroke="#526b86" />
-        {Array.from({ length: 11 }, (_, x) => { const a = point(x, 0), b = point(x, 22); return <path key={`x${x}`} d={`M${a.x} ${a.y}L${b.x} ${b.y}`} stroke="#213e55" />; })}
-        {Array.from({ length: 23 }, (_, y) => { const a = point(0, y), b = point(10, y); return <path key={`y${y}`} d={`M${a.x} ${a.y}L${b.x} ${b.y}`} stroke="#213e55" />; })}
+        <path d="M245 20 352 79 126 203 19 144V158L126 217 352 93V79M126 203V217" fill="#0b0e0b" stroke="#617667" />
+        {Array.from({ length: 11 }, (_, x) => { const a = point(x, 0), b = point(x, 22); return <path key={`x${x}`} d={`M${a.x} ${a.y}L${b.x} ${b.y}`} stroke="#293b2d" />; })}
+        {Array.from({ length: 23 }, (_, y) => { const a = point(0, y), b = point(10, y); return <path key={`y${y}`} d={`M${a.x} ${a.y}L${b.x} ${b.y}`} stroke="#293b2d" />; })}
         {m.target && pieceCells(m.target).map(([x, y], i) => <IsoBlock key={`ghost${i}`} {...point(x, y)} color={PIECES[m.target!.name].color} size={9} height={7} ghost />)}
         {[...cells, ...falling].sort((a, b) => (a.x + a.y) - (b.x + b.y)).map(cell => <IsoBlock key={cell.key} {...point(cell.x, cell.y)} color={cell.color} size={9} height={9} />)}
-        <text x="26" y="234" fill="#88a5c0" fontSize="9" letterSpacing="2">IDEAS LAND. PATTERNS EMERGE.</text>
+        <text x="26" y="234" fill="#bec7ba" fontSize="9" letterSpacing="2">IDEAS LAND. PATTERNS EMERGE.</text>
       </svg>
     </div>
   );

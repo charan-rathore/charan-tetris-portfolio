@@ -2850,3 +2850,64 @@ body { background:radial-gradient(ellipse at 6% 8%,#18344c44,transparent 38%),ra
 .space-actions{position:absolute;right:14px;bottom:20px;z-index:3;display:flex;gap:8px}
 .space-actions button{background:#101e2c;border:1px solid #4a889c;padding:12px;color:#b7eaff;cursor:pointer;font:10px var(--font-geist-mono),monospace}
 .space-actions button:disabled{opacity:.5;cursor:default}
+
+/* The reel and landing hero are one scene: the last soundtrack hit blooms
+   into a radial opening, while the mounted page focuses beneath it. */
+html.intro-active .hero-canvas{filter:blur(13px) brightness(.48);transform:scale(1.09)}
+html.intro-active .hero-content{opacity:0;transform:translateY(34px) scale(.98)}
+html.intro-active .site-header{opacity:0}
+html.intro-landed .hero-canvas{filter:none;transform:scale(1);transition:filter 1s ease-out,transform 1.2s cubic-bezier(.17,.75,.26,1)}
+html.intro-landed .hero-content{opacity:1;transform:none;transition:opacity .6s .08s ease-out,transform 1.05s cubic-bezier(.17,.75,.26,1)}
+html.intro-landed .site-header{opacity:1;transition:opacity .6s .35s ease-out}
+.space-intro.is-leaving{animation:space-portal-open 1.12s cubic-bezier(.2,.72,.18,1) forwards;pointer-events:none;
+  -webkit-mask-image:radial-gradient(circle at 50% 49%,transparent 0 var(--portal-radius),#000 calc(var(--portal-radius) + 2px));
+  mask-image:radial-gradient(circle at 50% 49%,transparent 0 var(--portal-radius),#000 calc(var(--portal-radius) + 2px))}
+@property --portal-radius{syntax:"<length>";initial-value:0px;inherits:false}
+@keyframes space-portal-open{0%{--portal-radius:0px;opacity:1}24%{--portal-radius:13vmax;opacity:1}66%{--portal-radius:64vmax;opacity:1}100%{--portal-radius:150vmax;opacity:0}}
+.space-handoff-ring{position:absolute;z-index:2;left:50%;top:49%;width:min(60vw,50vh);aspect-ratio:1;border:2px solid #82ffe0;border-radius:50%;box-shadow:0 0 45px #3fffc0,0 0 90px #3fffc080,inset 0 0 70px #3fffc070;opacity:0;transform:translate(-50%,-50%) scale(.15);pointer-events:none}
+.space-intro.is-leaving .space-handoff-ring{animation:space-ring 1.05s ease-out both}
+@keyframes space-ring{0%{opacity:.9;transform:translate(-50%,-50%) scale(.15)}42%{opacity:.78}100%{opacity:0;transform:translate(-50%,-50%) scale(5)}}
+@media(prefers-reduced-motion:reduce){html.intro-active .hero-canvas,html.intro-landed .hero-canvas{filter:none;transform:none}html.intro-active .hero-content,html.intro-landed .hero-content,html.intro-active .site-header,html.intro-landed .site-header{opacity:1;transform:none;transition:none}.space-intro.is-leaving{animation:none;opacity:0}}
+
+/* Editorial dark-mode: true black canvas, warm paper ink, one quiet green
+   signal. Tetris piece colors remain semantic within the playable work. */
+:root{--bg:#000;--bg-raised:#080908;--bg-panel:#101110;--line:#272a27;--line-bright:#414741;
+  --text:#eeeae2;--dim:#b1ada4;--faint:#777b73;--cyan:#9fdfb5;--yellow:#d3d9af;
+  --purple:#b7a6ba;--green:#7cca92;--red:#ed8479;--blue:#a8b8b0;--orange:#dcb890}
+body{background:#000;color:var(--text)}
+.hero--mcp{background:#000}
+.hero::after{background:linear-gradient(transparent,#000)}
+.hero--mcp h1{font-family:var(--font-sans);font-weight:550;letter-spacing:-.045em;line-height:1.12;text-shadow:none;text-wrap:balance}
+.hero-intro{font-family:var(--font-sans);color:#c7c1b7;line-height:1.62}
+.pixel-label{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.085em;line-height:1.65}
+.mcp-console{background:#090a09;border:1px solid #30332e;box-shadow:none;border-radius:3px}
+.mcp-console-top,.mcp-console-foot{color:#b5b8af;border-color:#2a2f29}
+.mcp-console-top .pixel-label{color:#eeeae2}
+.mcp-bridge{background:#050605}
+.mcp-output{background:#0d0e0c;border-color:#31362f;border-radius:3px}
+.mcp-output>span{color:#eeeae2}
+.mcp-output p{color:#b9b8ae}
+.bridge-choices button{background:#0c0d0b;border-color:#31362f;color:#c9c8bf;border-radius:2px}
+.bridge-choices button[aria-pressed=true]{background:#171d17;color:#f5f3ec}
+.hero--mcp h1::after{color:#a4dda9}
+.space-intro{background:#000}
+.space-intro canvas{filter:grayscale(.9) brightness(.9) contrast(1.12)}
+.space-caption{color:#d2e6d5;letter-spacing:.12em}
+.space-actions button{background:#0a0d0a;border-color:#4b6d53;color:#dbeddc}
+@media(prefers-reduced-motion:reduce){.space-intro.is-leaving{mask-image:none;-webkit-mask-image:none}}
+/* The landing stage is matte black, not a navy card. Use warm labels as
+   secondary ink and the signal green only at small wayfinding moments. */
+.thought-stage{background:#070807;border-color:#353b33}
+.thought-stage-top{background:#080908;border-color:#30362f;color:#c5c8bd;font-family:var(--font-mono)}
+.thought-story>.pixel-label{color:#a6d9ae}
+.thought-story h3{color:#eeeae2}
+.thought-story p,.thought-score span{color:#b7b5ac}
+.thought-controls{background:#090a09;border-color:#30362f}
+.thought-controls>span{color:#b6b7ae}
+.thought-controls button{border-color:#394139;color:#b0d9b4}
+.thought-controls button:hover{background:#19251a}
+.thinking-field>.pixel-label{color:#b3b6ac}
+.hero-identity-line{color:#c9c4ba!important}
+.bridge-core-action:hover,.bridge-core-action:focus-visible{outline-color:#a8dab0;background:#b4e2b111}
+.bridge-core-piece{filter:drop-shadow(0 0 9px #9fdfb566)}
+.mcp-output a{color:#a8dab0!important;font-family:var(--font-mono)!important;font-weight:600!important}

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const LENGTH = 11000;
+const LENGTH = 10250;
 const montage: HTMLImageElement[] = [];
 for (const file of ["chart","collage","eye"]) {if(typeof Image!=="undefined"){const image=new Image();image.src=`/${file==="chart"?"1":file==="collage"?"2":"3"}-systris-original-${file}.webp`;montage.push(image)}}
 const nebula = typeof Image !== "undefined" ? new Image() : null;
@@ -20,7 +20,7 @@ function paint(canvas: HTMLCanvasElement, elapsed: number) {
   if (canvas.width !== bw || canvas.height !== bh) { canvas.width = bw; canvas.height = bh; }
   const c = canvas.getContext("2d"); if (!c) return;
   c.setTransform(dpr,0,0,dpr,0,0);
-  c.fillStyle = "#030710"; c.fillRect(0,0,w,h);
+  c.fillStyle = "#000000"; c.fillRect(0,0,w,h);
   const cx = w*.5, cy = h*.49;
   const opening = clamp(elapsed/2250);
   const journey = clamp((elapsed-2050)/5650);
@@ -28,15 +28,15 @@ function paint(canvas: HTMLCanvasElement, elapsed: number) {
   const iris = 0;
   const warp = Math.min(w,h) * (.33 + travel * 1.45);
   const bg = c.createRadialGradient(cx,cy,0,cx,cy,Math.max(w,h)*.8);
-  bg.addColorStop(0,"#030710"); bg.addColorStop(.29,"#030710"); bg.addColorStop(.68,"#030710"); bg.addColorStop(1,"#020409");
+  bg.addColorStop(0,"#000000"); bg.addColorStop(.29,"#000000"); bg.addColorStop(.68,"#000000"); bg.addColorStop(1,"#000000");
   c.fillStyle=bg;c.fillRect(0,0,w,h);
   if(nebula?.complete && nebula.naturalWidth) {
-    c.save();c.globalAlpha=(1-iris)*(.3 + .7*opening)*.88;c.translate(cx,cy);c.rotate(travel*.29);
+    c.save();c.globalAlpha=(1-iris)*(.12 + .35*opening);c.translate(cx,cy);c.rotate(travel*.29);
     const size=warp*2.45;c.drawImage(nebula,-size/2,-size/2,size,size);c.restore();
   }
   const core=c.createRadialGradient(cx,cy,0,cx,cy,warp*.37);
-  core.addColorStop(0,`rgba(230,252,255,${(1-iris)*.83})`);
-  core.addColorStop(.21,`rgba(72,214,245,${(1-iris)*.5})`);core.addColorStop(1,"transparent");
+  core.addColorStop(0,`rgba(205,235,210,${(1-iris)*.52})`);
+  core.addColorStop(.21,`rgba(96,182,118,${(1-iris)*.26})`);core.addColorStop(1,"transparent");
   c.fillStyle=core;c.fillRect(cx-warp*.4,cy-warp*.4,warp*.8,warp*.8);
   // Every point is redrawn from a fixed seed and a depth value, so the fall is
   // perspective motion rather than scaling a low-resolution still.
@@ -49,7 +49,7 @@ function paint(canvas: HTMLCanvasElement, elapsed: number) {
     const y=cy+Math.sin(angle)*radius*stretch*.9;
     if (x<-20||x>w+20||y<-20||y>h+20) continue;
     const size=(.35+depth*2.3)*(w<600?.85:1);
-    const hue=["#a9e9ff","#ffd795","#77bfff","#e7b5ff"][i%4];
+    const hue=["#e4e2d9","#b5cbb6","#d5d2c8","#c4e6c8"][i%4];
     c.globalAlpha=(.2+depth*.72)*(1-iris);
     c.strokeStyle=hue;c.lineWidth=Math.max(.5,size*.48);
     c.beginPath();c.moveTo(x,y);
@@ -66,7 +66,7 @@ function paint(canvas: HTMLCanvasElement, elapsed: number) {
       const sliceStart=cuts[Math.max(shot,0)],sliceEnd=cuts[Math.max(shot+1,1)];
       const t=clamp((elapsed-sliceStart)/(sliceEnd-sliceStart));
       const stripH=Math.min(h*.38,w*.67),y=cy-stripH/2;
-      c.save();c.globalAlpha=1;c.fillStyle="#030710";c.fillRect(0,y,w,stripH);
+      c.save();c.globalAlpha=1;c.fillStyle="#000000";c.fillRect(0,y,w,stripH);
       c.beginPath();c.rect(0,y,w,stripH);c.clip();
       const zoom=1.02+t*.17, iw=Math.max(w*zoom,stripH*image.naturalWidth/image.naturalHeight),ih=iw*image.naturalHeight/image.naturalWidth;
       const pan=(shot%3-1)*w*.065;c.drawImage(image,cx-iw/2+pan,y+stripH/2-ih/2,iw,ih);
@@ -120,8 +120,21 @@ function paint(canvas: HTMLCanvasElement, elapsed: number) {
   }
   phrase(7530,8920,"BUILD WHAT'S NEXT", "right");
   // End by continuing the fall into darkness; do not return to the eye.
-  const fade=ease(clamp((elapsed-9050)/1950));
-  if(fade>0){c.fillStyle=`rgba(1,3,9,${fade})`;c.fillRect(0,0,w,h)}
+  const fade=ease(clamp((elapsed-9400)/2300));
+  if(fade>0){c.fillStyle=`rgba(1,3,9,${fade*.78})`;c.fillRect(0,0,w,h)}
+  // The last musical accent opens a cyan aperture at the galaxy core. The
+  // matching aperture reveals the live portfolio instead of cutting to it.
+  const portal=clamp((elapsed-9770)/480);
+  if(portal>0){
+    const radius=Math.min(w,h)*(.035+portal*.18);
+    const glow=c.createRadialGradient(cx,cy,0,cx,cy,radius*2.1);
+    glow.addColorStop(0,`rgba(187,255,241,${portal*.88})`);
+    glow.addColorStop(.25,`rgba(61,238,186,${portal*.36})`);
+    glow.addColorStop(1,"transparent");
+    c.fillStyle=glow;c.fillRect(cx-radius*2.1,cy-radius*2.1,radius*4.2,radius*4.2);
+    c.strokeStyle=`rgba(101,255,208,${portal*.75})`;c.lineWidth=2;
+    c.beginPath();c.arc(cx,cy,radius,0,Math.PI*2);c.stroke();
+  }
 }
 
 export function LoadingGalaxy() {
@@ -163,8 +176,20 @@ export function LoadingGalaxy() {
     (window as Window & {__introDraw?:(elapsed:number)=>void}).__introDraw=(elapsed)=>paint(element,elapsed);
     return()=>{cancelAnimationFrame(raf);window.removeEventListener("resize",resize);delete (window as Window & {__introDraw?:(elapsed:number)=>void}).__introDraw};
   },[phase]);
-  useEffect(()=>{if(phase!=="leaving")return;audio.current?.pause();const t=setTimeout(()=>setPhase("done"),650);return()=>clearTimeout(t)},[phase]);
-  useEffect(()=>()=>{audio.current?.pause();audio.current=null},[]);
+  useEffect(()=>{
+    // The hero is already mounted behind the reel. Sharpen it under the
+    // expanding portal as the final 750ms of the real soundtrack plays.
+    const root=document.documentElement;
+    if(phase==="playing")root.classList.add("intro-active");
+    if(phase==="leaving"){
+      root.classList.remove("intro-active");root.classList.add("intro-landed");
+      const t=setTimeout(()=>setPhase("done"),1150);
+      return()=>clearTimeout(t);
+    }
+    if(phase==="done")root.classList.remove("intro-active","intro-landed");
+    return()=>{root.classList.remove("intro-active","intro-landed")};
+  },[phase]);
+  useEffect(()=>()=>{audio.current?.pause();audio.current=null;document.documentElement.classList.remove("intro-active","intro-landed")},[]);
   if(phase==="done")return null;
   const enableSound=()=>{
     const track=audio.current;if(!track||phase!=="playing")return;
@@ -173,6 +198,7 @@ export function LoadingGalaxy() {
   };
   return <div className={`loading-galaxy space-intro ${phase==="leaving"?"is-leaving":""}`} role="dialog" aria-modal="true" aria-label="Enter the Systris portfolio">
     <canvas ref={canvas} aria-hidden="true" />
+    <div className="space-handoff-ring" aria-hidden="true" />
     <div className="space-caption">SYSTRIS <span>·</span> FOLLOW THE THREAD</div>
     <div className="space-actions">{!soundEnabled && <button type="button" onClick={enableSound}>{needsGesture ? "TAP FOR SOUND ↗" : "SOUND STARTING ↗"}</button>}<button type="button" onClick={()=>{audio.current?.pause();setPhase("leaving")}}>SKIP INTRO ↗</button></div>
   </div>;
