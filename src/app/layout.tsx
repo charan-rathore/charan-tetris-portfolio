@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import "./work-invite.css";
 
 const plex = localFont({
   src: [{ path: "./fonts/ibm-plex-sans-variable.ttf", weight: "100 700" }],
