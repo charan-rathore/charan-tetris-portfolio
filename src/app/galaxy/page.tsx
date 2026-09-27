@@ -8,6 +8,6 @@ export const metadata: Metadata = {
 };
 export default async function GalaxyPage({ searchParams }: { searchParams: Promise<{ focus?: string }> }) {
   const { focus } = await searchParams;
-  const selected = focus && galaxyNodes.some(node => node.id === focus) ? focus : "systris";
+  const selected = focus && galaxyNodes.some(node => node.id === focus) ? focus : "";
   return <GalaxyAtlas initialFocus={selected} />;
 }
