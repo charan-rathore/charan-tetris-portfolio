@@ -1,247 +1,1128 @@
 {
-  "title": "Charan Rathore's work galaxy",
-  "note": "Curated semantic links. Connections explain an idea or a theme, not a dependency or collaboration. Public forks alone do not prove upstream contributions.",
-  "nodes": [
-    {
-      "id": "intellirag",
-      "label": "IntelliRAG",
-      "idea": "An answer should show the passages behind it, and make failure visible when the evidence is thin.",
-      "method": "RAG platform with async pipelines, chunking strategies, RAGAS evaluation and workers.",
-      "source": "https://github.com/charan-rathore/IntelliRAG"
+  "title": "Charan Rathore's project trees",
+  "note": "Each tree describes one project independently. Other projects remain background stars. Summaries are curated from the portfolio and linked sources; a public fork alone does not prove upstream contributions.",
+  "projects": {
+    "intellirag": {
+      "project": "intellirag",
+      "nodes": [
+        {
+          "id": "intellirag",
+          "label": "IntelliRAG",
+          "kind": "project",
+          "detail": "RAG platform with async pipelines, chunking strategies, RAGAS evaluation and workers.",
+          "source": "https://github.com/charan-rathore/IntelliRAG"
+        },
+        {
+          "id": "intellirag:idea",
+          "label": "The idea",
+          "kind": "idea",
+          "detail": "An answer should show the passages behind it, and make failure visible when the evidence is thin.",
+          "source": "https://github.com/charan-rathore/IntelliRAG"
+        },
+        {
+          "id": "intellirag:work",
+          "label": "The work",
+          "kind": "work",
+          "detail": "RAG platform with async pipelines, chunking strategies, RAGAS evaluation and workers.",
+          "source": "https://github.com/charan-rathore/IntelliRAG"
+        },
+        {
+          "id": "intellirag:decision",
+          "label": "The choice",
+          "kind": "decision",
+          "detail": "An answer should show the passages behind it, and make failure visible when the evidence is thin.",
+          "source": "https://github.com/charan-rathore/IntelliRAG"
+        },
+        {
+          "id": "intellirag:source",
+          "label": "See the source",
+          "kind": "source",
+          "detail": "Inspect IntelliRAG at the linked source. A public fork alone does not prove upstream contributions.",
+          "source": "https://github.com/charan-rathore/IntelliRAG"
+        }
+      ],
+      "edges": [
+        {
+          "from": "intellirag",
+          "to": "intellirag:idea",
+          "relation": "starts with",
+          "weight": 1
+        },
+        {
+          "from": "intellirag",
+          "to": "intellirag:work",
+          "relation": "was built or practiced as",
+          "weight": 1.2
+        },
+        {
+          "from": "intellirag:idea",
+          "to": "intellirag:decision",
+          "relation": "leads to",
+          "weight": 1
+        },
+        {
+          "from": "intellirag:work",
+          "to": "intellirag:source",
+          "relation": "can be inspected at",
+          "weight": 1
+        }
+      ]
     },
-    {
-      "id": "memorable",
-      "label": "memoRABLE",
-      "idea": "Keep the original lines near the output so context survives the move from document to publication.",
-      "method": "Source-linked document memory, local-first with optional AI.",
-      "source": "https://github.com/charan-rathore/memoRABLE"
+    "memorable": {
+      "project": "memorable",
+      "nodes": [
+        {
+          "id": "memorable",
+          "label": "memoRABLE",
+          "kind": "project",
+          "detail": "Source-linked document memory, local-first with optional AI.",
+          "source": "https://github.com/charan-rathore/memoRABLE"
+        },
+        {
+          "id": "memorable:idea",
+          "label": "The idea",
+          "kind": "idea",
+          "detail": "Keep the original lines near the output so context survives the move from document to publication.",
+          "source": "https://github.com/charan-rathore/memoRABLE"
+        },
+        {
+          "id": "memorable:work",
+          "label": "The work",
+          "kind": "work",
+          "detail": "Source-linked document memory, local-first with optional AI.",
+          "source": "https://github.com/charan-rathore/memoRABLE"
+        },
+        {
+          "id": "memorable:decision",
+          "label": "The choice",
+          "kind": "decision",
+          "detail": "Keep the original lines near the output so context survives the move from document to publication.",
+          "source": "https://github.com/charan-rathore/memoRABLE"
+        },
+        {
+          "id": "memorable:source",
+          "label": "See the source",
+          "kind": "source",
+          "detail": "Inspect memoRABLE at the linked source. A public fork alone does not prove upstream contributions.",
+          "source": "https://github.com/charan-rathore/memoRABLE"
+        }
+      ],
+      "edges": [
+        {
+          "from": "memorable",
+          "to": "memorable:idea",
+          "relation": "starts with",
+          "weight": 1
+        },
+        {
+          "from": "memorable",
+          "to": "memorable:work",
+          "relation": "was built or practiced as",
+          "weight": 1.2
+        },
+        {
+          "from": "memorable:idea",
+          "to": "memorable:decision",
+          "relation": "leads to",
+          "weight": 1
+        },
+        {
+          "from": "memorable:work",
+          "to": "memorable:source",
+          "relation": "can be inspected at",
+          "weight": 1
+        }
+      ]
     },
-    {
-      "id": "thermosense",
-      "label": "ThermoSense",
-      "idea": "A forecast improves when it meets rooftop measurements, bias checks and an inspectable leaderboard.",
-      "method": "Hyperlocal temperature forecasting and model/API bias tracking.",
-      "source": "https://github.com/charan-rathore/Time-Series-Temperature-Modelling"
+    "thermosense": {
+      "project": "thermosense",
+      "nodes": [
+        {
+          "id": "thermosense",
+          "label": "ThermoSense",
+          "kind": "project",
+          "detail": "Hyperlocal temperature forecasting and model/API bias tracking.",
+          "source": "https://github.com/charan-rathore/Time-Series-Temperature-Modelling"
+        },
+        {
+          "id": "thermosense:idea",
+          "label": "The idea",
+          "kind": "idea",
+          "detail": "A forecast improves when it meets rooftop measurements, bias checks and an inspectable leaderboard.",
+          "source": "https://github.com/charan-rathore/Time-Series-Temperature-Modelling"
+        },
+        {
+          "id": "thermosense:work",
+          "label": "The work",
+          "kind": "work",
+          "detail": "Hyperlocal temperature forecasting and model/API bias tracking.",
+          "source": "https://github.com/charan-rathore/Time-Series-Temperature-Modelling"
+        },
+        {
+          "id": "thermosense:decision",
+          "label": "The choice",
+          "kind": "decision",
+          "detail": "A forecast improves when it meets rooftop measurements, bias checks and an inspectable leaderboard.",
+          "source": "https://github.com/charan-rathore/Time-Series-Temperature-Modelling"
+        },
+        {
+          "id": "thermosense:source",
+          "label": "See the source",
+          "kind": "source",
+          "detail": "Inspect ThermoSense at the linked source. A public fork alone does not prove upstream contributions.",
+          "source": "https://github.com/charan-rathore/Time-Series-Temperature-Modelling"
+        }
+      ],
+      "edges": [
+        {
+          "from": "thermosense",
+          "to": "thermosense:idea",
+          "relation": "starts with",
+          "weight": 1
+        },
+        {
+          "from": "thermosense",
+          "to": "thermosense:work",
+          "relation": "was built or practiced as",
+          "weight": 1.2
+        },
+        {
+          "from": "thermosense:idea",
+          "to": "thermosense:decision",
+          "relation": "leads to",
+          "weight": 1
+        },
+        {
+          "from": "thermosense:work",
+          "to": "thermosense:source",
+          "relation": "can be inspected at",
+          "weight": 1
+        }
+      ]
     },
-    {
-      "id": "systris",
-      "label": "Systris",
-      "idea": "Make a body of work explorable: follow a question to the decisions and evidence that shaped a project.",
-      "method": "This Tetris portfolio is built in Next.js and exposes project/source links.",
-      "source": "https://github.com/charan-rathore/charan-tetris-portfolio"
+    "systris": {
+      "project": "systris",
+      "nodes": [
+        {
+          "id": "systris",
+          "label": "Systris",
+          "kind": "project",
+          "detail": "This Tetris portfolio is built in Next.js and exposes project/source links.",
+          "source": "https://github.com/charan-rathore/charan-tetris-portfolio"
+        },
+        {
+          "id": "systris:idea",
+          "label": "The idea",
+          "kind": "idea",
+          "detail": "Make a body of work explorable: follow a question to the decisions and evidence that shaped a project.",
+          "source": "https://github.com/charan-rathore/charan-tetris-portfolio"
+        },
+        {
+          "id": "systris:work",
+          "label": "The work",
+          "kind": "work",
+          "detail": "This Tetris portfolio is built in Next.js and exposes project/source links.",
+          "source": "https://github.com/charan-rathore/charan-tetris-portfolio"
+        },
+        {
+          "id": "systris:decision",
+          "label": "The choice",
+          "kind": "decision",
+          "detail": "Make a body of work explorable: follow a question to the decisions and evidence that shaped a project.",
+          "source": "https://github.com/charan-rathore/charan-tetris-portfolio"
+        },
+        {
+          "id": "systris:source",
+          "label": "See the source",
+          "kind": "source",
+          "detail": "Inspect Systris at the linked source. A public fork alone does not prove upstream contributions.",
+          "source": "https://github.com/charan-rathore/charan-tetris-portfolio"
+        }
+      ],
+      "edges": [
+        {
+          "from": "systris",
+          "to": "systris:idea",
+          "relation": "starts with",
+          "weight": 1
+        },
+        {
+          "from": "systris",
+          "to": "systris:work",
+          "relation": "was built or practiced as",
+          "weight": 1.2
+        },
+        {
+          "from": "systris:idea",
+          "to": "systris:decision",
+          "relation": "leads to",
+          "weight": 1
+        },
+        {
+          "from": "systris:work",
+          "to": "systris:source",
+          "relation": "can be inspected at",
+          "weight": 1
+        }
+      ]
     },
-    {
-      "id": "evals",
-      "label": "RAGAS checks",
-      "idea": "Document tradeoffs and failure cases before calling a system reliable.",
-      "method": "IntelliRAG includes an eval directory and RAGAS evaluation; the portfolio links a scientific extraction study.",
-      "source": "https://github.com/charan-rathore/IntelliRAG/tree/main/eval"
+    "evals": {
+      "project": "evals",
+      "nodes": [
+        {
+          "id": "evals",
+          "label": "RAGAS checks",
+          "kind": "project",
+          "detail": "IntelliRAG includes an eval directory and RAGAS evaluation; the portfolio links a scientific extraction study.",
+          "source": "https://github.com/charan-rathore/IntelliRAG/tree/main/eval"
+        },
+        {
+          "id": "evals:idea",
+          "label": "The idea",
+          "kind": "idea",
+          "detail": "Document tradeoffs and failure cases before calling a system reliable.",
+          "source": "https://github.com/charan-rathore/IntelliRAG/tree/main/eval"
+        },
+        {
+          "id": "evals:work",
+          "label": "The work",
+          "kind": "work",
+          "detail": "IntelliRAG includes an eval directory and RAGAS evaluation; the portfolio links a scientific extraction study.",
+          "source": "https://github.com/charan-rathore/IntelliRAG/tree/main/eval"
+        },
+        {
+          "id": "evals:decision",
+          "label": "The choice",
+          "kind": "decision",
+          "detail": "Document tradeoffs and failure cases before calling a system reliable.",
+          "source": "https://github.com/charan-rathore/IntelliRAG/tree/main/eval"
+        },
+        {
+          "id": "evals:source",
+          "label": "See the source",
+          "kind": "source",
+          "detail": "Inspect RAGAS checks at the linked source. A public fork alone does not prove upstream contributions.",
+          "source": "https://github.com/charan-rathore/IntelliRAG/tree/main/eval"
+        }
+      ],
+      "edges": [
+        {
+          "from": "evals",
+          "to": "evals:idea",
+          "relation": "starts with",
+          "weight": 1
+        },
+        {
+          "from": "evals",
+          "to": "evals:work",
+          "relation": "was built or practiced as",
+          "weight": 1.2
+        },
+        {
+          "from": "evals:idea",
+          "to": "evals:decision",
+          "relation": "leads to",
+          "weight": 1
+        },
+        {
+          "from": "evals:work",
+          "to": "evals:source",
+          "relation": "can be inspected at",
+          "weight": 1
+        }
+      ]
     },
-    {
-      "id": "research",
-      "label": "Zeolite study",
-      "idea": "Compare prompting strategies against the same extraction task rather than trusting a polished demo.",
-      "method": "Zeolite synthesis event extraction study, arXiv 2512.15312.",
-      "source": "https://arxiv.org/abs/2512.15312"
+    "research": {
+      "project": "research",
+      "nodes": [
+        {
+          "id": "research",
+          "label": "Zeolite study",
+          "kind": "project",
+          "detail": "Zeolite synthesis event extraction study, arXiv 2512.15312.",
+          "source": "https://arxiv.org/abs/2512.15312"
+        },
+        {
+          "id": "research:idea",
+          "label": "The idea",
+          "kind": "idea",
+          "detail": "Compare prompting strategies against the same extraction task rather than trusting a polished demo.",
+          "source": "https://arxiv.org/abs/2512.15312"
+        },
+        {
+          "id": "research:work",
+          "label": "The work",
+          "kind": "work",
+          "detail": "Zeolite synthesis event extraction study, arXiv 2512.15312.",
+          "source": "https://arxiv.org/abs/2512.15312"
+        },
+        {
+          "id": "research:decision",
+          "label": "The choice",
+          "kind": "decision",
+          "detail": "Compare prompting strategies against the same extraction task rather than trusting a polished demo.",
+          "source": "https://arxiv.org/abs/2512.15312"
+        },
+        {
+          "id": "research:source",
+          "label": "See the source",
+          "kind": "source",
+          "detail": "Inspect Zeolite study at the linked source. A public fork alone does not prove upstream contributions.",
+          "source": "https://arxiv.org/abs/2512.15312"
+        }
+      ],
+      "edges": [
+        {
+          "from": "research",
+          "to": "research:idea",
+          "relation": "starts with",
+          "weight": 1
+        },
+        {
+          "from": "research",
+          "to": "research:work",
+          "relation": "was built or practiced as",
+          "weight": 1.2
+        },
+        {
+          "from": "research:idea",
+          "to": "research:decision",
+          "relation": "leads to",
+          "weight": 1
+        },
+        {
+          "from": "research:work",
+          "to": "research:source",
+          "relation": "can be inspected at",
+          "weight": 1
+        }
+      ]
     },
-    {
-      "id": "magpie",
-      "label": "magpie",
-      "idea": "Work on the edges where model choice, accounts and actual software behavior meet.",
-      "method": "Public fork of an agent model gateway; inspect contributions through GitHub.",
-      "source": "https://github.com/charan-rathore/magpie"
+    "magpie": {
+      "project": "magpie",
+      "nodes": [
+        {
+          "id": "magpie",
+          "label": "magpie",
+          "kind": "project",
+          "detail": "Public fork of an agent model gateway; inspect contributions through GitHub.",
+          "source": "https://github.com/charan-rathore/magpie"
+        },
+        {
+          "id": "magpie:idea",
+          "label": "The idea",
+          "kind": "idea",
+          "detail": "Work on the edges where model choice, accounts and actual software behavior meet.",
+          "source": "https://github.com/charan-rathore/magpie"
+        },
+        {
+          "id": "magpie:work",
+          "label": "The work",
+          "kind": "work",
+          "detail": "Public fork of an agent model gateway; inspect contributions through GitHub.",
+          "source": "https://github.com/charan-rathore/magpie"
+        },
+        {
+          "id": "magpie:decision",
+          "label": "The choice",
+          "kind": "decision",
+          "detail": "Work on the edges where model choice, accounts and actual software behavior meet.",
+          "source": "https://github.com/charan-rathore/magpie"
+        },
+        {
+          "id": "magpie:source",
+          "label": "See the source",
+          "kind": "source",
+          "detail": "Inspect magpie at the linked source. A public fork alone does not prove upstream contributions.",
+          "source": "https://github.com/charan-rathore/magpie"
+        }
+      ],
+      "edges": [
+        {
+          "from": "magpie",
+          "to": "magpie:idea",
+          "relation": "starts with",
+          "weight": 1
+        },
+        {
+          "from": "magpie",
+          "to": "magpie:work",
+          "relation": "was built or practiced as",
+          "weight": 1.2
+        },
+        {
+          "from": "magpie:idea",
+          "to": "magpie:decision",
+          "relation": "leads to",
+          "weight": 1
+        },
+        {
+          "from": "magpie:work",
+          "to": "magpie:source",
+          "relation": "can be inspected at",
+          "weight": 1
+        }
+      ]
     },
-    {
-      "id": "copilotkit",
-      "label": "CopilotKit",
-      "idea": "Agent interfaces need state that survives updates without hiding what happened.",
-      "method": "Public CopilotKit fork and contribution history.",
-      "source": "https://github.com/charan-rathore/CopilotKit"
+    "copilotkit": {
+      "project": "copilotkit",
+      "nodes": [
+        {
+          "id": "copilotkit",
+          "label": "CopilotKit",
+          "kind": "project",
+          "detail": "Public CopilotKit fork and contribution history.",
+          "source": "https://github.com/charan-rathore/CopilotKit"
+        },
+        {
+          "id": "copilotkit:idea",
+          "label": "The idea",
+          "kind": "idea",
+          "detail": "Agent interfaces need state that survives updates without hiding what happened.",
+          "source": "https://github.com/charan-rathore/CopilotKit"
+        },
+        {
+          "id": "copilotkit:work",
+          "label": "The work",
+          "kind": "work",
+          "detail": "Public CopilotKit fork and contribution history.",
+          "source": "https://github.com/charan-rathore/CopilotKit"
+        },
+        {
+          "id": "copilotkit:decision",
+          "label": "The choice",
+          "kind": "decision",
+          "detail": "Agent interfaces need state that survives updates without hiding what happened.",
+          "source": "https://github.com/charan-rathore/CopilotKit"
+        },
+        {
+          "id": "copilotkit:source",
+          "label": "See the source",
+          "kind": "source",
+          "detail": "Inspect CopilotKit at the linked source. A public fork alone does not prove upstream contributions.",
+          "source": "https://github.com/charan-rathore/CopilotKit"
+        }
+      ],
+      "edges": [
+        {
+          "from": "copilotkit",
+          "to": "copilotkit:idea",
+          "relation": "starts with",
+          "weight": 1
+        },
+        {
+          "from": "copilotkit",
+          "to": "copilotkit:work",
+          "relation": "was built or practiced as",
+          "weight": 1.2
+        },
+        {
+          "from": "copilotkit:idea",
+          "to": "copilotkit:decision",
+          "relation": "leads to",
+          "weight": 1
+        },
+        {
+          "from": "copilotkit:work",
+          "to": "copilotkit:source",
+          "relation": "can be inspected at",
+          "weight": 1
+        }
+      ]
     },
-    {
-      "id": "openmuse",
-      "label": "openmuse",
-      "idea": "Explore agent work that continues through tools, browser state and the user interface.",
-      "method": "Public openmuse fork.",
-      "source": "https://github.com/charan-rathore/openmuse"
+    "openmuse": {
+      "project": "openmuse",
+      "nodes": [
+        {
+          "id": "openmuse",
+          "label": "openmuse",
+          "kind": "project",
+          "detail": "Public openmuse fork.",
+          "source": "https://github.com/charan-rathore/openmuse"
+        },
+        {
+          "id": "openmuse:idea",
+          "label": "The idea",
+          "kind": "idea",
+          "detail": "Explore agent work that continues through tools, browser state and the user interface.",
+          "source": "https://github.com/charan-rathore/openmuse"
+        },
+        {
+          "id": "openmuse:work",
+          "label": "The work",
+          "kind": "work",
+          "detail": "Public openmuse fork.",
+          "source": "https://github.com/charan-rathore/openmuse"
+        },
+        {
+          "id": "openmuse:decision",
+          "label": "The choice",
+          "kind": "decision",
+          "detail": "Explore agent work that continues through tools, browser state and the user interface.",
+          "source": "https://github.com/charan-rathore/openmuse"
+        },
+        {
+          "id": "openmuse:source",
+          "label": "See the source",
+          "kind": "source",
+          "detail": "Inspect openmuse at the linked source. A public fork alone does not prove upstream contributions.",
+          "source": "https://github.com/charan-rathore/openmuse"
+        }
+      ],
+      "edges": [
+        {
+          "from": "openmuse",
+          "to": "openmuse:idea",
+          "relation": "starts with",
+          "weight": 1
+        },
+        {
+          "from": "openmuse",
+          "to": "openmuse:work",
+          "relation": "was built or practiced as",
+          "weight": 1.2
+        },
+        {
+          "from": "openmuse:idea",
+          "to": "openmuse:decision",
+          "relation": "leads to",
+          "weight": 1
+        },
+        {
+          "from": "openmuse:work",
+          "to": "openmuse:source",
+          "relation": "can be inspected at",
+          "weight": 1
+        }
+      ]
     },
-    {
-      "id": "vllm",
-      "label": "vLLM",
-      "idea": "Understand the serving layer behind fast model experiences.",
-      "method": "Public fork of vLLM.",
-      "source": "https://github.com/charan-rathore/vllm"
+    "vllm": {
+      "project": "vllm",
+      "nodes": [
+        {
+          "id": "vllm",
+          "label": "vLLM",
+          "kind": "project",
+          "detail": "Public fork of vLLM.",
+          "source": "https://github.com/charan-rathore/vllm"
+        },
+        {
+          "id": "vllm:idea",
+          "label": "The idea",
+          "kind": "idea",
+          "detail": "Understand the serving layer behind fast model experiences.",
+          "source": "https://github.com/charan-rathore/vllm"
+        },
+        {
+          "id": "vllm:work",
+          "label": "The work",
+          "kind": "work",
+          "detail": "Public fork of vLLM.",
+          "source": "https://github.com/charan-rathore/vllm"
+        },
+        {
+          "id": "vllm:decision",
+          "label": "The choice",
+          "kind": "decision",
+          "detail": "Understand the serving layer behind fast model experiences.",
+          "source": "https://github.com/charan-rathore/vllm"
+        },
+        {
+          "id": "vllm:source",
+          "label": "See the source",
+          "kind": "source",
+          "detail": "Inspect vLLM at the linked source. A public fork alone does not prove upstream contributions.",
+          "source": "https://github.com/charan-rathore/vllm"
+        }
+      ],
+      "edges": [
+        {
+          "from": "vllm",
+          "to": "vllm:idea",
+          "relation": "starts with",
+          "weight": 1
+        },
+        {
+          "from": "vllm",
+          "to": "vllm:work",
+          "relation": "was built or practiced as",
+          "weight": 1.2
+        },
+        {
+          "from": "vllm:idea",
+          "to": "vllm:decision",
+          "relation": "leads to",
+          "weight": 1
+        },
+        {
+          "from": "vllm:work",
+          "to": "vllm:source",
+          "relation": "can be inspected at",
+          "weight": 1
+        }
+      ]
     },
-    {
-      "id": "llama",
-      "label": "llama.cpp",
-      "idea": "Follow the practical constraints of local model inference, not only the model output.",
-      "method": "Public llama.cpp fork.",
-      "source": "https://github.com/charan-rathore/llama.cpp"
+    "llama": {
+      "project": "llama",
+      "nodes": [
+        {
+          "id": "llama",
+          "label": "llama.cpp",
+          "kind": "project",
+          "detail": "Public llama.cpp fork.",
+          "source": "https://github.com/charan-rathore/llama.cpp"
+        },
+        {
+          "id": "llama:idea",
+          "label": "The idea",
+          "kind": "idea",
+          "detail": "Follow the practical constraints of local model inference, not only the model output.",
+          "source": "https://github.com/charan-rathore/llama.cpp"
+        },
+        {
+          "id": "llama:work",
+          "label": "The work",
+          "kind": "work",
+          "detail": "Public llama.cpp fork.",
+          "source": "https://github.com/charan-rathore/llama.cpp"
+        },
+        {
+          "id": "llama:decision",
+          "label": "The choice",
+          "kind": "decision",
+          "detail": "Follow the practical constraints of local model inference, not only the model output.",
+          "source": "https://github.com/charan-rathore/llama.cpp"
+        },
+        {
+          "id": "llama:source",
+          "label": "See the source",
+          "kind": "source",
+          "detail": "Inspect llama.cpp at the linked source. A public fork alone does not prove upstream contributions.",
+          "source": "https://github.com/charan-rathore/llama.cpp"
+        }
+      ],
+      "edges": [
+        {
+          "from": "llama",
+          "to": "llama:idea",
+          "relation": "starts with",
+          "weight": 1
+        },
+        {
+          "from": "llama",
+          "to": "llama:work",
+          "relation": "was built or practiced as",
+          "weight": 1.2
+        },
+        {
+          "from": "llama:idea",
+          "to": "llama:decision",
+          "relation": "leads to",
+          "weight": 1
+        },
+        {
+          "from": "llama:work",
+          "to": "llama:source",
+          "relation": "can be inspected at",
+          "weight": 1
+        }
+      ]
     },
-    {
-      "id": "miq",
-      "label": "MiQ",
-      "idea": "Connect signals to a decision in the market context where they matter.",
-      "method": "Current analyst role in MENA markets, as listed in the portfolio résumé.",
-      "source": "https://drive.google.com/file/d/1vjBP8P8sgW30tyGk3gxGDrOI_ZUInl6u/view?usp=drive_link"
+    "miq": {
+      "project": "miq",
+      "nodes": [
+        {
+          "id": "miq",
+          "label": "MiQ",
+          "kind": "project",
+          "detail": "Current analyst role in MENA markets, as listed in the portfolio résumé.",
+          "source": "https://drive.google.com/file/d/1vjBP8P8sgW30tyGk3gxGDrOI_ZUInl6u/view?usp=drive_link"
+        },
+        {
+          "id": "miq:idea",
+          "label": "The idea",
+          "kind": "idea",
+          "detail": "Connect signals to a decision in the market context where they matter.",
+          "source": "https://drive.google.com/file/d/1vjBP8P8sgW30tyGk3gxGDrOI_ZUInl6u/view?usp=drive_link"
+        },
+        {
+          "id": "miq:work",
+          "label": "The work",
+          "kind": "work",
+          "detail": "Current analyst role in MENA markets, as listed in the portfolio résumé.",
+          "source": "https://drive.google.com/file/d/1vjBP8P8sgW30tyGk3gxGDrOI_ZUInl6u/view?usp=drive_link"
+        },
+        {
+          "id": "miq:decision",
+          "label": "The choice",
+          "kind": "decision",
+          "detail": "Connect signals to a decision in the market context where they matter.",
+          "source": "https://drive.google.com/file/d/1vjBP8P8sgW30tyGk3gxGDrOI_ZUInl6u/view?usp=drive_link"
+        },
+        {
+          "id": "miq:source",
+          "label": "See the source",
+          "kind": "source",
+          "detail": "Inspect MiQ at the linked source. A public fork alone does not prove upstream contributions.",
+          "source": "https://drive.google.com/file/d/1vjBP8P8sgW30tyGk3gxGDrOI_ZUInl6u/view?usp=drive_link"
+        }
+      ],
+      "edges": [
+        {
+          "from": "miq",
+          "to": "miq:idea",
+          "relation": "starts with",
+          "weight": 1
+        },
+        {
+          "from": "miq",
+          "to": "miq:work",
+          "relation": "was built or practiced as",
+          "weight": 1.2
+        },
+        {
+          "from": "miq:idea",
+          "to": "miq:decision",
+          "relation": "leads to",
+          "weight": 1
+        },
+        {
+          "from": "miq:work",
+          "to": "miq:source",
+          "relation": "can be inspected at",
+          "weight": 1
+        }
+      ]
     },
-    {
-      "id": "project-management-tool",
-      "label": "Shared board",
-      "idea": "A shared board for the messy middle.",
-      "method": "React and Next.js project board.",
-      "source": "https://github.com/charan-rathore/project-management-tool"
+    "project-management-tool": {
+      "project": "project-management-tool",
+      "nodes": [
+        {
+          "id": "project-management-tool",
+          "label": "Shared board",
+          "kind": "project",
+          "detail": "React and Next.js project board.",
+          "source": "https://github.com/charan-rathore/project-management-tool"
+        },
+        {
+          "id": "project-management-tool:idea",
+          "label": "The idea",
+          "kind": "idea",
+          "detail": "A shared board for the messy middle.",
+          "source": "https://github.com/charan-rathore/project-management-tool"
+        },
+        {
+          "id": "project-management-tool:work",
+          "label": "The work",
+          "kind": "work",
+          "detail": "React and Next.js project board.",
+          "source": "https://github.com/charan-rathore/project-management-tool"
+        },
+        {
+          "id": "project-management-tool:decision",
+          "label": "The choice",
+          "kind": "decision",
+          "detail": "A shared board for the messy middle.",
+          "source": "https://github.com/charan-rathore/project-management-tool"
+        },
+        {
+          "id": "project-management-tool:source",
+          "label": "See the source",
+          "kind": "source",
+          "detail": "Inspect Shared board at the linked source. A public fork alone does not prove upstream contributions.",
+          "source": "https://github.com/charan-rathore/project-management-tool"
+        }
+      ],
+      "edges": [
+        {
+          "from": "project-management-tool",
+          "to": "project-management-tool:idea",
+          "relation": "starts with",
+          "weight": 1
+        },
+        {
+          "from": "project-management-tool",
+          "to": "project-management-tool:work",
+          "relation": "was built or practiced as",
+          "weight": 1.2
+        },
+        {
+          "from": "project-management-tool:idea",
+          "to": "project-management-tool:decision",
+          "relation": "leads to",
+          "weight": 1
+        },
+        {
+          "from": "project-management-tool:work",
+          "to": "project-management-tool:source",
+          "relation": "can be inspected at",
+          "weight": 1
+        }
+      ]
     },
-    {
-      "id": "agentic-finance-advisor",
-      "label": "Finance agents",
-      "idea": "Agent research with visible confidence checks.",
-      "method": "Multi-agent finance advisor repository.",
-      "source": "https://github.com/charan-rathore/agentic-finance-advisor"
+    "agentic-finance-advisor": {
+      "project": "agentic-finance-advisor",
+      "nodes": [
+        {
+          "id": "agentic-finance-advisor",
+          "label": "Finance agents",
+          "kind": "project",
+          "detail": "Multi-agent finance advisor repository.",
+          "source": "https://github.com/charan-rathore/agentic-finance-advisor"
+        },
+        {
+          "id": "agentic-finance-advisor:idea",
+          "label": "The idea",
+          "kind": "idea",
+          "detail": "Agent research with visible confidence checks.",
+          "source": "https://github.com/charan-rathore/agentic-finance-advisor"
+        },
+        {
+          "id": "agentic-finance-advisor:work",
+          "label": "The work",
+          "kind": "work",
+          "detail": "Multi-agent finance advisor repository.",
+          "source": "https://github.com/charan-rathore/agentic-finance-advisor"
+        },
+        {
+          "id": "agentic-finance-advisor:decision",
+          "label": "The choice",
+          "kind": "decision",
+          "detail": "Agent research with visible confidence checks.",
+          "source": "https://github.com/charan-rathore/agentic-finance-advisor"
+        },
+        {
+          "id": "agentic-finance-advisor:source",
+          "label": "See the source",
+          "kind": "source",
+          "detail": "Inspect Finance agents at the linked source. A public fork alone does not prove upstream contributions.",
+          "source": "https://github.com/charan-rathore/agentic-finance-advisor"
+        }
+      ],
+      "edges": [
+        {
+          "from": "agentic-finance-advisor",
+          "to": "agentic-finance-advisor:idea",
+          "relation": "starts with",
+          "weight": 1
+        },
+        {
+          "from": "agentic-finance-advisor",
+          "to": "agentic-finance-advisor:work",
+          "relation": "was built or practiced as",
+          "weight": 1.2
+        },
+        {
+          "from": "agentic-finance-advisor:idea",
+          "to": "agentic-finance-advisor:decision",
+          "relation": "leads to",
+          "weight": 1
+        },
+        {
+          "from": "agentic-finance-advisor:work",
+          "to": "agentic-finance-advisor:source",
+          "relation": "can be inspected at",
+          "weight": 1
+        }
+      ]
     },
-    {
-      "id": "drone-wildlife-detection",
-      "label": "Wildlife vision",
-      "idea": "Drone footage into blackbuck detections.",
-      "method": "Object detection from drone footage repository.",
-      "source": "https://github.com/charan-rathore/Object-detection-from-drone-captured-videos"
+    "drone-wildlife-detection": {
+      "project": "drone-wildlife-detection",
+      "nodes": [
+        {
+          "id": "drone-wildlife-detection",
+          "label": "Wildlife vision",
+          "kind": "project",
+          "detail": "Object detection from drone footage repository.",
+          "source": "https://github.com/charan-rathore/Object-detection-from-drone-captured-videos"
+        },
+        {
+          "id": "drone-wildlife-detection:idea",
+          "label": "The idea",
+          "kind": "idea",
+          "detail": "Drone footage into blackbuck detections.",
+          "source": "https://github.com/charan-rathore/Object-detection-from-drone-captured-videos"
+        },
+        {
+          "id": "drone-wildlife-detection:work",
+          "label": "The work",
+          "kind": "work",
+          "detail": "Object detection from drone footage repository.",
+          "source": "https://github.com/charan-rathore/Object-detection-from-drone-captured-videos"
+        },
+        {
+          "id": "drone-wildlife-detection:decision",
+          "label": "The choice",
+          "kind": "decision",
+          "detail": "Drone footage into blackbuck detections.",
+          "source": "https://github.com/charan-rathore/Object-detection-from-drone-captured-videos"
+        },
+        {
+          "id": "drone-wildlife-detection:source",
+          "label": "See the source",
+          "kind": "source",
+          "detail": "Inspect Wildlife vision at the linked source. A public fork alone does not prove upstream contributions.",
+          "source": "https://github.com/charan-rathore/Object-detection-from-drone-captured-videos"
+        }
+      ],
+      "edges": [
+        {
+          "from": "drone-wildlife-detection",
+          "to": "drone-wildlife-detection:idea",
+          "relation": "starts with",
+          "weight": 1
+        },
+        {
+          "from": "drone-wildlife-detection",
+          "to": "drone-wildlife-detection:work",
+          "relation": "was built or practiced as",
+          "weight": 1.2
+        },
+        {
+          "from": "drone-wildlife-detection:idea",
+          "to": "drone-wildlife-detection:decision",
+          "relation": "leads to",
+          "weight": 1
+        },
+        {
+          "from": "drone-wildlife-detection:work",
+          "to": "drone-wildlife-detection:source",
+          "relation": "can be inspected at",
+          "weight": 1
+        }
+      ]
     },
-    {
-      "id": "bolt-dataset",
-      "label": "CAD bolt data",
-      "idea": "Generate the shape and label together.",
-      "method": "CAD automation repository.",
-      "source": "https://github.com/charan-rathore/Automation-of-3D-Bolt-Dataset"
+    "bolt-dataset": {
+      "project": "bolt-dataset",
+      "nodes": [
+        {
+          "id": "bolt-dataset",
+          "label": "CAD bolt data",
+          "kind": "project",
+          "detail": "CAD automation repository.",
+          "source": "https://github.com/charan-rathore/Automation-of-3D-Bolt-Dataset"
+        },
+        {
+          "id": "bolt-dataset:idea",
+          "label": "The idea",
+          "kind": "idea",
+          "detail": "Generate the shape and label together.",
+          "source": "https://github.com/charan-rathore/Automation-of-3D-Bolt-Dataset"
+        },
+        {
+          "id": "bolt-dataset:work",
+          "label": "The work",
+          "kind": "work",
+          "detail": "CAD automation repository.",
+          "source": "https://github.com/charan-rathore/Automation-of-3D-Bolt-Dataset"
+        },
+        {
+          "id": "bolt-dataset:decision",
+          "label": "The choice",
+          "kind": "decision",
+          "detail": "Generate the shape and label together.",
+          "source": "https://github.com/charan-rathore/Automation-of-3D-Bolt-Dataset"
+        },
+        {
+          "id": "bolt-dataset:source",
+          "label": "See the source",
+          "kind": "source",
+          "detail": "Inspect CAD bolt data at the linked source. A public fork alone does not prove upstream contributions.",
+          "source": "https://github.com/charan-rathore/Automation-of-3D-Bolt-Dataset"
+        }
+      ],
+      "edges": [
+        {
+          "from": "bolt-dataset",
+          "to": "bolt-dataset:idea",
+          "relation": "starts with",
+          "weight": 1
+        },
+        {
+          "from": "bolt-dataset",
+          "to": "bolt-dataset:work",
+          "relation": "was built or practiced as",
+          "weight": 1.2
+        },
+        {
+          "from": "bolt-dataset:idea",
+          "to": "bolt-dataset:decision",
+          "relation": "leads to",
+          "weight": 1
+        },
+        {
+          "from": "bolt-dataset:work",
+          "to": "bolt-dataset:source",
+          "relation": "can be inspected at",
+          "weight": 1
+        }
+      ]
     },
-    {
-      "id": "flipkart",
-      "label": "Flipkart",
-      "idea": "Seller-funnel behavior became pipelines and dashboards for product decisions.",
-      "method": "Product Analyst Intern role listed in the portfolio résumé.",
-      "source": "https://drive.google.com/file/d/1vjBP8P8sgW30tyGk3gxGDrOI_ZUInl6u/view?usp=drive_link"
+    "flipkart": {
+      "project": "flipkart",
+      "nodes": [
+        {
+          "id": "flipkart",
+          "label": "Flipkart",
+          "kind": "project",
+          "detail": "Product Analyst Intern role listed in the portfolio résumé.",
+          "source": "https://drive.google.com/file/d/1vjBP8P8sgW30tyGk3gxGDrOI_ZUInl6u/view?usp=drive_link"
+        },
+        {
+          "id": "flipkart:idea",
+          "label": "The idea",
+          "kind": "idea",
+          "detail": "Seller-funnel behavior became pipelines and dashboards for product decisions.",
+          "source": "https://drive.google.com/file/d/1vjBP8P8sgW30tyGk3gxGDrOI_ZUInl6u/view?usp=drive_link"
+        },
+        {
+          "id": "flipkart:work",
+          "label": "The work",
+          "kind": "work",
+          "detail": "Product Analyst Intern role listed in the portfolio résumé.",
+          "source": "https://drive.google.com/file/d/1vjBP8P8sgW30tyGk3gxGDrOI_ZUInl6u/view?usp=drive_link"
+        },
+        {
+          "id": "flipkart:decision",
+          "label": "The choice",
+          "kind": "decision",
+          "detail": "Seller-funnel behavior became pipelines and dashboards for product decisions.",
+          "source": "https://drive.google.com/file/d/1vjBP8P8sgW30tyGk3gxGDrOI_ZUInl6u/view?usp=drive_link"
+        },
+        {
+          "id": "flipkart:source",
+          "label": "See the source",
+          "kind": "source",
+          "detail": "Inspect Flipkart at the linked source. A public fork alone does not prove upstream contributions.",
+          "source": "https://drive.google.com/file/d/1vjBP8P8sgW30tyGk3gxGDrOI_ZUInl6u/view?usp=drive_link"
+        }
+      ],
+      "edges": [
+        {
+          "from": "flipkart",
+          "to": "flipkart:idea",
+          "relation": "starts with",
+          "weight": 1
+        },
+        {
+          "from": "flipkart",
+          "to": "flipkart:work",
+          "relation": "was built or practiced as",
+          "weight": 1.2
+        },
+        {
+          "from": "flipkart:idea",
+          "to": "flipkart:decision",
+          "relation": "leads to",
+          "weight": 1
+        },
+        {
+          "from": "flipkart:work",
+          "to": "flipkart:source",
+          "relation": "can be inspected at",
+          "weight": 1
+        }
+      ]
     }
-  ],
-  "edges": [
-    {
-      "from": "intellirag",
-      "to": "evals",
-      "relation": "checks answers with",
-      "why": "The IntelliRAG repository includes an evaluation directory and RAGAS checks."
-    },
-    {
-      "from": "intellirag",
-      "to": "memorable",
-      "relation": "shares the question of traceable sources with",
-      "why": "Both projects keep a source close to the generated output."
-    },
-    {
-      "from": "evals",
-      "to": "research",
-      "relation": "shares a measurement-first approach with",
-      "why": "The zeolite study compares approaches against the same extraction task."
-    },
-    {
-      "from": "memorable",
-      "to": "research",
-      "relation": "connects source fidelity to",
-      "why": "Document memory and scientific extraction both depend on preserving source context."
-    },
-    {
-      "from": "thermosense",
-      "to": "miq",
-      "relation": "connects observed signals to decisions, as does",
-      "why": "ThermoSense measures forecast bias; MiQ is market analytics. This is a theme, not shared software."
-    },
-    {
-      "from": "thermosense",
-      "to": "drone-wildlife-detection",
-      "relation": "shares field observations with",
-      "why": "Rooftop sensors and drone footage are different sources of real-world measurements."
-    },
-    {
-      "from": "miq",
-      "to": "flipkart",
-      "relation": "continues an analytics thread from",
-      "why": "Both are analytics roles described in the portfolio résumé."
-    },
-    {
-      "from": "magpie",
-      "to": "vllm",
-      "relation": "sits upstream of model serving such as",
-      "why": "A gateway routes model requests; vLLM serves inference. This is a systems relationship, not a code dependency."
-    },
-    {
-      "from": "magpie",
-      "to": "llama",
-      "relation": "contrasts hosted routing with local inference in",
-      "why": "A model gateway and local inference solve different parts of getting model output."
-    },
-    {
-      "from": "vllm",
-      "to": "llama",
-      "relation": "shares an inference focus with",
-      "why": "Both are inference projects, with different serving and local-runtime constraints."
-    },
-    {
-      "from": "magpie",
-      "to": "copilotkit",
-      "relation": "connects model routing to agent interfaces such as",
-      "why": "The gateway and agent UI address adjacent layers; this does not imply an integration."
-    },
-    {
-      "from": "copilotkit",
-      "to": "openmuse",
-      "relation": "shares an agent-interface theme with",
-      "why": "The portfolio links public forks in agent UI and agent-tool ecosystems."
-    },
-    {
-      "from": "systris",
-      "to": "intellirag",
-      "relation": "lets visitors discover",
-      "why": "The portfolio links to IntelliRAG and its source."
-    },
-    {
-      "from": "systris",
-      "to": "memorable",
-      "relation": "lets visitors discover",
-      "why": "The portfolio links to memoRABLE and its source."
-    },
-    {
-      "from": "systris",
-      "to": "thermosense",
-      "relation": "lets visitors discover",
-      "why": "The portfolio links to ThermoSense and its source."
-    },
-    {
-      "from": "systris",
-      "to": "magpie",
-      "relation": "lets visitors discover",
-      "why": "The portfolio connects open-source work to its source."
-    },
-    {
-      "from": "systris",
-      "to": "miq",
-      "relation": "sets professional context for",
-      "why": "The portfolio résumé links MiQ to the body of work."
-    },
-    {
-      "from": "systris",
-      "to": "project-management-tool",
-      "relation": "lets visitors discover",
-      "why": "The portfolio links to the shared board project."
-    },
-    {
-      "from": "systris",
-      "to": "agentic-finance-advisor",
-      "relation": "lets visitors discover",
-      "why": "The portfolio links to the finance advisor project."
-    },
-    {
-      "from": "project-management-tool",
-      "to": "bolt-dataset",
-      "relation": "contrasts collaborative software with data generation in",
-      "why": "These are two different build projects, not a code relationship."
-    }
-  ]
+  }
 }
