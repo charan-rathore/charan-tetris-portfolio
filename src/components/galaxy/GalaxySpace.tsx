@@ -48,7 +48,7 @@ export function GalaxySpace({ speed, glow, orbits, paused, focus }: { speed: num
       const dots = 1050, points = new Float32Array(dots * 3), colors = new Float32Array(dots * 3);
       for (let i=0;i<dots;i++) { const a=i*2.39996,r=Math.sqrt(i/dots)*9.5,z=Math.sin(a*.72)*1.8;
         points[i*3]=Math.cos(a)*r;points[i*3+1]=Math.sin(a)*r*.65;points[i*3+2]=z+(Math.sin(i*17.23)*.5);
-        const c=new Color(i%11===0?0xffd166:i%7===0?0xb968ff:0xa3b8a3);
+        const c=new Color(i%11===0?0xc9d0c8:i%7===0?0xaeb7ac:0x758477);
         colors[i*3]=c.r;colors[i*3+1]=c.g;colors[i*3+2]=c.b;
       }
       const dotGeo=new BufferGeometry();dotGeo.setAttribute("position",new BufferAttribute(points,3));dotGeo.setAttribute("color",new BufferAttribute(colors,3));
@@ -57,7 +57,7 @@ export function GalaxySpace({ speed, glow, orbits, paused, focus }: { speed: num
       const markers: { node: (typeof galaxyNodes)[number]; material: InstanceType<typeof PointsMaterial> }[] = [];
       for (const n of galaxyNodes) {
         const geo=new BufferGeometry();geo.setAttribute("position",new BufferAttribute(new Float32Array(nodePos(n).toArray()),3));
-        const mat=new PointsMaterial({size:.35,color:n.color,transparent:true,opacity:.95,depthWrite:false,blending:AdditiveBlending});
+        const mat=new PointsMaterial({size:.35,color:0xa6b4a7,transparent:true,opacity:.95,depthWrite:false,blending:AdditiveBlending});
         system.add(new Points(geo,mat));markers.push({node:n,material:mat});resources.push(geo,mat);
       }
       const resize=()=>{const w=root.clientWidth,h=root.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();renderer.render(scene,camera);};
@@ -73,7 +73,7 @@ export function GalaxySpace({ speed, glow, orbits, paused, focus }: { speed: num
         cloud.rotation.z=elapsed*.000035;
         orbitGroups.forEach((line,i)=>{line.visible=c.orbits;line.rotation.z=elapsed*.000035*(i%2?-1:1);});
         dotMat.opacity=Math.min(1,.32+c.glow*.16);
-        markers.forEach(({node,material})=>{material.opacity=node.id===c.focus?1:.72;material.size=node.id===c.focus?.52:.35;});
+        markers.forEach(({node,material})=>{material.color.set(node.id===c.focus?node.color:0xa6b4a7);material.opacity=node.id===c.focus?1:.38;material.size=node.id===c.focus?.52:.26;});
         controls.update();renderer.render(scene,camera);
       };
       frame=requestAnimationFrame(loop);
