@@ -2891,7 +2891,7 @@ body{background:#000;color:var(--text)}
 .bridge-choices button[aria-pressed=true]{background:#171d17;color:#f5f3ec}
 .hero--mcp h1::after{color:#a4dda9}
 .space-intro{background:#000}
-.space-intro canvas{filter:grayscale(.9) brightness(.9) contrast(1.12)}
+.space-intro canvas{filter:saturate(.92) brightness(.85) contrast(1.14)}
 .space-caption{color:#d2e6d5;letter-spacing:.12em}
 .space-actions button{background:#0a0d0a;border-color:#4b6d53;color:#dbeddc}
 @media(prefers-reduced-motion:reduce){.space-intro.is-leaving{mask-image:none;-webkit-mask-image:none}}

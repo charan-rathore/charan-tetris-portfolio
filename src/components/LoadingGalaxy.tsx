@@ -31,7 +31,7 @@ function paint(canvas: HTMLCanvasElement, elapsed: number) {
   bg.addColorStop(0,"#000000"); bg.addColorStop(.29,"#000000"); bg.addColorStop(.68,"#000000"); bg.addColorStop(1,"#000000");
   c.fillStyle=bg;c.fillRect(0,0,w,h);
   if(nebula?.complete && nebula.naturalWidth) {
-    c.save();c.globalAlpha=(1-iris)*(.12 + .35*opening);c.translate(cx,cy);c.rotate(travel*.29);
+    c.save();c.globalAlpha=(1-iris)*(.2 + .48*opening);c.translate(cx,cy);c.rotate(travel*.29);
     const size=warp*2.45;c.drawImage(nebula,-size/2,-size/2,size,size);c.restore();
   }
   const core=c.createRadialGradient(cx,cy,0,cx,cy,warp*.37);
@@ -49,8 +49,8 @@ function paint(canvas: HTMLCanvasElement, elapsed: number) {
     const y=cy+Math.sin(angle)*radius*stretch*.9;
     if (x<-20||x>w+20||y<-20||y>h+20) continue;
     const size=(.35+depth*2.3)*(w<600?.85:1);
-    const hue=["#e4e2d9","#b5cbb6","#d5d2c8","#c4e6c8"][i%4];
-    c.globalAlpha=(.2+depth*.72)*(1-iris);
+    const hue=["#bbd8c4","#d6c899","#a4c0bb","#d2afaa"][i%4];
+    c.globalAlpha=(.24+depth*.72)*(1-iris);
     c.strokeStyle=hue;c.lineWidth=Math.max(.5,size*.48);
     c.beginPath();c.moveTo(x,y);
     c.lineTo(x+Math.cos(angle)*Math.max(size,depth*travel*22),y+Math.sin(angle)*Math.max(size,depth*travel*22));c.stroke();

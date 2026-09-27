@@ -32,3 +32,34 @@
 .galaxy-tuning input[type=checkbox]{accent-color:#61dbf5}
 @media(max-width:600px){.galaxy-tuning{gap:9px}.galaxy-tuning>span{width:100%;font-size:8px}}
 @media(prefers-reduced-motion:reduce){.galaxy-space{display:none}}
+/* The atlas is the same portfolio, not a separate navy product. Keep its
+   category-colored nodes as semantic markers on a true-black editorial field. */
+.galaxy-page{--atlas:#000;background:#000;color:#eeeae2;font-family:var(--font-sans)}
+.galaxy-backdrop{background:none}
+.galaxy-page a{color:#b6d5b7}
+.galaxy-header{background:#050605;border-color:#30352d;color:#b9bbb2;letter-spacing:.085em}
+.galaxy-header span{color:#aaa9a0}.galaxy-home{color:#d3d9af!important}
+.galaxy-intro{padding-top:clamp(42px,6vw,80px)}
+.galaxy-kicker{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.09em;color:#a6d9ae}
+.galaxy-intro h1{font-family:var(--font-sans);font-size:clamp(40px,6vw,76px);font-weight:550;letter-spacing:-.055em;line-height:1.07;color:#eeeae2}
+.galaxy-intro p,.galaxy-index p,.galaxy-activity-head p{color:#bbb8af;line-height:1.65}
+.galaxy-controls button,.galaxy-neighbors button{background:#0b0c0a;border-color:#373d34;color:#c2c1b8;font-family:var(--font-mono);border-radius:2px}
+.galaxy-controls button.is-active,.galaxy-controls button:hover,.galaxy-controls button:focus-visible{background:#1b241b;color:#e9eee3;border-color:#8fbd96}
+.galaxy-controls .galaxy-motion{color:#cbd1ad}
+.galaxy-tuning,.galaxy-tuning>span{color:#aaaFA4}.galaxy-tuning input[type=range],.galaxy-tuning input[type=checkbox]{accent-color:#a6d9ae}
+.galaxy-map{background:#000;border-color:#313830}
+.galaxy-lines line.is-connected{stroke:#a3c3a6}
+.atlas-orbits ellipse{stroke:#7fa78c;stroke-opacity:.33}
+.atlas-travelers{fill:#d1e4d1;filter:none}
+.galaxy-point{background:#080a08e0;border-color:transparent;text-shadow:0 1px 4px #000}
+.galaxy-point:hover,.galaxy-point:focus-visible,.galaxy-point.is-selected{background:#18251b;border-color:currentColor}
+.galaxy-point i{box-shadow:0 0 8px currentColor}
+.galaxy-inspector{background:#0b0c0a;border-color:#353a32}
+.galaxy-inspector h2,.galaxy-index h2,.galaxy-activity h2{font-weight:550;letter-spacing:-.035em;color:#eeeae2}
+.galaxy-story{color:#e1ddd5}.galaxy-proof,.galaxy-neighbors{border-color:#353b32}
+.galaxy-proof span,.galaxy-neighbors>span,.galaxy-proof p{color:#b2b4aa}
+.galaxy-index-list button{background:#0a0b09;border-color:#343a32;color:#e6e4da}
+.galaxy-index-list button:hover,.galaxy-index-list button:focus-visible{background:#18241a;border-color:#8fbd96}
+.galaxy-index-list small,.galaxy-index-list button>span:last-child{color:#a8c5aa}
+.galaxy-footer{border-color:#30352d;color:#aeb0a6}
+@media(max-width:520px){.galaxy-intro{padding-top:46px}.galaxy-intro h1{font-size:clamp(38px,10vw,48px)}.galaxy-controls{gap:7px}.galaxy-controls button{font-size:10px;padding:9px 11px}.galaxy-tuning>span{line-height:1.6}}

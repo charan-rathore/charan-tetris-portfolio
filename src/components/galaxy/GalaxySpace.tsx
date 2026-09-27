@@ -37,18 +37,18 @@ export function GalaxySpace({ speed, glow, orbits, paused, focus }: { speed: num
         const vertices: number[] = [];
         for (let i = 0; i < 120; i++) { const a = i / 120 * Math.PI * 2; vertices.push(Math.cos(a) * radius, Math.sin(a) * radius * .58, Math.sin(a * 2) * .65); }
         const geo = new BufferGeometry(); geo.setAttribute("position", new BufferAttribute(new Float32Array(vertices), 3));
-        const mat = new LineBasicMaterial({ color: 0x58cde8, transparent: true, opacity: .3 });
+        const mat = new LineBasicMaterial({ color: 0x9cbaa0, transparent: true, opacity: .3 });
         const loop = new LineLoop(geo, mat); system.add(loop); orbitGroups.push(loop); resources.push(geo,mat);
       }
       const edgeVertices: number[] = [];
       for (const [a,b] of galaxyEdges) { const p = nodePos(galaxyNodes.find(n=>n.id===a)!), q=nodePos(galaxyNodes.find(n=>n.id===b)!); edgeVertices.push(...p.toArray(),...q.toArray()); }
       const edgeGeo = new BufferGeometry(); edgeGeo.setAttribute("position",new BufferAttribute(new Float32Array(edgeVertices),3));
-      const edgeMat = new LineBasicMaterial({color:0x71cce5,transparent:true,opacity:.25});
+      const edgeMat = new LineBasicMaterial({color:0x8eaa93,transparent:true,opacity:.25});
       system.add(new LineSegments(edgeGeo,edgeMat));resources.push(edgeGeo,edgeMat);
       const dots = 1050, points = new Float32Array(dots * 3), colors = new Float32Array(dots * 3);
       for (let i=0;i<dots;i++) { const a=i*2.39996,r=Math.sqrt(i/dots)*9.5,z=Math.sin(a*.72)*1.8;
         points[i*3]=Math.cos(a)*r;points[i*3+1]=Math.sin(a)*r*.65;points[i*3+2]=z+(Math.sin(i*17.23)*.5);
-        const c=new Color(i%11===0?0xffd166:i%7===0?0xb968ff:0x76dffa);
+        const c=new Color(i%11===0?0xffd166:i%7===0?0xb968ff:0xa3b8a3);
         colors[i*3]=c.r;colors[i*3+1]=c.g;colors[i*3+2]=c.b;
       }
       const dotGeo=new BufferGeometry();dotGeo.setAttribute("position",new BufferAttribute(points,3));dotGeo.setAttribute("color",new BufferAttribute(colors,3));
