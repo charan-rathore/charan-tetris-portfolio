@@ -1,55 +1,37 @@
 import { galaxyNodes } from "./galaxy";
 
-/** Curated, sourced semantic edges; these are editorial links, not claims of shared code. */
-export const knowledgeEdges = [
-  { from:"intellirag",to:"evals",relation:"checks answers with",why:"The IntelliRAG repository includes an evaluation directory and RAGAS checks.",weight:1 },
-  { from:"intellirag",to:"memorable",relation:"shares the question of traceable sources with",why:"Both projects keep a source close to the generated output.",weight:1.3 },
-  { from:"evals",to:"research",relation:"shares a measurement-first approach with",why:"The zeolite study compares approaches against the same extraction task.",weight:1.1 },
-  { from:"memorable",to:"research",relation:"connects source fidelity to",why:"Document memory and scientific extraction both depend on preserving source context.",weight:1.4 },
-  { from:"thermosense",to:"miq",relation:"connects observed signals to decisions, as does",why:"ThermoSense measures forecast bias; MiQ is market analytics. This is a theme, not shared software.",weight:1.4 },
-  { from:"thermosense",to:"drone-wildlife-detection",relation:"shares field observations with",why:"Rooftop sensors and drone footage are different sources of real-world measurements.",weight:1.3 },
-  { from:"miq",to:"flipkart",relation:"continues an analytics thread from",why:"Both are analytics roles described in the portfolio résumé.",weight:1.1 },
-  { from:"magpie",to:"vllm",relation:"sits upstream of model serving such as",why:"A gateway routes model requests; vLLM serves inference. This is a systems relationship, not a code dependency.",weight:1.1 },
-  { from:"magpie",to:"llama",relation:"contrasts hosted routing with local inference in",why:"A model gateway and local inference solve different parts of getting model output.",weight:1.2 },
-  { from:"vllm",to:"llama",relation:"shares an inference focus with",why:"Both are inference projects, with different serving and local-runtime constraints.",weight:1 },
-  { from:"magpie",to:"copilotkit",relation:"connects model routing to agent interfaces such as",why:"The gateway and agent UI address adjacent layers; this does not imply an integration.",weight:1.5 },
-  { from:"copilotkit",to:"openmuse",relation:"shares an agent-interface theme with",why:"The portfolio links public forks in agent UI and agent-tool ecosystems.",weight:1.2 },
-  { from:"systris",to:"intellirag",relation:"lets visitors discover",why:"The portfolio links to IntelliRAG and its source.",weight:1.8 },
-  { from:"systris",to:"memorable",relation:"lets visitors discover",why:"The portfolio links to memoRABLE and its source.",weight:1.8 },
-  { from:"systris",to:"thermosense",relation:"lets visitors discover",why:"The portfolio links to ThermoSense and its source.",weight:1.8 },
-  { from:"systris",to:"magpie",relation:"lets visitors discover",why:"The portfolio connects open-source work to its source.",weight:1.8 },
-  { from:"systris",to:"miq",relation:"sets professional context for",why:"The portfolio résumé links MiQ to the body of work.",weight:1.8 },
-  { from:"systris",to:"project-management-tool",relation:"lets visitors discover",why:"The portfolio links to the shared board project.",weight:1.8 },
-  { from:"systris",to:"agentic-finance-advisor",relation:"lets visitors discover",why:"The portfolio links to the finance advisor project.",weight:1.8 },
-  { from:"project-management-tool",to:"bolt-dataset",relation:"contrasts collaborative software with data generation in",why:"These are two different build projects, not a code relationship.",weight:1.8 },
-] as const;
-
-export const knowledgeDetails: Record<string, { idea: string; method: string }> = Object.fromEntries(galaxyNodes.map(n=>[n.id,{idea:n.story,method:n.evidence}]));
+/** Each project is an independent tree. Editorial summaries come from the existing portfolio project records. */
+const projectTree = (project: (typeof galaxyNodes)[number]) => ({
+  project: project.id,
+  nodes: [
+    {id:project.id,label:project.label,kind:"project",detail:project.evidence,source:project.href},
+    {id:`${project.id}:idea`,label:"The idea",kind:"idea",detail:project.story,source:project.href},
+    {id:`${project.id}:work`,label:"The work",kind:"work",detail:project.evidence,source:project.href},
+    {id:`${project.id}:decision`,label:"The choice",kind:"decision",detail:project.story,source:project.href},
+    {id:`${project.id}:source`,label:"See the source",kind:"source",detail:`Inspect ${project.label} at the linked source. A public fork alone does not prove upstream contributions.`,source:project.href},
+  ],
+  edges:[
+    {from:project.id,to:`${project.id}:idea`,relation:"starts with",weight:1},
+    {from:project.id,to:`${project.id}:work`,relation:"was built or practiced as",weight:1.2},
+    {from:`${project.id}:idea`,to:`${project.id}:decision`,relation:"leads to",weight:1},
+    {from:`${project.id}:work`,to:`${project.id}:source`,relation:"can be inspected at",weight:1},
+  ]
+});
+export const projectTrees = Object.fromEntries(galaxyNodes.map(n=>[n.id,projectTree(n)]));
 export const knowledgeGraph = {
-  title:"Charan Rathore's work galaxy",
-  note:"Curated semantic links. Connections explain an idea or a theme, not a dependency or collaboration. Public forks alone do not prove upstream contributions.",
-  nodes:galaxyNodes.map(n=>({id:n.id,label:n.label,idea:n.story,method:n.evidence,source:n.href})),
-  edges:knowledgeEdges.map(e=>({from:e.from,to:e.to,relation:e.relation,why:e.why}))
+  title:"Charan Rathore's project trees",
+  note:"Each tree describes one project independently. Other projects remain background stars. Summaries are curated from the portfolio and linked sources; a public fork alone does not prove upstream contributions.",
+  projects:projectTrees
 };
 
-/** Dijkstra over the curated graph. Light only the nearest meaningful routes. */
-export function traceFrom(start:string) {
-  const distances=new Map<string,number>([[start,0]]), previous=new Map<string,string>(),visited=new Set<string>();
-  while(visited.size<galaxyNodes.length) {
-    const next=[...distances].filter(([id])=>!visited.has(id)).sort((a,b)=>a[1]-b[1])[0];
-    if(!next)break;
+/** Dijkstra on one project tree, not across projects. Each branch lights when its shortest distance is reached. */
+export function traceFrom(projectId:string){
+  const tree=projectTrees[projectId];if(!tree)return {nodes:new Map<string,number>(),edges:new Map<string,number>()};
+  const distances=new Map<string,number>([[projectId,0]]),visited=new Set<string>();
+  while(visited.size<tree.nodes.length){
+    const next=[...distances].filter(([id])=>!visited.has(id)).sort((a,b)=>a[1]-b[1])[0];if(!next)break;
     const [id,dist]=next;visited.add(id);
-    for(const e of knowledgeEdges) {
-      const neighbor=e.from===id?e.to:e.to===id?e.from:null;
-      if(!neighbor||visited.has(neighbor))continue;
-      const candidate=dist+e.weight;
-      if(candidate<(distances.get(neighbor)??Infinity)){distances.set(neighbor,candidate);previous.set(neighbor,id);}
-    }
+    for(const edge of tree.edges){if(edge.from!==id||visited.has(edge.to))continue;distances.set(edge.to,Math.min(distances.get(edge.to)??Infinity,dist+edge.weight));}
   }
-  const targets=[...distances].filter(([id])=>id!==start).sort((a,b)=>a[1]-b[1]).slice(0,5);
-  const routes=new Map<string,number>([[start,0]]);
-  for(const [target] of targets){let id=target;while(id!==start&&previous.has(id)){routes.set(id,distances.get(id)!);id=previous.get(id)!;}}
-  const segments=new Map<string,number>();
-  for(const [id,dist] of routes){const parent=previous.get(id);if(parent)segments.set([id,parent].sort().join("|"),dist);}
-  return {routes,segments,targets:targets.map(([id])=>id)};
+  return {nodes:distances,edges:new Map(tree.edges.map(e=>[`${e.from}|${e.to}`,distances.get(e.to)??0]))};
 }
