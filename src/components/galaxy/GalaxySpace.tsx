@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { galaxyEdges, galaxyNodes } from "../../data/galaxy";
+import { galaxyNodes } from "../../data/galaxy";
 
 export function GalaxySpace({ speed, glow, orbits, paused, focus }: { speed: number; glow: number; orbits: boolean; paused: boolean; focus: string }) {
   const host = useRef<HTMLDivElement>(null);
@@ -11,7 +11,7 @@ export function GalaxySpace({ speed, glow, orbits, paused, focus }: { speed: num
     const root = host.current;
     if (!root || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let disposed = false, cleanup: (() => void) | undefined;
-    import("three").then(async ({ Scene, PerspectiveCamera, WebGLRenderer, Group, Color, BufferGeometry, BufferAttribute, PointsMaterial, Points, LineBasicMaterial, LineLoop, LineSegments, AdditiveBlending, Vector3 }) => {
+    import("three").then(async ({ Scene, PerspectiveCamera, WebGLRenderer, Group, Color, BufferGeometry, BufferAttribute, PointsMaterial, Points, LineBasicMaterial, LineLoop, AdditiveBlending, Vector3 }) => {
       const { OrbitControls } = await import("three/addons/controls/OrbitControls.js");
       if (disposed) return;
       let renderer: InstanceType<typeof WebGLRenderer>;
@@ -40,11 +40,6 @@ export function GalaxySpace({ speed, glow, orbits, paused, focus }: { speed: num
         const mat = new LineBasicMaterial({ color: 0x9cbaa0, transparent: true, opacity: .3 });
         const loop = new LineLoop(geo, mat); system.add(loop); orbitGroups.push(loop); resources.push(geo,mat);
       }
-      const edgeVertices: number[] = [];
-      for (const [a,b] of galaxyEdges) { const p = nodePos(galaxyNodes.find(n=>n.id===a)!), q=nodePos(galaxyNodes.find(n=>n.id===b)!); edgeVertices.push(...p.toArray(),...q.toArray()); }
-      const edgeGeo = new BufferGeometry(); edgeGeo.setAttribute("position",new BufferAttribute(new Float32Array(edgeVertices),3));
-      const edgeMat = new LineBasicMaterial({color:0x8eaa93,transparent:true,opacity:.08});
-      system.add(new LineSegments(edgeGeo,edgeMat));resources.push(edgeGeo,edgeMat);
       const dots = 1050, points = new Float32Array(dots * 3), colors = new Float32Array(dots * 3);
       for (let i=0;i<dots;i++) { const a=i*2.39996,r=Math.sqrt(i/dots)*9.5,z=Math.sin(a*.72)*1.8;
         points[i*3]=Math.cos(a)*r;points[i*3+1]=Math.sin(a)*r*.65;points[i*3+2]=z+(Math.sin(i*17.23)*.5);
