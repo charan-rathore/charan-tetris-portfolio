@@ -10,3 +10,8 @@
 .landing-activity{max-width:1400px;margin:24px auto 52px;padding:0 24px;scroll-margin-top:90px}
 .landing-activity .stage-heading{padding:0 16px}
 @media(max-width:600px){.landing-activity{padding:0 12px;margin:20px auto 36px}.landing-activity .stage-heading{padding:0 4px}.landing-activity .activity-timeline{margin:20px 0}}
+
+@media (min-width: 851px) {
+  .landing-activity { width: var(--desktop-frame); max-width: none; padding-inline: 0; }
+  .landing-activity .stage-heading { padding-inline: 0; }
+}

@@ -182,13 +182,13 @@ export function ActivityTimeline() {
         const opacity = ease(clamp((progress-.88)/.08,0,1));ctx.globalAlpha = opacity;
         const repoCount=new Set(events.map(e=>e.repo)).size;
         ctx.textAlign="left";ctx.fillStyle="#e4e0e5";
-        ctx.font=`600 ${Math.max(16,w*.034)}px Arial, sans-serif`;
+        ctx.font=`600 ${Math.max(16,w*.023)}px Arial, sans-serif`;
         ctx.fillText("September, at a glance",left,h*.105);
-        ctx.font=`700 ${Math.max(27,w*.075)}px Arial, sans-serif`;
-        ctx.fillText(String(events.length),left,h*.215);
+        ctx.font=`700 ${Math.max(27,w*.055)}px Arial, sans-serif`;
+        ctx.fillText(String(events.length),left,h*.27);
         ctx.font=`${Math.max(10,w*.012)}px Arial, sans-serif`;ctx.fillStyle="#aaa1a9";
-        ctx.fillText("PUBLIC MERGED PRS",left+Math.max(45,w*.13),h*.185);
-        ctx.fillText(`${activeDates.length} ACTIVE DAYS  ·  ${repoCount} REPOS`,left+Math.max(45,w*.13),h*.235);
+        ctx.fillText("PUBLIC MERGED PRS",left+Math.max(55,w*.13),h*.215);
+        ctx.fillText(`${activeDates.length} ACTIVE DAYS  ·  ${repoCount} REPOS`,left+Math.max(55,w*.13),h*.27);
         ctx.globalAlpha=1;
       }
 
